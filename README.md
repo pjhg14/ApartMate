@@ -1,5 +1,5 @@
 # ApartMate
-Database GUI system responcible for the management of investment properties and the persons inhabiting or repairing them
+Database GUI system responsible for the management of investment properties and the persons inhabiting or repairing them
 
 ## Known issues:
 -Issue page needs to be set up
