@@ -16,6 +16,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
+//TODO: Javadoc's for every method
 public class ContAddController {
 	
 	@FXML
@@ -55,11 +56,7 @@ public class ContAddController {
 	
 	@FXML
 	private void useCurrApt() {
-		if(isUsingCurrApt.isSelected()) {
-			apartmentChoice.setDisable(true);
-		}else {
-			apartmentChoice.setDisable(false);
-		}
+		apartmentChoice.setDisable(isUsingCurrApt.isSelected());
 	}
 	
 	

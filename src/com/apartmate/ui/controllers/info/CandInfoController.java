@@ -11,6 +11,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
+//TODO: Javadoc's for every method
+// Add TreeView Functionality
 public class CandInfoController {
 
 	@FXML
@@ -76,25 +78,8 @@ public class CandInfoController {
 	public void initialize() {
 		currCand = Database.getInstance().getCurrCand();
 
-		// Set Tenant Text
-		nameText.setText("Name: " + currCand.getFirstName() + " " + currCand.getLastName());
-		addressText.setText("Address: " + Database.getInstance().getCurrApt().getAddress());
-		phoneText.setText("Phone: " + currCand.getPhone());
-		emailText.setText("Email: " + currCand.getEmail());
-		SSNText.setText("SSN: " + currCand.getSSN());
-
-		try {
-			spNameText
-					.setText("Name: " + currCand.getSpouse().getFirstName() + " " + currCand.getSpouse().getLastName());
-			spAddressText.setText("Address: " + Database.getInstance().getCurrApt().getAddress());
-			spPhoneText.setText("Phone: " + currCand.getSpouse().getPhone());
-			spEmailText.setText("Email: " + currCand.getSpouse().getEmail());
-			spSSNText.setText("SSN: " + currCand.getSpouse().getSSN());
-		} catch (NullPointerException e) {
-			spTitle.setVisible(false);
-			spouseInfoBox.setVisible(false);
-			editButton2.setVisible(false);
-		}
+		// Set Text
+		setText();
 	}
 
 	@FXML
@@ -116,5 +101,31 @@ public class CandInfoController {
 	@FXML
 	public void editSpouse() {
 		Main.getLibrary().editWindow(FXMLLocation.SPOUSEEDIT);
+	}
+
+	private void setText() {
+		nameText.setText("Name: " + currCand.getFirstName() + " " + currCand.getLastName());
+		addressText.setText("Address: " + Database.getInstance().getCurrApt().getAddress());
+		phoneText.setText("Phone: " + currCand.getPhone());
+		emailText.setText("Email: " + currCand.getEmail());
+		SSNText.setText("SSN: " + currCand.getSSN());
+
+		try {
+			if (currCand.getSpouse().getFirstName().equals(""))
+				throw new NullPointerException("Candidate has no Spouse");
+			spNameText
+					.setText("Name: " + currCand.getSpouse().getFirstName() + " " + currCand.getSpouse().getLastName());
+			spAddressText.setText("Address: " + Database.getInstance().getCurrApt().getAddress());
+			spPhoneText.setText("Phone: " + currCand.getSpouse().getPhone());
+			spEmailText.setText("Email: " + currCand.getSpouse().getEmail());
+			spSSNText.setText("SSN: " + currCand.getSpouse().getSSN());
+		} catch (NullPointerException e) {
+			spTitle.setVisible(false);
+			spouseInfoBox.setVisible(false);
+			editButton2.setVisible(false);
+
+			if (Main.DEBUG)
+				System.out.println(e.getMessage());
+		}
 	}
 }

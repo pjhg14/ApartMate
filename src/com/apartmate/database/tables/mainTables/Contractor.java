@@ -3,17 +3,19 @@ package com.apartmate.database.tables.mainTables;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.apartmate.database.tables.subTables.ContInvoice;
+import com.apartmate.database.tables.subTables.Invoice;
+import com.apartmate.main.Main;
 
 /**
  * Contractor object
  * <p>
  * Records information of contractors that have worked on a respective Apartment
- * 
- * @since Can we call this an alpha? (0.1)
- * @version Capstone (0.8)
+ *
  * @author Paul Graham Jr (pjhg14@gmail.com)
+ * @version {@value Main#VERSION}
+ * @since Can we call this an alpha? (0.1)
  */
+//TODO: Javadoc's for every method
 public class Contractor extends Table {
 
 	/**
@@ -25,23 +27,10 @@ public class Contractor extends Table {
 	private String phone;
 	private String email;
 
-	private List<ContInvoice> contInvoices;
+	private List<Invoice> invoices;
 
 	public Contractor() {
-		super();
-		name = "";
-		bill = 0;
-		email = "";
-		phone = "";
-
-		contInvoices = new ArrayList<>();
-	}
-
-	public Contractor(int id, int fk, String name) {
-		super(id, fk);
-		this.name = name;
-
-		contInvoices = new ArrayList<>();
+		this(0,0,"",0,"","");
 	}
 
 	public Contractor(int id, int fk, String name, double bill, String phone, String email) {
@@ -51,7 +40,7 @@ public class Contractor extends Table {
 		this.phone = phone;
 		this.email = email;
 
-		contInvoices = new ArrayList<>();
+		invoices = new ArrayList<>();
 	}
 
 	@Override
@@ -61,9 +50,6 @@ public class Contractor extends Table {
 
 	// *************************************************************
 	// General getters and setters
-	public void VVVVVV() {
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -96,12 +82,12 @@ public class Contractor extends Table {
 		this.email = email;
 	}
 
-	public List<ContInvoice> getInvoices() {
-		return contInvoices;
+	public List<Invoice> getInvoices() {
+		return invoices;
 	}
 
-	public void setInvoices(List<ContInvoice> contInvoices) {
-		this.contInvoices = contInvoices;
+	public void setInvoices(List<Invoice> invoices) {
+		this.invoices = invoices;
 	}
 
 	// *************************************************************

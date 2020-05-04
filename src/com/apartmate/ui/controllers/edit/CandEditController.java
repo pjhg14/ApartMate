@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
+import com.apartmate.database.dbMirror.DBTables;
 import com.apartmate.database.dbMirror.Database;
 import com.apartmate.database.tables.mainTables.Apartment;
 import com.apartmate.database.tables.mainTables.Candidate;
@@ -22,6 +23,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
+//TODO: Javadoc's for every method
 public class CandEditController {
 
 	// ---------------------------------------------------------
@@ -84,9 +86,8 @@ public class CandEditController {
 		lastNameTextField.setText(Database.getInstance().getCurrTnant().getLastName());
 		phoneTextField.setText(Database.getInstance().getCurrTnant().getPhone());
 		emailTextField.setText(Database.getInstance().getCurrTnant().getEmail());
-		dateOfBirthDatePicker.setValue(
-				Database.getInstance().getCurrTnant().getDateOfBirth()
-				.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+		dateOfBirthDatePicker.setPromptText(
+				Database.getInstance().getCurrTnant().getDateOfBirth().toString());
 		annualIncomeTextField.setText(String.valueOf(Database.getInstance().getCurrTnant().getAnnualIncome()));
 		SSNTextField.setText(Database.getInstance().getCurrTnant().getSSN());
 		numChildrenTextField.setText(String.valueOf(Database.getInstance().getCurrTnant().getNumChildren()));
@@ -99,11 +100,7 @@ public class CandEditController {
 
 	@FXML
 	private void useCurrApt() {
-		if (isUsingCurrApt.isSelected()) {
-			apartmentChoice.setDisable(true);
-		} else {
-			apartmentChoice.setDisable(false);
-		}
+		apartmentChoice.setDisable(isUsingCurrApt.isSelected());
 	}
 
 	@FXML
@@ -119,22 +116,13 @@ public class CandEditController {
 	}
 
 	@FXML
-	public void addToTenants() {
-		int id;
-
-		if (Database.getInstance().getCandidates().isEmpty()) {
-			id = 0;
-		} else {
-			id = Database.getInstance().getCandidates().get(Database.getInstance().getCandidates().size() - 1).getId()
-					+ 1;
-		}
-
+	public void editCandidate() {
 		try {
 			Candidate temp = new Candidate();
 
 			LocalDate date;
 
-			temp.setId(id);
+			temp.setId(Database.getInstance().getCurrCand().getId());
 			if (isUsingCurrApt.isSelected()) {
 				temp.setFk(Database.getInstance().getCurrApt().getId());
 			} else {
@@ -146,8 +134,14 @@ public class CandEditController {
 			temp.setEmail(emailTextField.getText());
 			temp.setSSN(SSNTextField.getText());
 			temp.setNumChildren(Integer.parseInt(numChildrenTextField.getText()));
-			date = dateOfBirthDatePicker.getValue();
-			temp.setDateOfBirth(Date.from(Instant.from(date.atStartOfDay(ZoneId.systemDefault()))));
+
+			if (dateOfBirthDatePicker.getValue() != null) {
+				date = dateOfBirthDatePicker.getValue();
+				temp.setDateOfBirth(Date.from(Instant.from(date.atStartOfDay(ZoneId.systemDefault()))));
+			} else {
+				temp.setDateOfBirth(Database.getInstance().getCurrCand().getDateOfBirth());
+			}
+
 			temp.setAnnualIncome(Integer.parseInt(annualIncomeTextField.getText()));
 
 			Database.getInstance().getCandidates().add(temp);

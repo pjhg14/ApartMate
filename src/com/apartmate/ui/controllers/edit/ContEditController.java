@@ -15,6 +15,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
+//TODO: Javadoc's for every method
 public class ContEditController {
 
 	@FXML

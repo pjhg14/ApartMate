@@ -3,6 +3,7 @@ package com.apartmate.ui.controllers.addition;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.apartmate.database.dbMirror.DBTables;
 import com.apartmate.database.dbMirror.Database;
 import com.apartmate.database.tables.mainTables.Apartment;
 import com.apartmate.main.Main;
@@ -15,6 +16,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
+//TODO: Javadoc's for every method
+// Fix Add window
 public class AptAddController {
 
 	@FXML
@@ -32,8 +35,6 @@ public class AptAddController {
 	@FXML
 	private TextField capacityTextField;
 
-	@FXML
-	private TextField insBillTextField;
 
 	@FXML
 	private Text errorText;
@@ -41,53 +42,42 @@ public class AptAddController {
 	@FXML
 	private Button addButton;
 
-	private ObservableList<String> stateList;
-
 	@FXML
 	public void initialize() {
-		List<String> temp = setStateList();
-		
-		stateList = FXCollections.observableArrayList(temp);
-
-		stateComboBox.setItems(stateList);
+		stateComboBox.setItems(FXCollections.observableArrayList(setStateList()));
 	}
 
 	@FXML
 	public void addToApartments() {
 		int id;
 
-		if (Database.getInstance().getApartments().isEmpty()) {
-			id = 1;
+		int lastId = Database.getInstance().getLastID(DBTables.APARTMENTS);
+		if (lastId > 0) {
+			id = lastId	+ 1;
 		} else {
-			id = Database.getInstance().getApartments().get(Database.getInstance().getApartments().size() - 1).getId()
-					+ 1;
+			id = 1;
 		}
 
 		try {
-			Apartment temp = new Apartment();
-			String parse;
+			Apartment newApartment = new Apartment();
 
-			temp.setId(id);
-			temp.setAddress(addressTextField.getText());
-			temp.setCity(cityTextField.getText());
 
-			if(stateComboBox.getValue() == "State" || stateComboBox.getValue() == "") {
+			newApartment.setId(id);
+			newApartment.setAddress(addressTextField.getText());
+			newApartment.setCity(cityTextField.getText());
+
+			if (stateComboBox.getValue().equals("State") || stateComboBox.getValue().equals("")) {
 				throw new NumberFormatException("Invalid Value in State box");
 			}
-			parse = stateComboBox.getValue()
+
+			String shortState = stateComboBox.getValue()
 					.substring(stateComboBox.getValue().indexOf('-') + 1).trim();
-			temp.setState(parse);
+			newApartment.setState(shortState);
 
-			temp.setZipCode(zipTextField.getText());
-			temp.setCapacity(Integer.parseInt(capacityTextField.getText()));
-			if (insBillTextField.getText() == "") {
-				throw new NumberFormatException("Invalid Value in Monthly insurance field");
-			} else {
-				parse = insBillTextField.getText();
-			}
-			temp.setInsBill(Double.parseDouble(parse));
+			newApartment.setZipCode(zipTextField.getText());
+			newApartment.setCapacity(Integer.parseInt(capacityTextField.getText()));
 
-			Database.getInstance().add(temp);
+			Database.getInstance().add(newApartment);
 
 			Main.getLibrary().closePopup();
 		} catch (NumberFormatException e) {

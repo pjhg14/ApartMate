@@ -1,0 +1,99 @@
+ApartMate Changelog
+
+Unnamed Version 0.8.5
+{
+com.apartmate.database.dbMirror.*:
+    Created DBTables enum to easily cycle through Tables with a switch statement
+
+    Database.java:      Created sub enum DBSorting to replace static final constants
+                        Revised CRUD methods (add, edit, remove)
+                        Removed issInspSwitch, was redundant with DBTables
+                        Incorporated DBSorting into sorting methods
+                        Created getLastID() method to easily search for the last id of a table
+
+
+com.apartmate.database.tables.mainTables.*:
+    Table.java:         Implemented constructor chaining in order to make constructors more succinct
+                        Changed isPopulated field to populated
+                        Added Javadocs for all fields, methods and constructors
+
+    Apartment.java:     Implemented constructor chaining in order to make constructors more succinct
+                        Removed insBill field: was redundant as Insurance class exists
+                        Removed VVVVVV method
+                        Added Javadocs for all fields, methods and constructors
+
+    Tenant.java:        Implemented constructor chaining in order to make constructors more succinct
+                        Removed VVVVVV method
+                        Added getFullName method
+                        Added Javadocs for all fields, methods and constructors
+
+    Candidate.java:     Implemented constructor chaining in order to make constructors more succinct
+                        Removed VVVVVV method
+
+    Contractor.java:    Implemented constructor chaining in order to make constructors more succinct
+                        Removed VVVVVV method
+
+
+com.apartmate.database.tables.subTables.*:
+    Created Bill.java to track various bills eg. Water, Electric, Mortgages, ect.
+
+    Inspection.java:    Implemented constructor chaining in order to make constructors more succinct
+                        Removed VVVVVV method
+                        Added inspDate field, getter, and setter to store the date of an Inspection itself rather than
+                            the instance date
+
+
+Created com.apartmate.database.utilities.saving to hold all classes involved with saving data
+
+com.apartmate.database.utilities.saving.*:
+    SQLBridge.java:     Fixed stuff so far
+                        Changed table column constants to match SQL script changes
+                        Added utilization of DBTables for insert, delete and update methods regarding
+                            Spouses and Invoices
+
+
+com.apartmate.ui.controllers.*:
+    com.apartmate.ui.controllers.addition:
+        AptAddController.java:      Refactored to reflect changes in Apartment.java
+                                    ...
+
+    com.apartmate.ui.controllers.edit:
+        AptEditController.java:     Refactored to reflect changes in Apartment.java
+                                    ...
+
+    com.apartmate.ui.controllers.info:
+        AptInfoController.java:     Added moved text setting code to setText() method
+                                    ...
+
+        CandInfController.java:     Added moved text setting code to setText() method
+                                    ...
+
+        ContInfoController.java:    Added moved text setting code to setText() method
+                                    ...
+
+        TnantInfoController.java:   Added moved text setting code to setText() method
+                                    ...
+
+    com.apartmate.ui.controllers.invoice:
+        Created singular InvoiceController.java class
+
+        Deleted TnantInvoiceController.java, ContInvoiceController.java, & InsInvoiceController.java
+
+    com.apartmate.ui.controllers.mainScreen:
+        AptScreenController.java:
+
+        CandScreenController.java:
+
+        ContScreenController.java:
+
+        LoginController.java:
+
+        TnantScreenController.java:
+com.apartmate.ui.fxml.*
+
+
+Other:
+    Moved mysql-connector & pdfbox from project path to external file (really shouldn't post things that are not my work)
+    Added requirements.txt to show all needed dependencies
+    Added roadmap.txt to document plans for future versions
+}

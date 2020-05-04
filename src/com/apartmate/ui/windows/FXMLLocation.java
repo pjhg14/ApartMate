@@ -1,12 +1,15 @@
 package com.apartmate.ui.windows;
 
+import com.apartmate.main.Main;
+
 /**
  * Enumeration class that holds location constants for WindowLibrary
  * 
  * @since Can we call this an alpha? (0.1)
- * @version Capstone (0.8)
+ * @version {@value Main#VERSION}
  * @author Paul Graham Jr (pjhg14@gmail.com)
  */
+//TODO: Javadoc's for every method
 public enum FXMLLocation {
 
 	LOGIN("/com/apartmate/ui/fxml/mainScreen/login.fxml"),
@@ -14,7 +17,7 @@ public enum FXMLLocation {
 	APARTMENT("/com/apartmate/ui/fxml/mainScreen/apartment.fxml"),
 	TENANT("/com/apartmate/ui/fxml/mainScreen/tenant.fxml"),
 	CANDIDATE("/com/apartmate/ui/fxml/mainScreen/candidate.fxml"),
-	CONTRACTOR("/com/apartmate/ui/fxml/mainScreen/apartment.fxml"),
+	CONTRACTOR("/com/apartmate/ui/fxml/mainScreen/contractor.fxml"),
 
 	APTINFO("/com/apartmate/ui/fxml/info/aptinfo.fxml"), 
 	TNANTINFO("/com/apartmate/ui/fxml/info/tnantinfo.fxml"),
@@ -31,17 +34,18 @@ public enum FXMLLocation {
 	CANDEDIT("/com/apartmate/ui/fxml/edit/candedit.fxml"), 
 	CONTEDIT("/com/apartmate/ui/fxml/edit/contedit.fxml"),
 
-	TNANTINVOICES("/com/apartmate/ui/fxml/invoice/tnantinvtable.fxml"),
-	CONTINVOICES("/com/apartmate/ui/fxml/invoice/continvtable.fxml"),
-	INSURANCES("/com/apartmate/ui/fxml/invoice/instable.fxml"),
-
+	INVOICES("/com/apartmate/ui/fxml/invoice/invtable.fxml"),
 	SPOUSEADD("/com/apartmate/ui/fxml/addition/spouseadd.fxml"),
-	SPOUSEEDIT("/com/apartmate/ui/fxml/edit/spouseedit.fxml"), 
-	ISSINSP("/com/apartmate/ui/fxml/edit/notes.fxml");
+	SPOUSEEDIT("/com/apartmate/ui/fxml/edit/spouseedit.fxml"),
+	INSADD("/com/apartmate/ui/fxml/addition/insadd.fxml"),
+	INSEDIT("/com/apartmate/ui/fxml/edit/insedit.fxml"),
+	BILLADD("/com/apartmate/ui/fxml/addition/billadd.fxml"),
+	BILLEDIT("/com/apartmate/ui/fxml/edit/billedit.fxml"),
+	ISSINSP("/com/apartmate/ui/fxml/notes/notes.fxml");
 
 	private String location;
 
-	private FXMLLocation(String location) {
+	FXMLLocation(String location) {
 		this.location = location;
 	}
 

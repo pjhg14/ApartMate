@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
+import com.apartmate.database.dbMirror.DBTables;
 import com.apartmate.database.dbMirror.Database;
 import com.apartmate.database.tables.mainTables.Apartment;
 import com.apartmate.database.tables.mainTables.Tenant;
@@ -22,6 +23,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
+//TODO: Javadoc's for every method
 public class TnantAddController {
 
 	// ---------------------------------------------------------
@@ -88,20 +90,22 @@ public class TnantAddController {
 	
 	@FXML
 	private void useCurrApt() {
-		if(isUsingCurrApt.isSelected()) {
-			apartmentChoice.setDisable(true);
-		}else {
-			apartmentChoice.setDisable(false);
-		}
+		apartmentChoice.setDisable(isUsingCurrApt.isSelected());
 	}
 	
 	@FXML
 	public void addSpouseToTenant() {
 		Main.getLibrary().additionWindow(FXMLLocation.SPOUSEADD);
 		try {
-			spNameLoadConf.setText(tnantSpouse.getFirstName() + " " + tnantSpouse.getLastName());
-		} catch(NumberFormatException e) {
+			if (tnantSpouse.getFirstName().equals("") || tnantSpouse.getLastName().equals(""))
+				throw new NullPointerException("Spouse name is empty");
+
+			spNameLoadConf.setText(tnantSpouse.getFullName());
+		} catch(NullPointerException e) {
 			spNameLoadConf.setText("No Spouse Added");
+
+			if (Main.DEBUG)
+				System.out.println(e.getMessage());
 		}
 	}
 
@@ -109,41 +113,46 @@ public class TnantAddController {
 	public void addToTenants() {
 		int id;
 
-		if (Database.getInstance().getTenants().isEmpty()) {
-			id = 0;
+		int lastId = Database.getInstance().getLastID(DBTables.TENANTS);
+		if (lastId > 0) {
+			id = lastId;
 		} else {
-			id = Database.getInstance().getTenants().get(Database.getInstance().getTenants().size() - 1).getId() + 1;
+			id = 1;
 		}
 
 		try {
-			Tenant temp = new Tenant();
+			Tenant tenantToAdd = new Tenant();
 
 			LocalDate date;
 
-			temp.setId(id);
+			tenantToAdd.setId(id);
 			if(isUsingCurrApt.isSelected()) {
-				temp.setFk(Database.getInstance().getCurrApt().getId());
+				tenantToAdd.setFk(Database.getInstance().getCurrApt().getId());
 			}else {
-				temp.setFk(apartmentChoice.getSelectionModel().getSelectedItem().getId());
+				tenantToAdd.setFk(apartmentChoice.getSelectionModel().getSelectedItem().getId());
 			}
-			temp.setFirstName(firstNameTextField.getText());
-			temp.setLastName(lastNameTextField.getText());
-			temp.setPhone(phoneTextField.getText());
-			temp.setEmail(emailTextField.getText());
-			temp.setSSN(SSNTextField.getText());
-			temp.setRent(Double.parseDouble(rentTextField.getText()));
-			temp.setNumChildren(Integer.parseInt(numChildrenTextField.getText()));
-			date = movInDatePicker.getValue();
-			temp.setMovinDate(Date.from(Instant.from(date.atStartOfDay(ZoneId.systemDefault()))));
-			date = dateOfBirthDatePicker.getValue();
-			temp.setDateOfBirth(Date.from(Instant.from(date.atStartOfDay(ZoneId.systemDefault()))));
-			temp.setAnnualIncome(Integer.parseInt(annualIncomeTextField.getText()));
-			if(tnantSpouse != null) {
-				temp.setSpouse(tnantSpouse);
-			}
-			
 
-			Database.getInstance().add(temp);
+			tenantToAdd.setFirstName(firstNameTextField.getText());
+			tenantToAdd.setLastName(lastNameTextField.getText());
+			tenantToAdd.setPhone(phoneTextField.getText());
+			tenantToAdd.setEmail(emailTextField.getText());
+			tenantToAdd.setSSN(SSNTextField.getText());
+			tenantToAdd.setRent(Double.parseDouble(rentTextField.getText()));
+			tenantToAdd.setNumChildren(Integer.parseInt(numChildrenTextField.getText()));
+
+			date = movInDatePicker.getValue();
+			tenantToAdd.setMovInDate(Date.from(Instant.from(date.atStartOfDay(ZoneId.systemDefault()))));
+
+			date = dateOfBirthDatePicker.getValue();
+			tenantToAdd.setDateOfBirth(Date.from(Instant.from(date.atStartOfDay(ZoneId.systemDefault()))));
+
+			tenantToAdd.setAnnualIncome(Integer.parseInt(annualIncomeTextField.getText()));
+
+			if (tnantSpouse != null && !(tnantSpouse.getFirstName().equals("") || tnantSpouse.getLastName().equals(""))) {
+				tenantToAdd.setSpouse(tnantSpouse);
+			}
+
+			Database.getInstance().add(tenantToAdd);
 
 			Main.getLibrary().closePopup();
 		} catch (NumberFormatException e) {

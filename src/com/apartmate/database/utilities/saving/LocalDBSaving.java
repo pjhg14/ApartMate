@@ -1,4 +1,4 @@
-package com.apartmate.database.utilities;
+package com.apartmate.database.utilities.saving;
 
 import java.io.BufferedOutputStream;
 import java.io.EOFException;
@@ -17,26 +17,28 @@ import com.apartmate.database.tables.mainTables.Apartment;
 import com.apartmate.database.tables.mainTables.Candidate;
 import com.apartmate.database.tables.mainTables.Contractor;
 import com.apartmate.database.tables.mainTables.Tenant;
+import com.apartmate.main.Main;
 
 /**
  * Responsible for the saving of tables to a local file
- * 
- * @since Can we call this an alpha? (0.1)
- * @version Capstone (0.8)
+ *
  * @author Paul Graham Jr <pjhg14@gmail.com>
+ * @version {@value Main#VERSION}
+ * @since Can we call this an alpha? (0.1)
  */
+//TODO: Javadoc's for every method
+//TODO: Finalize Class
 public class LocalDBSaving {
 
-	private final File DIRECTORY = new File("data/db");
+	private static final File DIRECTORY = new File("data/db");
 
-	public LocalDBSaving() {
-
-	}
-
+	/**
+	 * Checks if the directory 'com/apartmate/data/db' exists and creates it if not so
+	 * @return true/false depending on whether the directory exists or not
+	 * */
 	public boolean createDir() {
 		if (!DIRECTORY.exists()) {
-			DIRECTORY.mkdir();
-			return false;
+			return !DIRECTORY.mkdir();
 		}
 		return true;
 	}
@@ -46,58 +48,58 @@ public class LocalDBSaving {
 	// Saving Methods
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
-	public boolean saveApartments() {
+	/**
+	 * */
+	public void saveApartments(List<Apartment> apartments) {
 		try (ObjectOutputStream output = new ObjectOutputStream(
 				new BufferedOutputStream(new FileOutputStream("data/db/apartments.dat")))) {
-			for (Apartment apartment : Database.getInstance().getApartments()) {
+			for (Apartment apartment : apartments) {
 				output.writeObject(apartment);
 			}
 		} catch (IOException io) {
-			System.out.println("Exception occurred: " + io.getMessage());
-			return false;
+			System.out.println("Exception occurred while saving Apartment list: " + io.getMessage());
 		}
-		return true;
 	}
 
-	public boolean saveTenants() {
+	/**
+	 * */
+	public void saveTenants(List<Tenant> tenants) {
 		try (ObjectOutputStream output = new ObjectOutputStream(
 				new BufferedOutputStream(new FileOutputStream("data/db/tenants.dat")))) {
-			for (Tenant tenant : Database.getInstance().getTenants()) {
+			for (Tenant tenant : tenants) {
 				output.writeObject(tenant);
 			}
 
-			return true;
 		} catch (IOException io) {
-			System.out.println("Exception occurred: " + io.getMessage());
-			return false;
+			System.out.println("Exception occurred while saving Tenant list: " + io.getMessage());
 		}
 	}
 
-	public boolean saveCandidates() {
+	/**
+	 * */
+	public void saveCandidates(List<Candidate> candidates) {
 		try (ObjectOutputStream output = new ObjectOutputStream(
 				new BufferedOutputStream(new FileOutputStream("data/db/candidates.dat")))) {
-			for (Candidate candidate : Database.getInstance().getCandidates()) {
+			for (Candidate candidate : candidates) {
 				output.writeObject(candidate);
 			}
 
-			return true;
 		} catch (IOException io) {
-			System.out.println("Exception ocurred: " + io.getMessage());
-			return false;
+			System.out.println("Exception occurred while saving Candidate list: " + io.getMessage());
 		}
 	}
 
-	public boolean saveContractors() {
+	/**
+	 * */
+	public void saveContractors(List<Contractor> contractors) {
 		try (ObjectOutputStream output = new ObjectOutputStream(
 				new BufferedOutputStream(new FileOutputStream("data/db/contractors.dat")))) {
-			for (Contractor contractor : Database.getInstance().getContractors()) {
+			for (Contractor contractor : contractors) {
 				output.writeObject(contractor);
 			}
 
-			return true;
 		} catch (IOException io) {
-			System.out.println("Exception ocurred: " + io.getMessage());
-			return false;
+			System.out.println("Exception occurred while saving Contractor list: " + io.getMessage());
 		}
 	}
 
@@ -106,6 +108,8 @@ public class LocalDBSaving {
 	// Loading Methods
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
+	/**
+	 * */
 	public List<Apartment> loadApartments() {
 		try (ObjectInputStream input = new ObjectInputStream(
 				new BufferedInputStream(new FileInputStream("data/db/apartments.dat")))) {
@@ -115,7 +119,9 @@ public class LocalDBSaving {
 			while (!endOfFile) {
 				try {
 					Apartment apartment = (Apartment) input.readObject();
-					System.out.println("New Apartment loaded: " + apartment);
+
+					if (Main.DEBUG)
+						System.out.println("New Apartment loaded: " + apartment);
 
 					temp.add(apartment);
 				} catch (EOFException eof) {
@@ -124,11 +130,14 @@ public class LocalDBSaving {
 			}
 			return temp;
 		} catch (IOException | ClassNotFoundException io) {
-			return null;
+			System.out.println("Error occurred while loading Apartments: Apartment list empty" + io.getMessage());
+			return new ArrayList<>();
 		}
 
 	}
 
+	/**
+	 * */
 	public List<Tenant> loadTenants() {
 		try (ObjectInputStream input = new ObjectInputStream(
 				new BufferedInputStream(new FileInputStream("data/db/tenants.dat")))) {
@@ -147,12 +156,14 @@ public class LocalDBSaving {
 			}
 			return temp;
 		} catch (IOException | ClassNotFoundException io) {
-			System.out.println("" + io.getMessage());
-			return null;
+			System.out.println("Error occurred while loading Tenants: Tenant list empty" + io.getMessage());
+			return new ArrayList<>();
 		}
 
 	}
 
+	/**
+	 * */
 	public List<Candidate> loadCandidates() {
 		try (ObjectInputStream input = new ObjectInputStream(
 				new BufferedInputStream(new FileInputStream("data/db/contractors.dat")))) {
@@ -170,10 +181,13 @@ public class LocalDBSaving {
 			}
 			return temp;
 		} catch (IOException | ClassNotFoundException io) {
-			return null;
+			System.out.println("Error occurred while loading Candidates: Candidate list empty" + io.getMessage());
+			return new ArrayList<>();
 		}
 	}
 
+	/**
+	 * */
 	public List<Contractor> loadContractors() {
 		try (ObjectInputStream input = new ObjectInputStream(
 				new BufferedInputStream(new FileInputStream("data/db/contractors.dat")))) {
@@ -192,7 +206,8 @@ public class LocalDBSaving {
 			}
 			return temp;
 		} catch (IOException | ClassNotFoundException io) {
-			return null;
+			System.out.println("Error occurred while loading Contractors: Contractor list empty" + io.getMessage());
+			return new ArrayList<>();
 		}
 	}
 

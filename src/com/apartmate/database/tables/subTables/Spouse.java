@@ -3,6 +3,7 @@ package com.apartmate.database.tables.subTables;
 import java.util.Date;
 
 import com.apartmate.database.tables.mainTables.Table;
+import com.apartmate.main.Main;
 
 /**
  * Spouse object
@@ -12,9 +13,10 @@ import com.apartmate.database.tables.mainTables.Table;
  * </p>
  *
  * @since Can we call this an alpha? (0.1)
- * @version Capstone (0.8)
+ * @version {@value Main#VERSION}
  * @author Paul Graham Jr (pjhg14@gmail.com)
  */
+//TODO: Javadoc's for every method
 public class Spouse extends Table {
 
 	private static final long serialVersionUID = 1L;
@@ -31,7 +33,7 @@ public class Spouse extends Table {
 	private int annualIncome; // spouse's annual income(optional)
 
 	public Spouse() {
-		super();
+		this(0,0,"","","","","",new Date());
 	}
 
 	// Tenant Spouse constructor
@@ -59,6 +61,22 @@ public class Spouse extends Table {
 	@Override
 	public String toString() {
 		return "Spouse name:" + " " + lastName + "," + firstName + "; Email: " + email;
+	}
+
+	/**
+	 * Gives the full name of the Tenant
+	 * @return first name last name
+	 * */
+	public String getFullName() {
+		return firstName + " " + lastName;
+	}
+
+	/**
+	 * Gives the full name of the Tenant; last first: first last
+	 * @return last name, first name
+	 * */
+	public String getProperName() {
+		return lastName + ", " + firstName;
 	}
 
 	// *************************************************************

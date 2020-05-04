@@ -1,4 +1,4 @@
-package com.apartmate.database.utilities;
+package com.apartmate.database.utilities.unordered;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,14 +9,18 @@ import com.apartmate.database.tables.mainTables.Candidate;
 import com.apartmate.database.tables.mainTables.Contractor;
 import com.apartmate.database.tables.mainTables.Tenant;
 import com.apartmate.database.tables.subTables.*;
+import com.apartmate.database.utilities.unordered.Heck;
+import com.apartmate.main.Main;
 
 /**
  * Testing data class; Holds all example data for demonstration
  * 
  * @since 0.1
- * @version Milestone 4 (0.4)
+ * @version {@value Main#VERSION}
  * @author Paul Graham Jr (pjhg14@gmail.com)
  */
+//TODO: Javadoc's for every method
+//TODO: Refactor to reflect recent changes
 public class TestingData {
 
 	private List<Apartment> apartments;
@@ -52,11 +56,11 @@ public class TestingData {
 		//contractors.add(new Contractor());
 
 		// Add sample data
-		apartments.add(new Apartment(1, "1 S.Winston place", "Lincroft", "NJ", "08893", 5, 1000));
-		apartments.add(new Apartment(2, "1194 Allison Way", "Edison", "NJ", "08812", 4, 1000));
-		apartments.add(new Apartment(3, "8367 Long Street", "Wyndmoor", "PA", "18893", 5, 1000));
-		apartments.add(new Apartment(4, "64 Walters Avenue", "Brooklyn", "NY", "07723", 3, 1000));
-		apartments.add(new Apartment(5, "21 Emile Drive", "Matawan", "NJ", "08867", 1, 1000));
+		apartments.add(new Apartment(1, "1 S.Winston place", "Lincroft", "NJ", "08893", 5));
+		apartments.add(new Apartment(2, "1194 Allison Way", "Edison", "NJ", "08812", 4));
+		apartments.add(new Apartment(3, "8367 Long Street", "Wyndmoor", "PA", "18893", 5));
+		apartments.add(new Apartment(4, "64 Walters Avenue", "Brooklyn", "NY", "07723", 3));
+		apartments.add(new Apartment(5, "21 Emile Drive", "Matawan", "NJ", "08867", 1));
 		//apartments.add(new Apartment(6, "Address", "", "NJ", "", 1, 1000));
 		//apartments.add(new Apartment(7, "Address", "", "", "", 3, 1000));
 		//apartments.add(new Apartment(8, "Address", "", "", "", 2, 1000));

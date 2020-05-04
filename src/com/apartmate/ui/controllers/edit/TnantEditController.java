@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
+import com.apartmate.database.dbMirror.DBTables;
 import com.apartmate.database.dbMirror.Database;
 import com.apartmate.database.tables.mainTables.Apartment;
 import com.apartmate.database.tables.mainTables.Tenant;
@@ -21,6 +22,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
+//TODO: Javadoc's for every method
 public class TnantEditController {
 
 	// ---------------------------------------------------------
@@ -84,24 +86,24 @@ public class TnantEditController {
 			apartmentChoice.getSelectionModel().select(Database.getInstance().getCurrApt());
 			
 			//Populate Fields
-			firstNameTextField.setText(Database.getInstance().getCurrTnant().getFirstName());
-			lastNameTextField.setText(Database.getInstance().getCurrTnant().getLastName());
-			phoneTextField.setText(Database.getInstance().getCurrTnant().getPhone());
-			emailTextField.setText(Database.getInstance().getCurrTnant().getEmail());
-			dateOfBirthDatePicker.setValue(
-					Database.getInstance().getCurrTnant().getDateOfBirth()
-					.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-			annualIncomeTextField.setText(String.valueOf(Database.getInstance().getCurrTnant().getAnnualIncome()));
-			SSNTextField.setText(Database.getInstance().getCurrTnant().getSSN());
-			rentTextField.setText(String.valueOf(Database.getInstance().getCurrTnant().getRent()));
-			movInDatePicker.setValue(
-					Database.getInstance().getCurrTnant().getMovinDate()
-					.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-			numChildrenTextField.setText(String.valueOf(Database.getInstance().getCurrTnant().getNumChildren()));
+			Tenant editedTenant = Database.getInstance().getCurrTnant();
+
+			firstNameTextField.setText(editedTenant.getFirstName());
+			lastNameTextField.setText(editedTenant.getLastName());
+			phoneTextField.setText(editedTenant.getPhone());
+			emailTextField.setText(editedTenant.getEmail());
+			dateOfBirthDatePicker.setPromptText(
+					editedTenant.getDateOfBirth().toString());
+			annualIncomeTextField.setText(String.valueOf(editedTenant.getAnnualIncome()));
+			SSNTextField.setText(editedTenant.getSSN());
+			rentTextField.setText(String.valueOf(editedTenant.getRent()));
+			movInDatePicker.setPromptText(
+					editedTenant.getMovInDate().toString());
+			numChildrenTextField.setText(String.valueOf(editedTenant.getNumChildren()));
 			
-			if (Database.getInstance().getCurrTnant().getSpouse() != null) {
-				spNameLoadConf.setText(Database.getInstance().getCurrTnant().getSpouse().getFirstName()
-						 + Database.getInstance().getCurrTnant().getSpouse().getLastName());
+			if (editedTenant.getSpouse() != null) {
+				spNameLoadConf.setText(editedTenant.getSpouse().getFirstName()
+						 + editedTenant.getSpouse().getLastName());
 			}
 		}
 		
@@ -119,21 +121,13 @@ public class TnantEditController {
 		}
 
 		@FXML
-		public void addToTenants() {
-			int id;
-
-			if (Database.getInstance().getTenants().isEmpty()) {
-				id = 0;
-			} else {
-				id = Database.getInstance().getTenants().get(Database.getInstance().getTenants().size() - 1).getId() + 1;
-			}
-
+		public void editTenant() {
 			try {
 				Tenant temp = new Tenant();
 
 				LocalDate date;
 
-				temp.setId(id);
+				temp.setId(Database.getInstance().getCurrTnant().getId());
 				if(!apartmentChoice.getSelectionModel().getSelectedItem().equals(
 						Database.getInstance().getCurrApt())) {
 					temp.setFk(apartmentChoice.getSelectionModel().getSelectedItem().getId());
@@ -145,10 +139,19 @@ public class TnantEditController {
 				temp.setSSN(SSNTextField.getText());
 				temp.setRent(Double.parseDouble(rentTextField.getText()));
 				temp.setNumChildren(Integer.parseInt(numChildrenTextField.getText()));
-				date = movInDatePicker.getValue();
-				temp.setMovinDate(Date.from(Instant.from(date.atStartOfDay(ZoneId.systemDefault()))));
-				date = dateOfBirthDatePicker.getValue();
-				temp.setDateOfBirth(Date.from(Instant.from(date.atStartOfDay(ZoneId.systemDefault()))));
+
+				if (movInDatePicker.getValue() != null) {
+					date = movInDatePicker.getValue();
+					temp.setMovInDate(Date.from(Instant.from(date.atStartOfDay(ZoneId.systemDefault()))));
+				} else {
+					temp.setMovInDate(Database.getInstance().getCurrTnant().getMovInDate());
+				}
+				if (dateOfBirthDatePicker.getValue() != null) {
+					date = dateOfBirthDatePicker.getValue();
+					temp.setDateOfBirth(Date.from(Instant.from(date.atStartOfDay(ZoneId.systemDefault()))));
+				} else {
+					temp.setDateOfBirth(Database.getInstance().getCurrTnant().getDateOfBirth());
+				}
 				temp.setAnnualIncome(Integer.parseInt(annualIncomeTextField.getText()));
 
 				Database.getInstance().edit(temp);

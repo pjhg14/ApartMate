@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import com.apartmate.database.dbMirror.Database;
 import com.apartmate.database.tables.mainTables.Apartment;
-import com.apartmate.database.utilities.TestingData;
+import com.apartmate.database.utilities.unordered.TestingData;
 import com.apartmate.main.Main;
 import com.apartmate.ui.windows.FXMLLocation;
 
@@ -22,6 +22,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
+//TODO: Javadoc's for every method
+// Add TreeView Functionality
 public class AptScreenController {
 
 	@FXML
@@ -234,7 +236,8 @@ public class AptScreenController {
 
 	@FXML
 	public void refresh() {
-		System.out.println(Database.getInstance().getApartments());
+		if (Main.DEBUG)
+			System.out.println(Database.getInstance().getApartments());
 		setAptInfo(Database.getInstance().getApartments());
 	}
 
@@ -253,9 +256,7 @@ public class AptScreenController {
 		numPages = apartments.size() % 8;
 		// Using page number,
 		//subList = 
-		apartments.subList((currPage - 1) * 8, (currPage * 8) - 1).forEach(apt -> {
-			subList.add(apt);
-		});;
+		subList.addAll(apartments.subList((currPage - 1) * 8, (currPage * 8) - 1));
 	}
 
 	private void setAptInfo(List<Apartment> apartments) {
@@ -269,9 +270,7 @@ public class AptScreenController {
 
 			// Fill out the the rest w/ dummy apartments until the list has 8 elements
 			int x = apartments.size();
-			apartments.forEach(apt -> {
-				subList.add(apt);
-			});
+			subList.addAll(apartments);
 
 			while (subList.size() < 8) {
 				subList.add(x, new Apartment());
@@ -286,9 +285,7 @@ public class AptScreenController {
 			splitList(apartments);
 		} else {
 			// Set subList to the 8 existing apartments
-			apartments.forEach(apt -> {
-				subList.add(apt);
-			});
+			subList.addAll(apartments);
 		}
 
 		// Set Buttons (should be 8 elements in)
@@ -298,231 +295,49 @@ public class AptScreenController {
 	}
 
 	private void setCells() {
-		setCell1();
-		setCell2();
-		setCell3();
-		setCell4();
-		setCell5();
-		setCell6();
-		setCell7();
-		setCell8();
+		setCell(image1,address1,edit1,delete1,cell1,0);
+		setCell(image2,address2,edit2,delete2,cell2,1);
+		setCell(image3,address3,edit3,delete3,cell3,2);
+		setCell(image4,address4,edit4,delete4,cell4,3);
+		setCell(image5,address5,edit5,delete5,cell5,4);
+		setCell(image6,address6,edit6,delete6,cell6,5);
+		setCell(image7,address7,edit7,delete7,cell7,6);
+		setCell(image8,address8,edit8,delete8,cell8,7);
+
 	}
 
-	private void setCell1() {
-		if (!subList.get(0).getAddress().equals("")) {
-			// Container-Table join (container 1)
-			cell1.setVisible(true);
 
-			image1.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrApt(subList.get(0));
+	private void setCell(ImageView image, Text address, Button edit, Button delete, VBox cell ,int index) {
+		if (!subList.get(index).getAddress().equals("") && index < 8) {
+			// Container-Table join
+
+			//Set information redirect (img box)
+			image.setOnMouseClicked(e -> {
+				Database.getInstance().setCurrApt(subList.get(index));
 				Main.getLibrary().mainWindow(FXMLLocation.APTINFO);
 			});
-			address1.setText(subList.get(0).getAddress());
-			edit1.setOnAction(e -> {
-				Database.getInstance().setCurrApt(subList.get(0));
+
+			//Set address text
+			address.setText(subList.get(index).getAddress());
+
+			//Set information redirect (Edit button)
+			edit.setOnAction(e -> {
+				Database.getInstance().setCurrApt(subList.get(index));
 				Main.getLibrary().editWindow(FXMLLocation.APTEDIT);
 			});
-			delete1.setOnAction(e -> {
+			delete.setOnAction(e -> {
 				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(0).getAddress());
+				a.setContentText("Are you sure you want to delete " + subList.get(index).getAddress());
 
 				Optional<ButtonType> option = a.showAndWait();
 
-				if (option.get() == ButtonType.OK) {
-					Database.getInstance().remove(subList.get(0));
+				if (option.isPresent() && option.get() == ButtonType.OK) {
+					Database.getInstance().remove(subList.get(index));
+					subList.remove(index);
 					setAptInfo(Database.getInstance().getApartments());
 				}
 			});
-		}
-	}
-
-	private void setCell2() {
-		if (!subList.get(1).getAddress().equals("")) {
-			// Container-Table join (container 2)
-			cell2.setVisible(true);
-			image2.setOnMouseClicked(e -> {
-				Database.currApt = subList.get(1);
-				Main.getLibrary().mainWindow(FXMLLocation.APTINFO);
-			});
-			address2.setText(subList.get(1).getAddress());
-			edit2.setOnAction(e -> {
-				Database.getInstance().setCurrApt(subList.get(1));
-				Main.getLibrary().editWindow(FXMLLocation.APTEDIT);
-			});
-			delete2.setOnAction(e -> {
-				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(1).getAddress());
-
-				Optional<ButtonType> option = a.showAndWait();
-
-				if (option.get() == ButtonType.OK) {
-					Database.getInstance().remove(subList.get(1));
-					setAptInfo(Database.getInstance().getApartments());
-				}
-			});
-		}
-	}
-
-	private void setCell3() {
-		if (!subList.get(2).getAddress().equals("")) {
-			// Container-Table join (container 3)
-			cell3.setVisible(true);
-			image3.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrApt(subList.get(2));
-				Main.getLibrary().mainWindow(FXMLLocation.APTINFO);
-			});
-			address3.setText(subList.get(2).getAddress());
-			edit3.setOnAction(e -> {
-				Database.getInstance().setCurrApt(subList.get(2));
-				Main.getLibrary().editWindow(FXMLLocation.APTEDIT);
-			});
-			delete3.setOnAction(e -> {
-				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(2).getAddress());
-
-				Optional<ButtonType> option = a.showAndWait();
-
-				if (option.get() == ButtonType.OK) {
-					Database.getInstance().remove(subList.get(2));
-					setAptInfo(Database.getInstance().getApartments());
-				}
-			});
-		}
-	}
-
-	private void setCell4() {
-		if (!subList.get(3).getAddress().equals("")) {
-			// Container-Table join (container 4)
-			cell4.setVisible(true);
-			image4.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrApt(subList.get(3));
-				Main.getLibrary().mainWindow(FXMLLocation.APTINFO);
-			});
-			address4.setText(subList.get(3).getAddress());
-			edit4.setOnAction(e -> {
-				Database.getInstance().setCurrApt(subList.get(3));
-				Main.getLibrary().editWindow(FXMLLocation.APTEDIT);
-			});
-			delete4.setOnAction(e -> {
-				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(3).getAddress());
-
-				Optional<ButtonType> option = a.showAndWait();
-
-				if (option.get() == ButtonType.OK) {
-					Database.getInstance().remove(subList.get(3));
-					setAptInfo(Database.getInstance().getApartments());
-				}
-			});
-		}
-	}
-
-	private void setCell5() {
-		if (!subList.get(4).getAddress().equals("")) {
-			// Container-Table join (container 5)
-			cell5.setVisible(true);
-			image5.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrApt(subList.get(4));
-				Main.getLibrary().mainWindow(FXMLLocation.APTINFO);
-			});
-			address5.setText(subList.get(4).getAddress());
-			edit5.setOnAction(e -> {
-				Database.getInstance().setCurrApt(subList.get(4));
-				Main.getLibrary().editWindow(FXMLLocation.APTEDIT);
-			});
-			delete5.setOnAction(e -> {
-				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(4).getAddress());
-
-				Optional<ButtonType> option = a.showAndWait();
-
-				if (option.get() == ButtonType.OK) {
-					Database.getInstance().remove(subList.get(4));
-					setAptInfo(Database.getInstance().getApartments());
-				}
-			});
-		}
-	}
-
-	private void setCell6() {
-		if (!subList.get(5).getAddress().equals("")) {
-			// Container-Table join (container 6)
-			cell6.setVisible(true);
-			image6.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrApt(subList.get(5));
-				Main.getLibrary().mainWindow(FXMLLocation.APTINFO);
-			});
-			address6.setText(subList.get(5).getAddress());
-			edit6.setOnAction(e -> {
-				Database.getInstance().setCurrApt(subList.get(5));
-				Main.getLibrary().editWindow(FXMLLocation.APTEDIT);
-			});
-			delete6.setOnAction(e -> {
-				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(5).getAddress());
-
-				Optional<ButtonType> option = a.showAndWait();
-
-				if (option.get() == ButtonType.OK) {
-					Database.getInstance().remove(subList.get(5));
-					setAptInfo(Database.getInstance().getApartments());
-				}
-			});
-		}
-	}
-
-	private void setCell7() {
-		if (!subList.get(6).getAddress().equals("")) {
-			// Container-Table join (container 7)
-			cell7.setVisible(true);
-			image7.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrApt(subList.get(6));
-				Main.getLibrary().mainWindow(FXMLLocation.APTINFO);
-			});
-			address7.setText(subList.get(6).getAddress());
-			edit7.setOnAction(e -> {
-				Database.getInstance().setCurrApt(subList.get(6));
-				Main.getLibrary().editWindow(FXMLLocation.APTEDIT);
-			});
-			delete7.setOnAction(e -> {
-				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(6).getAddress());
-
-				Optional<ButtonType> option = a.showAndWait();
-
-				if (option.get() == ButtonType.OK) {
-					Database.getInstance().remove(subList.get(6));
-					setAptInfo(Database.getInstance().getApartments());
-				}
-			});
-		}
-	}
-
-	private void setCell8() {
-		if (!subList.get(7).getAddress().equals("")) {
-			// Container-Table join (container 8)
-			cell8.setVisible(true);
-			image8.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrApt(subList.get(7));
-				Main.getLibrary().mainWindow(FXMLLocation.APTINFO);
-			});
-			address8.setText(subList.get(7).getAddress());
-			edit8.setOnAction(e -> {
-				Database.getInstance().setCurrApt(subList.get(7));
-				Main.getLibrary().editWindow(FXMLLocation.APTEDIT);
-			});
-			delete8.setOnAction(e -> {
-				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(7).getAddress());
-
-				Optional<ButtonType> option = a.showAndWait();
-
-				if (option.get() == ButtonType.OK) {
-					subList.remove(7);
-					Database.getInstance().remove(subList.get(7));
-					setAptInfo(Database.getInstance().getApartments());
-				}
-			});
+			cell.setVisible(true);
 		}
 	}
 

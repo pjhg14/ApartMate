@@ -1,0 +1,13 @@
+Current Version: Unnamed 0.8.5
+
+0.8.6- GUI revamp
+    Change GUI to be more user friendly and ascetically pleasing
+
+0.8.7 -> 0.8.9- Form saving and loading
+    Add forms for various circumstances that a user might need
+
+0.9- Form printing
+    Add ability to print forms using pdfbox
+
+0.9.5-
+    ...

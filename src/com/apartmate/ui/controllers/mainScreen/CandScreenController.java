@@ -19,6 +19,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
+//TODO: Javadoc's for every method
+// Add TreeView Functionality
 public class CandScreenController {
 	// ----------------------------------------------------------------
 	// Utility Buttons/////////////////////////////////////////////////
@@ -53,7 +55,7 @@ public class CandScreenController {
 	@FXML
 	private ImageView image1;
 	@FXML
-	private Text address1;
+	private Text name1;
 	@FXML
 	private Button edit1;
 	@FXML
@@ -65,7 +67,7 @@ public class CandScreenController {
 	@FXML
 	private ImageView image2;
 	@FXML
-	private Text address2;
+	private Text name2;
 	@FXML
 	private Button edit2;
 	@FXML
@@ -77,7 +79,7 @@ public class CandScreenController {
 	@FXML
 	private ImageView image3;
 	@FXML
-	private Text address3;
+	private Text name3;
 	@FXML
 	private Button edit3;
 	@FXML
@@ -89,7 +91,7 @@ public class CandScreenController {
 	@FXML
 	private ImageView image4;
 	@FXML
-	private Text address4;
+	private Text name4;
 	@FXML
 	private Button edit4;
 	@FXML
@@ -101,7 +103,7 @@ public class CandScreenController {
 	@FXML
 	private ImageView image5;
 	@FXML
-	private Text address5;
+	private Text name5;
 	@FXML
 	private Button edit5;
 	@FXML
@@ -113,7 +115,7 @@ public class CandScreenController {
 	@FXML
 	private ImageView image6;
 	@FXML
-	private Text address6;
+	private Text name6;
 	@FXML
 	private Button edit6;
 	@FXML
@@ -125,7 +127,7 @@ public class CandScreenController {
 	@FXML
 	private ImageView image7;
 	@FXML
-	private Text address7;
+	private Text name7;
 	@FXML
 	private Button edit7;
 	@FXML
@@ -137,7 +139,7 @@ public class CandScreenController {
 	@FXML
 	private ImageView image8;
 	@FXML
-	private Text address8;
+	private Text name8;
 	@FXML
 	private Button edit8;
 	@FXML
@@ -273,247 +275,47 @@ public class CandScreenController {
 	}
 
 	private void setCells() {
-		setCell1();
-		setCell2();
-		setCell3();
-		setCell4();
-		setCell5();
-		setCell6();
-		setCell7();
-		setCell8();
+		setCell(image1,name1,edit1,delete1,cell1,0);
+		setCell(image2,name2,edit2,delete2,cell2,1);
+		setCell(image3,name3,edit3,delete3,cell3,2);
+		setCell(image4,name4,edit4,delete4,cell4,3);
+		setCell(image5,name5,edit5,delete5,cell5,4);
+		setCell(image6,name6,edit6,delete6,cell6,5);
+		setCell(image7,name7,edit7,delete7,cell7,6);
+		setCell(image8,name8,edit8,delete8,cell8,7);
 	}
 
-	private void setCell1() {
-		if (!subList.get(0).getFirstName().equals("")) {
-			// Container-Table join (container 1)
-			cell1.setVisible(true);
+	private void setCell(ImageView image, Text name, Button edit, Button delete, VBox cell ,int index) {
+		if (!subList.get(index).getFirstName().equals("") && index < 8) {
+			// Container-Table join
 
-			image1.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrCand(subList.get(0));
+			//Set information redirect (img box)
+			image.setOnMouseClicked(e -> {
+				Database.getInstance().setCurrCand(subList.get(index));
 				Main.getLibrary().mainWindow(FXMLLocation.CANDINFO);
 			});
-			address1.setText(subList.get(0).getFirstName() + " " + subList.get(0).getLastName());
-			edit1.setOnAction(e -> {
-				Database.getInstance().setCurrCand(subList.get(0));
+
+			//Set name text
+			name.setText(subList.get(index).getFullName());
+
+			//Set information redirect (Edit button)
+			edit.setOnAction(e -> {
+				Database.getInstance().setCurrCand(subList.get(index));
 				Main.getLibrary().editWindow(FXMLLocation.CANDEDIT);
 			});
-			delete1.setOnAction(e -> {
+			delete.setOnAction(e -> {
 				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(0).getFirstName() + " "
-						+ subList.get(0).getLastName() + "'s Profile?");
+				a.setContentText("Are you sure you want to delete " + subList.get(index).getFullName());
 
 				Optional<ButtonType> option = a.showAndWait();
 
-				if (option.get() == ButtonType.OK) {
-					Database.getInstance().remove(subList.get(0));
-					trimList(Database.getInstance().getCandidates());
-					setCandInfo(temp);
+				if (option.isPresent() && option.get() == ButtonType.OK) {
+					Database.getInstance().remove(subList.get(index));
+					subList.remove(index);
+					setCandInfo(Database.getInstance().getCandidates());
 				}
 			});
-		}
-	}
-
-	private void setCell2() {
-		if (!subList.get(1).getFirstName().equals("")) {
-			// Container-Table join (container 2)
-			cell2.setVisible(true);
-			image2.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrCand(subList.get(1));
-				Main.getLibrary().mainWindow(FXMLLocation.CANDINFO);
-			});
-			address2.setText(subList.get(1).getFirstName() + " " + subList.get(1).getLastName());
-			edit2.setOnAction(e -> {
-				Database.getInstance().setCurrCand(subList.get(1));
-				Main.getLibrary().editWindow(FXMLLocation.CANDEDIT);
-			});
-			delete2.setOnAction(e -> {
-				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(1).getFirstName() + " "
-						+ subList.get(1).getLastName() + "'s Profile?");
-
-				Optional<ButtonType> option = a.showAndWait();
-
-				if (option.get() == ButtonType.OK) {
-					Database.getInstance().remove(subList.get(1));
-					trimList(Database.getInstance().getCandidates());
-					setCandInfo(temp);
-				}
-			});
-		}
-	}
-
-	private void setCell3() {
-		if (!subList.get(2).getFirstName().equals("")) {
-			// Container-Table join (container 3)
-			cell3.setVisible(true);
-			image3.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrCand(subList.get(2));
-				Main.getLibrary().mainWindow(FXMLLocation.CANDINFO);
-			});
-			address3.setText(subList.get(2).getFirstName() + " " + subList.get(2).getLastName());
-			edit3.setOnAction(e -> {
-				Database.getInstance().setCurrCand(subList.get(2));
-				Main.getLibrary().editWindow(FXMLLocation.CANDEDIT);
-			});
-			delete3.setOnAction(e -> {
-				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(2).getFirstName() + " "
-						+ subList.get(2).getLastName() + "'s Profile?");
-
-				Optional<ButtonType> option = a.showAndWait();
-
-				if (option.get() == ButtonType.OK) {
-					Database.getInstance().remove(subList.get(2));
-					trimList(Database.getInstance().getCandidates());
-					setCandInfo(temp);
-				}
-			});
-		}
-	}
-
-	private void setCell4() {
-		if (!subList.get(3).getFirstName().equals("")) {
-			// Container-Table join (container 4)
-			cell4.setVisible(true);
-			image4.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrCand(subList.get(3));
-				Main.getLibrary().mainWindow(FXMLLocation.CANDINFO);
-			});
-			address4.setText(subList.get(3).getFirstName() + " " + subList.get(3).getLastName());
-			edit4.setOnAction(e -> {
-				Database.getInstance().setCurrCand(subList.get(3));
-				Main.getLibrary().editWindow(FXMLLocation.CANDEDIT);
-			});
-			delete4.setOnAction(e -> {
-				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(3).getFirstName() + " "
-						+ subList.get(3).getLastName() + "'s Profile?");
-
-				Optional<ButtonType> option = a.showAndWait();
-
-				if (option.get() == ButtonType.OK) {
-					Database.getInstance().remove(subList.get(3));
-					trimList(Database.getInstance().getCandidates());
-					setCandInfo(temp);
-				}
-			});
-		}
-	}
-
-	private void setCell5() {
-		if (!subList.get(4).getFirstName().equals("")) {
-			// Container-Table join (container 5)
-			cell5.setVisible(true);
-			image5.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrCand(subList.get(4));
-				Main.getLibrary().mainWindow(FXMLLocation.CANDINFO);
-			});
-			address5.setText(subList.get(4).getFirstName() + " " + subList.get(4).getLastName());
-			edit5.setOnAction(e -> {
-				Database.getInstance().setCurrCand(subList.get(4));
-				Main.getLibrary().editWindow(FXMLLocation.CANDEDIT);
-			});
-			delete5.setOnAction(e -> {
-				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(4).getFirstName() + " "
-						+ subList.get(4).getLastName() + "'s Profile?");
-
-				Optional<ButtonType> option = a.showAndWait();
-
-				if (option.get() == ButtonType.OK) {
-					Database.getInstance().remove(subList.get(4));
-					trimList(Database.getInstance().getCandidates());
-					setCandInfo(temp);
-				}
-			});
-		}
-	}
-
-	private void setCell6() {
-		if (!subList.get(5).getFirstName().equals("")) {
-			// Container-Table join (container 6)
-			cell6.setVisible(true);
-			image6.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrCand(subList.get(5));
-				Main.getLibrary().mainWindow(FXMLLocation.CANDINFO);
-			});
-			address6.setText(subList.get(5).getFirstName() + " " + subList.get(5).getLastName());
-			edit6.setOnAction(e -> {
-				Database.getInstance().setCurrCand(subList.get(5));
-				Main.getLibrary().editWindow(FXMLLocation.CANDEDIT);
-			});
-			delete6.setOnAction(e -> {
-				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(5).getFirstName() + " "
-						+ subList.get(5).getLastName() + "'s Profile?");
-
-				Optional<ButtonType> option = a.showAndWait();
-
-				if (option.get() == ButtonType.OK) {
-					Database.getInstance().remove(subList.get(5));
-					trimList(Database.getInstance().getCandidates());
-					setCandInfo(temp);
-				}
-			});
-		}
-	}
-
-	private void setCell7() {
-		if (!subList.get(6).getFirstName().equals("")) {
-			// Container-Table join (container 7)
-			cell7.setVisible(true);
-			image7.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrCand(subList.get(6));
-				Main.getLibrary().mainWindow(FXMLLocation.CANDINFO);
-			});
-			address7.setText(subList.get(6).getFirstName() + " " + subList.get(6).getLastName());
-			edit7.setOnAction(e -> {
-				Database.getInstance().setCurrCand(subList.get(6));
-				Main.getLibrary().editWindow(FXMLLocation.CANDEDIT);
-			});
-			delete7.setOnAction(e -> {
-				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(6).getFirstName() + " "
-						+ subList.get(6).getLastName() + "'s Profile?");
-
-				Optional<ButtonType> option = a.showAndWait();
-
-				if (option.get() == ButtonType.OK) {
-					Database.getInstance().remove(subList.get(6));
-					trimList(Database.getInstance().getCandidates());
-					setCandInfo(temp);
-				}
-			});
-		}
-	}
-
-	private void setCell8() {
-		if (!subList.get(7).getFirstName().equals("")) {
-			// Container-Table join (container 8)
-			cell8.setVisible(true);
-			image8.setOnMouseClicked(e -> {
-				Database.getInstance().setCurrCand(subList.get(7));
-				Main.getLibrary().mainWindow(FXMLLocation.CANDINFO);
-			});
-			address8.setText(subList.get(7).getFirstName() + " " + subList.get(7).getLastName());
-			edit8.setOnAction(e -> {
-				Database.getInstance().setCurrCand(subList.get(7));
-				Main.getLibrary().editWindow(FXMLLocation.CANDEDIT);
-			});
-			delete8.setOnAction(e -> {
-				Alert a = new Alert(AlertType.CONFIRMATION);
-				a.setContentText("Are you sure you want to delete " + subList.get(7).getFirstName() + " "
-						+ subList.get(7).getLastName() + "'s Profile?");
-
-				Optional<ButtonType> option = a.showAndWait();
-
-				if (option.get() == ButtonType.OK) {
-					subList.remove(7);
-					Database.getInstance().remove(subList.get(7));
-					trimList(Database.getInstance().getCandidates());
-					setCandInfo(temp);
-				}
-			});
+			cell.setVisible(true);
 		}
 	}
 

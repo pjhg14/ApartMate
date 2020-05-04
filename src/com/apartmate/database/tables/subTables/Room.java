@@ -1,12 +1,14 @@
 package com.apartmate.database.tables.subTables;
 
 import com.apartmate.database.tables.mainTables.Table;
+import com.apartmate.main.Main;
 
 /**
  * @since Capstone (0.8)
- * @version Capstone (0.8)
+ * @version {@value Main#VERSION}
  * @author Paul Graham Jr
  */
+//TODO: Javadoc's for every method
 public class Room extends Table {
 
 	/**

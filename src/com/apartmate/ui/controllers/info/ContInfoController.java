@@ -2,9 +2,10 @@ package com.apartmate.ui.controllers.info;
 
 import java.util.Date;
 
+import com.apartmate.database.dbMirror.DBTables;
 import com.apartmate.database.dbMirror.Database;
 import com.apartmate.database.tables.mainTables.Contractor;
-import com.apartmate.database.tables.subTables.ContInvoice;
+import com.apartmate.database.tables.subTables.Invoice;
 import com.apartmate.main.Main;
 import com.apartmate.ui.windows.FXMLLocation;
 
@@ -19,6 +20,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
+//TODO: Javadoc's for every method
+// Add TreeView Functionality
 public class ContInfoController {
 
 	@FXML
@@ -48,22 +51,26 @@ public class ContInfoController {
 	// ---------------------------------------------------------
 	// TableView Variables
 	@FXML
-	private TableView<ContInvoice> invTable;
+	private TableView<Invoice> invTable;
 
 	@FXML
-	private TableColumn<ContInvoice, Number> payments;
+	private TableColumn<Invoice, Number> payments;
 	@FXML
-	private TableColumn<ContInvoice, Number> balances;
+	private TableColumn<Invoice, Number> dues;
 	@FXML
-	private TableColumn<ContInvoice, Number> totalDues;
+	private TableColumn<Invoice, Number> balances;
 	@FXML
-	private TableColumn<ContInvoice, Date> paymentDates;
+	private TableColumn<Invoice, Number> totalPaid;
 	@FXML
-	private TableColumn<ContInvoice, Date> dueDates;
+	private TableColumn<Invoice, Number> totalDues;
 	@FXML
-	private TableColumn<ContInvoice, Date> dateCreated;
+	private TableColumn<Invoice, Date> paymentDates;
 	@FXML
-	private TableColumn<ContInvoice, Date> dateModified;
+	private TableColumn<Invoice, Date> dueDates;
+	@FXML
+	private TableColumn<Invoice, Date> dateCreated;
+	@FXML
+	private TableColumn<Invoice, Date> dateModified;
 	// ---------------------------------------------------------
 
 	@FXML
@@ -75,32 +82,23 @@ public class ContInfoController {
 	@FXML
 	private Button tablePopup;
 
-	private ObservableList<ContInvoice> observIns;
+	private ObservableList<Invoice> observIns;
 
-	private Contractor currCont;
+	private Contractor contractor;
 
 	@FXML
 	public void initialize() {
-		currCont = Database.getInstance().getCurrCont();
+		contractor = Database.getInstance().getCurrCont();
 
 		// Set Tenant Text
-		nameText.setText("Name: " + currCont.getName());
-		addressText.setText("Address: " + Database.getInstance().getCurrApt().getAddress());
-		phoneText.setText("Phone: " + currCont.getPhone());
-		emailText.setText("Email: " + currCont.getEmail());
-		billText.setText("Monthly Payment: : " + currCont.getBill());
-		balanceText.setText("Balance: " + currCont.getInvoices().get(currCont.getInvoices().size() - 1).getBalance());
+		setText();
 
 		// Initialize TableView
 		observIns = FXCollections.observableArrayList(Database.getInstance().getCurrCont().getInvoices());
-		observIns.addListener((ListChangeListener<ContInvoice>) c -> {
+		observIns.addListener((ListChangeListener<Invoice>) c -> {
 			while (c.next()) {
 				if (c.wasAdded()) {
-					Database.getInstance().getCurrCont().getInvoices().addAll(c.getAddedSubList());
-
-					c.getAddedSubList().forEach(inv -> {
-						Database.getInstance().getEvents().updateTotals(inv);
-					});
+					Database.getInstance().getEvents().updateTotals(observIns);
 				}
 				if (c.wasRemoved()) {
 					Database.getInstance().getCurrCont().getInvoices().removeAll(c.getRemoved());
@@ -109,13 +107,7 @@ public class ContInfoController {
 		});
 
 		// Column set-up
-		balances.setCellValueFactory(new PropertyValueFactory<>("balance"));
-		payments.setCellValueFactory(new PropertyValueFactory<>("paymentAmount"));
-		totalDues.setCellValueFactory(new PropertyValueFactory<>("totalDue"));
-		paymentDates.setCellValueFactory(new PropertyValueFactory<>("paymentDate"));
-		dueDates.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
-		dateCreated.setCellValueFactory(new PropertyValueFactory<>("dateCreated"));
-		dateModified.setCellValueFactory(new PropertyValueFactory<>("dateModified"));
+		setTableColumns();
 
 		invTable.setItems(observIns);
 	}
@@ -126,8 +118,9 @@ public class ContInfoController {
 	}
 
 	@FXML
-	public void openTable() {
-		Main.getLibrary().popWindow(FXMLLocation.CONTINVOICES);
+	public void viewInvoices() {
+		Database.setCurrTable(DBTables.CONTRACTORS);
+		Main.getLibrary().popWindow(FXMLLocation.INVOICES);
 	}
 
 	@FXML
@@ -139,5 +132,65 @@ public class ContInfoController {
 	@FXML
 	public void editContractor() {
 		Main.getLibrary().editWindow(FXMLLocation.CONTEDIT);
+	}
+
+	private void setText() {
+		nameText.setText("Name: " + contractor.getName());
+		addressText.setText("Address: " + Database.getInstance().getCurrApt().getAddress());
+		phoneText.setText("Phone: " + contractor.getPhone());
+		emailText.setText("Email: " + contractor.getEmail());
+		billText.setText("Monthly Payment: : " + contractor.getBill());
+		balanceText.setText("Balance: " + contractor.getInvoices().get(contractor.getInvoices().size() - 1).getBalance());
+	}
+
+	private void setTableColumns() {
+		//Don't know if table should be editable in normal Tenant info view
+		payments.setCellValueFactory(new PropertyValueFactory<>("payment"));
+//		payments.setEditable(true);
+//		payments.setOnEditCommit(event -> {
+//					Invoice editedInvoice = event.getTableView().getItems().get(
+//							event.getTablePosition().getRow());
+//
+//					int invoiceIndex = event.getTablePosition().getRow();
+//
+//					editedInvoice.setPayment(event.getNewValue().doubleValue());
+//
+//					//Update totals when updated
+//					Database.getInstance().getEvents().updateTotals(
+//							event.getTableView().getItems(), invoiceIndex);
+//
+//					//Update dateModified when updated
+//					Database.getInstance().getEvents().upDateModified(
+//							event.getTableView().getItems().get(invoiceIndex));
+//				}
+//		);
+
+		dues.setCellValueFactory(new PropertyValueFactory<>("dues"));
+//		dues.setEditable(true);
+//		dues.setOnEditCommit(event -> {
+//					Invoice editedInvoice = event.getTableView().getItems().get(
+//							event.getTablePosition().getRow());
+//
+//					int invoiceIndex = event.getTablePosition().getRow();
+//
+//					editedInvoice.setDues(event.getNewValue().doubleValue());
+//
+//					//Update totals when updated
+//					Database.getInstance().getEvents().updateTotals(
+//							event.getTableView().getItems(), invoiceIndex);
+//
+//					//Update dateModified when updated
+//					Database.getInstance().getEvents().upDateModified(
+//							event.getTableView().getItems().get(invoiceIndex));
+//				}
+//		);
+
+		balances.setCellValueFactory(new PropertyValueFactory<>("balance"));
+		totalPaid.setCellValueFactory(new PropertyValueFactory<>("totalPaid"));
+		totalDues.setCellValueFactory(new PropertyValueFactory<>("totalDue"));
+		paymentDates.setCellValueFactory(new PropertyValueFactory<>("paymentDate"));
+		dueDates.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
+		dateCreated.setCellValueFactory(new PropertyValueFactory<>("dateCreated"));
+		dateModified.setCellValueFactory(new PropertyValueFactory<>("dateModified"));
 	}
 }
