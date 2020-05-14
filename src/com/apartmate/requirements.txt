@@ -1,2 +1,0 @@
-MySQL Connector v8.0.15+
-PDF Box v2.0.17+
