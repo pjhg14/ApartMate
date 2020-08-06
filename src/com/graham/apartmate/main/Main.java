@@ -28,6 +28,7 @@ public class Main extends Application {
     public final static boolean DEBUG = Boolean.parseBoolean(System.getProperty("debug", "false"));
 
     //New Version: <Unnamed Version> 0.8.6
+    //Current Patch: Back Atcha' 0.8.5.2
     /**
      * Version constant; holds the current version of the program
      * */

@@ -3,8 +3,10 @@ package com.graham.apartmate.database.tables.mainTables;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.subTables.Invoice;
 import com.graham.apartmate.main.Main;
+import javafx.scene.image.Image;
 
 /**
  * Contractor object
@@ -20,6 +22,9 @@ public class Contractor extends Table {
 	/**
 	 * Serialization long*/
 	private static final long serialVersionUID = 1L;
+
+	/***/
+	private Image image;
 
 	/**
 	 * Contractor's name
@@ -54,10 +59,21 @@ public class Contractor extends Table {
 	}
 
 	/**
+	 * Dummy Contractor Constructor
+	 * */
+	public Contractor(String dummy) {
+		this();
+		if (dummy.equals(DUMMY_TABLE)) {
+			super.setDummy(true);
+		}
+	}
+
+	/**
 	 * Full constructor
 	 * */
 	public Contractor(int id, int fk, String name, double bill, String phone, String email) {
 		super(id, fk);
+		image = new Image("com/graham/apartmate/ui/res/Tenantimg_small.png");
 		this.name = name;
 		this.bill = bill;
 		this.phone = phone;
@@ -65,6 +81,8 @@ public class Contractor extends Table {
 
 		invoices = new ArrayList<>();
 	}
+
+
 
 	/**
 	 * Overrided toString() method:
@@ -76,8 +94,28 @@ public class Contractor extends Table {
 		return String.format("Contractor: id; %s, name; %s", super.getId() ,name);
 	}
 
+	@Override
+	public String getGenericName() {
+		return name;
+	}
+
+	@Override
+	public DBTables getTableType() {
+		return DBTables.CONTRACTORS;
+	}
+
+	@Override
+	public Image getImage() {
+		return image;
+	}
+
 	// *************************************************************
 	// General getters and setters
+	/***/
+	public void setImage(Image image) {
+		this.image = image;
+	}
+
 	/**
 	 * Getter:
 	 * Gets Contractor's business name

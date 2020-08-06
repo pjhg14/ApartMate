@@ -11,7 +11,7 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="278.0"
       prefWidth="602.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.graham.apartmate.ui.controllers.edit.SpouseEditController">
+      fx:controller="com.graham.apartmate.ui.editwindows.spouse.SpouseEditController">
     <children>
         <HBox>
             <children>

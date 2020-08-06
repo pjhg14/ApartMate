@@ -3,8 +3,10 @@ package com.graham.apartmate.database.tables.subTables;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.mainTables.Table;
 import com.graham.apartmate.main.Main;
+import javafx.scene.image.Image;
 
 /**
  * Insurance object
@@ -63,6 +65,16 @@ public class Insurance extends Table {
 	}
 
 	/**
+	 * Dummy Insurance Constructor
+	 * */
+	public Insurance(String dummy) {
+		this();
+		if (dummy.equals(DUMMY_TABLE)) {
+			super.setDummy(true);
+		}
+	}
+
+	/**
 	 * Full constructor
 	 * */
 	public Insurance(int id, int fk, String name, double bill, String phone, String email) {
@@ -82,6 +94,31 @@ public class Insurance extends Table {
 	@Override
 	public String toString() {
 		return String.format("Insurance: %d; %s, %s, %s ", super.getId(), name, email, phone);
+	}
+
+	@Override
+	public String getGenericName() {
+		return name;
+	}
+
+	/**
+	 * Gets the type of Table in question
+	 *
+	 * @return table type
+	 */
+	@Override
+	public DBTables getTableType() {
+		return DBTables.INSURANCES;
+	}
+
+	/**
+	 * Returns the image related to a particular instance of a Table
+	 *
+	 * @return Table image
+	 */
+	@Override
+	public Image getImage() {
+		return new Image("");
 	}
 
 	// *************************************************************

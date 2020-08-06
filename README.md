@@ -2,8 +2,8 @@
 Database GUI system responsible for the management of investment properties and the persons inhabiting or repairing them
 
 ## Known issues:
-- error in insurance addition (foreign key failure for initial Invoice)
-- invoice screen needs edit button(or edit from table)
+- error in insurance addition (foreign key failure for initial Invoice) (Resolved?)
+- invoice screen needs edit button(or edit from table) 
 - numTenants for Apartment not updated when adding or deleting tenants
 - create add,delete, cancel buttons leading to respective windows/actions for noteLog info window
 - noteLogs not being updated in database

@@ -1,7 +1,9 @@
 package com.graham.apartmate.database.tables.subTables;
 
+import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.main.Main;
 import com.graham.apartmate.database.tables.mainTables.Table;
+import javafx.scene.image.Image;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,12 +24,17 @@ public class Bill extends Table {
     private static final long serialVersionID = 1L;
 
     /**
+     * Type of bill (Insurance, Water, Electric, Mortgage)
+     * */
+    private String type;
+
+    /**
      * Name of company holding the bill
      * */
     private String companyName;
 
     /**
-     * Company address
+     * Company address (if any)
      * */
     private String address;
 
@@ -40,6 +47,13 @@ public class Bill extends Table {
      * Monthly payment
      * */
     private double bill;
+
+    /**
+     * Tells program to utilize the interest rate upon invoice calculation
+     * */
+    private boolean mortgage;
+
+
 
     /**
      * List of Invoices
@@ -56,6 +70,16 @@ public class Bill extends Table {
      * */
     public Bill() {
         this(0,0,"","","",0);
+    }
+
+    /**
+     * Dummy Bill Constructor
+     * */
+    public Bill(String dummy) {
+        this();
+        if (dummy.equals(DUMMY_TABLE)) {
+            super.setDummy(true);
+        }
     }
 
     /**
@@ -78,6 +102,31 @@ public class Bill extends Table {
     @Override
     public String toString() {
         return String.format("Bill: %d; %s, %s", super.getId(), companyName, address);
+    }
+
+    @Override
+    public String getGenericName() {
+        return companyName;
+    }
+
+    /**
+     * Gets the type of Table in question
+     *
+     * @return table type
+     */
+    @Override
+    public DBTables getTableType() {
+        return DBTables.BILLS;
+    }
+
+    /**
+     * Returns the image related to a particular instance of a Table
+     *
+     * @return Table image
+     */
+    @Override
+    public Image getImage() {
+        return new Image("");
     }
 
     // *************************************************************

@@ -21,7 +21,7 @@
 <?import javafx.scene.text.Text?>
 
 <HBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.graham.apartmate.ui.controllers.info.TnantInfoController">
+      fx:controller="com.graham.apartmate.ui.controllers.mainScreen.subscreen.infocontrollers.TnantInfoController">
     <children>
         <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
                     minWidth="-Infinity" prefHeight="550.0" prefWidth="1050.0" HBox.hgrow="ALWAYS">

@@ -44,5 +44,10 @@ public enum DBTables {
     /**
      * Issue Table pointer
      * */
-    ISSUES
+    ISSUES,
+
+    /**
+     * Invalid Table pointer
+     * */
+    NONE
 }

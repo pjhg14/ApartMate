@@ -1,6 +1,8 @@
 package com.graham.apartmate.database.tables.mainTables;
 
+import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.main.Main;
+import javafx.scene.image.Image;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -62,7 +64,8 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	/**
 	 * Whether a Table was edited
 	 * <p>
-	 * True if a field was changed*/
+	 * True if a field was changed
+	 * */
 	private boolean edited;
 
 	/**
@@ -73,6 +76,8 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * True if so, False if not
 	 * */
 	private boolean dummy;
+
+	public static final String DUMMY_TABLE = "DUMMY";
 	//----------------------------------------------------------------
 
 	//----------------------------------------------------------------
@@ -141,6 +146,24 @@ public abstract class Table implements Serializable, Comparable<Table> {
 			System.out.println("Dummy Table class created");
 		}
 	}
+
+	/**
+	 * Gets the main identifying name of an instance of a Table
+	 * @return Table's "generic" name
+	 * */
+	public abstract String getGenericName();
+
+	/**
+	 * Gets the type of Table in question
+	 * @return table type
+	 * */
+	public abstract DBTables getTableType();
+
+	/**
+	 * Returns the image related to a particular instance of a Table
+	 * @return Table image
+	 * */
+	public abstract Image getImage();
 	//----------------------------------------------------------------
 
 	//----------------------------------------------------------------
@@ -201,7 +224,7 @@ public abstract class Table implements Serializable, Comparable<Table> {
 		final int prime = 31;
 		int result = 1;
 
-		result = prime * result + id;
+		result = prime * result + id + fk + fk2;
 
 		return result;
 	}

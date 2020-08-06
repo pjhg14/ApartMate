@@ -2,9 +2,12 @@ package com.graham.apartmate.database.tables.mainTables;
 
 import java.util.Date;
 
+import com.graham.apartmate.database.dbMirror.DBTables;
+import com.graham.apartmate.database.tables.subTables.EContact;
 import com.graham.apartmate.database.tables.subTables.Spouse;
 
 import com.graham.apartmate.main.Main;
+import javafx.scene.image.Image;
 
 /**
  * Candidate object
@@ -24,8 +27,8 @@ public class Candidate extends Table {
 	 * */
 	private static final long serialVersionUID = 1L;
 
-//	/***/
-//	private Image image;
+	/***/
+	private Image image;
 
 	// Mandatory fields
 	/**
@@ -62,7 +65,7 @@ public class Candidate extends Table {
 	/**
 	 * Candidate's annual Income
 	 * */
-	private int annualIncome; // candidate's annual income(optional)
+	private int annualIncome;
 
 	/**
 	 * Candidates number of children
@@ -81,41 +84,68 @@ public class Candidate extends Table {
 	private Spouse spouse;
 
 	/**
+	 * Candidate's first contact
+	 * */
+	private EContact contact1;
+
+	/**
+	 * Candidate's second contact
+	 * */
+	private EContact contact2;
+
+	/**
 	 * Default Constructor
 	 * */
 	public Candidate() {
-		this(0,0,"","","","","",new Date(),0,0,new Spouse());
+		this(0,0,"","","","","",new Date(),0,0,
+				new Spouse(DUMMY_TABLE),new EContact(DUMMY_TABLE), new EContact(DUMMY_TABLE));
+	}
+
+	/**
+	 * Dummy Candidate Constructor
+	 * */
+	public Candidate(String dummy) {
+		this();
+		if (dummy.equals(DUMMY_TABLE)) {
+			super.setDummy(true);
+		}
 	}
 
 	/**
 	 * Mandatory field constructor w/o spouse
 	 * */
-	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, String SSN) {
-		this(id, fk, firstName, lastName, phone, email, SSN, new Date(), 0,0,new Spouse());
+	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, String SSN,
+					 EContact contact1, EContact contact2) {
+		this(id, fk, firstName, lastName, phone, email, SSN, new Date(), 0,0,
+				new Spouse(DUMMY_TABLE), contact1, contact2);
 	}
 
 	/**
 	 * Mandatory field constructor w/ spouse
 	 * */
 	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, String SSN,
-			Spouse spouse) {
-		this(id, fk, firstName, lastName, phone, email, SSN, new Date(),0,0,spouse);
+			Spouse spouse, EContact contact1, EContact contact2) {
+		this(id, fk, firstName, lastName, phone, email, SSN, new Date(),0,0,
+				spouse, contact1,contact2);
 	}
 
 	/**
 	 * Full constructor w/o spouse
 	 * */
 	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, Date dateOfBirth,
-			int annualIncome, String SSN, int numChildren) {
-		this(id, fk, firstName, lastName, phone, email, SSN, dateOfBirth ,annualIncome, numChildren, new Spouse());
+			int annualIncome, String SSN, int numChildren, EContact contact1, EContact contact2) {
+		this(id, fk, firstName, lastName, phone, email, SSN, dateOfBirth ,annualIncome, numChildren,
+				new Spouse(DUMMY_TABLE),contact1, contact2);
 	}
 
 	/**
 	 * Full constructor w/ spouse
 	 * */
-	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email,String SSN, Date dateOfBirth,
-			int annualIncome,  int numChildren, Spouse spouse) {
+	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email,String SSN,
+					 Date dateOfBirth, int annualIncome,  int numChildren, Spouse spouse, EContact contact1,
+					 EContact contact2) {
 		super(id, fk);
+		image = new Image("com/graham/apartmate/ui/res/Tenantimg_small.png");
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phone = phone;
@@ -126,6 +156,8 @@ public class Candidate extends Table {
 		this.numChildren = numChildren;
 		accepted = false;
 		this.spouse = spouse;
+		this.contact1 = contact1;
+		this.contact2 = contact2;
 	}
 
 	/**
@@ -136,6 +168,24 @@ public class Candidate extends Table {
 	@Override
 	public String toString() {
 		return String.format("Candidate: %s; %s, %s", super.getId() ,lastName, firstName);
+	}
+
+	/***/
+	@Override
+	public String getGenericName() {
+		return getFullName();
+	}
+
+	/***/
+	@Override
+	public DBTables getTableType() {
+		return DBTables.CANDIDATES;
+	}
+
+	/***/
+	@Override
+	public Image getImage() {
+		return image;
 	}
 
 	/**
@@ -153,17 +203,28 @@ public class Candidate extends Table {
 	public String getProperName() {
 		return lastName + ", " + firstName;
 	}
-	// *************************************************************
-	// General getters and setters
-//	/***/
-//	public Image getImage() {
-//		return image;
-//	}
-//
-//	/***/
-//	public void setImage(Image image) {
-//		this.image = image;
-//	}
+
+	/**
+	 * Returns whether or not a Candidate has a Spouse
+	 * @return <code>true</code> if Candidate has a Spouse <code>false</code> if not
+	 * */
+	public boolean hasSpouse() {
+		return !spouse.isDummy();
+	}
+
+	/**
+	 * Removes Candidate's Spouse
+	 * */
+	public void removeSpouse() {
+		spouse = new Spouse(DUMMY_TABLE);
+	}
+	//------------------------------------------------------------
+	// General getters and setters////////////////////////////////
+	//------------------------------------------------------------
+	/***/
+	public void setImage(Image image) {
+		this.image = image;
+	}
 
 	/**
 	 * Getter:
@@ -364,5 +425,42 @@ public class Candidate extends Table {
 	public void setSpouse(Spouse spouse) {
 		this.spouse = spouse;
 	}
-	// *************************************************************
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets Candidate's first Emergency Contact
+	 * */
+	public EContact getContact1() {
+		return contact1;
+	}
+
+	/**
+	 * Setter:
+	 * <p>
+	 * Sets Candidate's first Emergency Contact
+	 * */
+	public void setContact1(EContact contact1) {
+		this.contact1 = contact1;
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets Candidate's second Emergency Contact
+	 * */
+	public EContact getContact2() {
+		return contact2;
+	}
+
+	/**
+	 * Setter:
+	 * <p>
+	 * Sets Candidate's second Emergency Contact
+	 * */
+	public void setContact2(EContact contact2) {
+		this.contact2 = contact2;
+	}
+
+	//------------------------------------------------------------
 }

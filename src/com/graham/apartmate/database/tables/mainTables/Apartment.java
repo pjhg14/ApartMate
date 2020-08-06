@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.subTables.Bill;
 import com.graham.apartmate.database.tables.subTables.Insurance;
 import com.graham.apartmate.database.tables.subTables.NoteLog;
 import com.graham.apartmate.main.Main;
+import javafx.scene.image.Image;
 
 /**
  * Apartment object
@@ -29,6 +31,9 @@ public class Apartment extends Table {
 	 * Serialization long
 	 * */
 	private static final long serialVersionUID = 1L;
+
+	/***/
+	private Image image;
 
 	/**
 	 * Name of Apartment
@@ -63,6 +68,7 @@ public class Apartment extends Table {
 	// Sub-tables
 	/**
 	 * List of Insurances
+	 * (TO BE REMOVED)
 	 * */
 	private List<Insurance> insurances;
 
@@ -76,7 +82,8 @@ public class Apartment extends Table {
 	 * */
 	private List<Bill> bills;
 
-	// private List<Room> rooms;
+//	 /***/
+//	 private List<Room> rooms;
 
 	/**
 	 * */
@@ -87,6 +94,16 @@ public class Apartment extends Table {
 	 * */
 	public Apartment() {
 		this(0,"","","","",0);
+	}
+
+	/**
+	 * Dummy Apartment Constructor
+	 * */
+	public Apartment(String dummy) {
+		this();
+		if (dummy.equals(DUMMY_TABLE)) {
+			super.setDummy(true);
+		}
 	}
 
 	/**
@@ -101,6 +118,7 @@ public class Apartment extends Table {
 	 * */
 	public Apartment(int id, String address, String city, String state, String zipCode, int capacity) {
 		super(id);
+		image = new Image("com/graham/apartmate/ui/res/Apartmentimg_small.png");
 		this.address = address;
 		this.city = city;
 		this.state = state;
@@ -122,6 +140,24 @@ public class Apartment extends Table {
 	public String toString() {
 		return String.format("Apartment %d %s %s %s %s", super.getId(),
 				address, city, state, zipCode);
+	}
+
+	/***/
+	@Override
+	public String getGenericName() {
+		return address;
+	}
+
+	/***/
+	@Override
+	public DBTables getTableType() {
+		return DBTables.APARTMENTS;
+	}
+
+	/***/
+	@Override
+	public Image getImage() {
+		return image;
 	}
 
 	/**
@@ -152,8 +188,23 @@ public class Apartment extends Table {
 		return -1;
 	}
 
+//	/***/
+//	public boolean addBill(Bill bill) {
+//		return bills.add(bill);
+//	}
+//
+//	/***/
+//	public boolean removeBill(Bill bill) {
+//		return bills.remove(bill);
+//	}
+
 	// *************************************************************
 	// General getters and setters
+	/***/
+	public void setImage(Image image) {
+		this.image = image;
+	}
+
 	/**
 	 * Getter:
 	 * <p>

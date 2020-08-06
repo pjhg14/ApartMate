@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.graham.apartmate.database.dbMirror.DBTables;
+import com.graham.apartmate.database.tables.subTables.EContact;
 import com.graham.apartmate.database.tables.subTables.NoteLog;
 import com.graham.apartmate.database.tables.subTables.Spouse;
 import com.graham.apartmate.database.tables.subTables.Invoice;
 import com.graham.apartmate.database.utilities.unordered.Heck;
 import com.graham.apartmate.main.Main;
+import javafx.scene.image.Image;
 
 /**
  * Tenant object
@@ -23,12 +26,16 @@ import com.graham.apartmate.main.Main;
 // Add boolean indicating whether the security deposit was sent
 // Possibly add address Tenant moved to for deposit mailing
 // Add interface for account logging?
+// Add loaded image constructor
 public class Tenant extends Table {
 
 	/**
 	 * Serializable Long
 	 * */
 	private static final long serialVersionUID = 1L;
+
+	/***/
+	private Image image;
 
 	//------------------------------------------------------------
 	// Mandatory fields///////////////////////////////////////////
@@ -114,6 +121,16 @@ public class Tenant extends Table {
 	private Spouse spouse;
 
 	/**
+	 * Tenant's first contact
+	 * */
+	private EContact contact1;
+
+	/**
+	 * Tenant's second contact
+	 * */
+	private EContact contact2;
+
+	/**
 	 * List of the Tenant's invoices
 	 * */
 	private List<Invoice> invoices;
@@ -130,11 +147,34 @@ public class Tenant extends Table {
 	//------------------------------------------------------------
 	/**
 	 * Default constructor:
-	 * Creates a dummy Tenant object
 	 * */
 	public Tenant() {
 		this(0,0,"","","","",new Date(),-1,"",-1,0,
-				new Date(),new Spouse());
+				new Date(),new Spouse(DUMMY_TABLE), new EContact(DUMMY_TABLE), new EContact(DUMMY_TABLE));
+	}
+
+	/**
+	 * Dummy Tenant Constructor
+	 * */
+	public Tenant(String dummy) {
+		this();
+		if (dummy.equals(DUMMY_TABLE)) {
+			super.setDummy(true);
+		}
+	}
+
+	/**
+	 * Candidate conversion constructor
+	 * @param id Id of tenant to be
+	 * @param candidate Candidate to convert
+	 * @param rent New Tenant's rent
+	 * @param movInDate New Tenant's move in date
+	 * */
+	public Tenant(int id, Candidate candidate, double rent, Date movInDate) {
+		this(id, candidate.getFk(), candidate.getFirstName(), candidate.getLastName(), candidate.getPhone(),
+				candidate.getEmail(),candidate.getDateOfBirth(),candidate.getAnnualIncome(),candidate.getSSN(),
+				rent,candidate.getNumChildren(), movInDate, candidate.getSpouse(), candidate.getContact1(),
+				candidate.getContact2());
 	}
 
 	// Constructor w/o Spouse
@@ -147,15 +187,17 @@ public class Tenant extends Table {
 	 * @param phone Tenant's phone #
 	 * @param email Tenant's email
 	 * @param dateOfBirth Tenant's date of birth
-	 * @param annualIncome Tenant's annnual income
+	 * @param annualIncome Tenant's annual income
 	 * @param SSN Tenants's ID #
 	 * @param rent Tenants's monthly rent
 	 * @param numChildren Tenant's # of children
 	 * @param movInDate Tenant's move in date
 	 * */
 	public Tenant(int id, int fk, String firstName, String lastName, String phone, String email, Date dateOfBirth,
-			int annualIncome, String SSN, double rent, int numChildren, Date movInDate) {
-		this(id,fk,firstName,lastName,phone,email,dateOfBirth,annualIncome,SSN,rent,numChildren,movInDate,new Spouse());
+			int annualIncome, String SSN, double rent, int numChildren, Date movInDate, EContact contact1,
+				  EContact contact2) {
+		this(id,fk,firstName,lastName,phone,email,dateOfBirth,annualIncome,SSN,rent,numChildren,movInDate,
+				new Spouse(DUMMY_TABLE), contact1, contact2);
 	}
 
 	// Constructor w/ Spouse
@@ -176,8 +218,10 @@ public class Tenant extends Table {
 	 * @param spouse Tenant's Spouse
 	 * */
 	public Tenant(int id, int fk, String firstName, String lastName, String phone, String email, Date dateOfBirth,
-				  int annualIncome, String SSN, double rent, int numChildren, Date movInDate, Spouse spouse) {
+				  int annualIncome, String SSN, double rent, int numChildren, Date movInDate, Spouse spouse,
+				  EContact contact1, EContact contact2) {
 		super(id, fk);
+		image = new Image("com/graham/apartmate/ui/res/Tenantimg_small.png");
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phone = phone;
@@ -193,6 +237,8 @@ public class Tenant extends Table {
 		evictReason = "";
 
 		this.spouse = spouse;
+		this.contact1 = contact1;
+		this.contact2 = contact2;
 		invoices = new ArrayList<>();
 		inspections = new ArrayList<>();
 	}
@@ -211,6 +257,24 @@ public class Tenant extends Table {
 		return String.format("Tenant %d: %s, %s", super.getId(), lastName, firstName);
 	}
 
+	/***/
+	@Override
+	public String getGenericName() {
+		return getFullName();
+	}
+
+	/***/
+	@Override
+	public DBTables getTableType() {
+		return DBTables.TENANTS;
+	}
+
+	/***/
+	@Override
+	public Image getImage() {
+		return image;
+	}
+
 	/**
 	 * Gives the full name of the Tenant
 	 * @return first name last name
@@ -227,9 +291,33 @@ public class Tenant extends Table {
 		return lastName + ", " + firstName;
 	}
 
+	/***/
+	public boolean invalidName() {
+		return firstName.equals("") || lastName.equals("");
+	}
+
+	/**
+	 * Returns whether or not a Tenant has a Spouse
+	 * @return <code>true</code> if Tenant has a Spouse <code>false</code> if not
+	 * */
+	public boolean hasSpouse() {
+		return !spouse.isDummy();
+	}
+
+	/**
+	 * Removes Tenant's Spouse
+	 * */
+	public void removeSpouse() {
+		spouse = new Spouse(DUMMY_TABLE);
+	}
 	//------------------------------------------------------------
 	// General getters and setters////////////////////////////////
 	//------------------------------------------------------------
+	/***/
+	public void setImage(Image image) {
+		this.image = image;
+	}
+
 	/**
 	 * Getter:
 	 * <p>
@@ -508,6 +596,42 @@ public class Tenant extends Table {
 	 * */
 	public void setSpouse(Spouse spouse) {
 		this.spouse = spouse;
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets Tenant's first Emergency Contact
+	 * */
+	public EContact getContact1() {
+		return contact1;
+	}
+
+	/**
+	 * Setter:
+	 * <p>
+	 * Sets Tenant's first Emergency Contact
+	 * */
+	public void setContact1(EContact contact1) {
+		this.contact1 = contact1;
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets Tenant's second Emergency Contact
+	 * */
+	public EContact getContact2() {
+		return contact2;
+	}
+
+	/**
+	 * Setter:
+	 * <p>
+	 * Sets Tenant's second Emergency Contact
+	 * */
+	public void setContact2(EContact contact2) {
+		this.contact2 = contact2;
 	}
 
 	/**

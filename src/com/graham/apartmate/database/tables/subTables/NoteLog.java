@@ -1,7 +1,9 @@
 package com.graham.apartmate.database.tables.subTables;
 
+import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.mainTables.Table;
 import com.graham.apartmate.main.Main;
+import javafx.scene.image.Image;
 
 import java.util.Date;
 
@@ -41,6 +43,16 @@ public class NoteLog extends Table {
     }
 
     /**
+     * Dummy NoteLog Constructor
+     * */
+    public NoteLog(String dummy) {
+        this();
+        if (dummy.equals(DUMMY_TABLE)) {
+            super.setDummy(true);
+        }
+    }
+
+    /**
      * Full constructor
      * */
     public NoteLog(int id, int fk, String log) {
@@ -56,6 +68,36 @@ public class NoteLog extends Table {
     @Override
     public String toString() {
         return "Log Date: " + logDate;
+    }
+
+    /**
+     * Gets the main identifying name of an instance of a Table
+     *
+     * @return Table's "unique" name
+     */
+    @Override
+    public String getGenericName() {
+        return "";
+    }
+
+    /**
+     * Gets the type of Table in question
+     *
+     * @return table type
+     */
+    @Override
+    public DBTables getTableType() {
+        return DBTables.NONE;
+    }
+
+    /**
+     * Returns the image related to a particular instance of a Table
+     *
+     * @return Table image
+     */
+    @Override
+    public Image getImage() {
+        return new Image("");
     }
 
     // *************************************************************

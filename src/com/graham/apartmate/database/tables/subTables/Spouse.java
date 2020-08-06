@@ -1,9 +1,12 @@
 package com.graham.apartmate.database.tables.subTables;
 
+
 import java.util.Date;
 
+import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.mainTables.Table;
 import com.graham.apartmate.main.Main;
+import javafx.scene.image.Image;
 
 /**
  * Spouse object
@@ -23,6 +26,8 @@ public class Spouse extends Table {
 	 * Serialization long
 	 * */
 	private static final long serialVersionUID = 1L;
+
+	private Image image;
 
 	// Mandatory fields
 	/**
@@ -70,10 +75,21 @@ public class Spouse extends Table {
 	}
 
 	/**
+	 * Dummy Spouse Constructor
+	 * */
+	public Spouse(String dummy) {
+		this();
+		if (dummy.equals(DUMMY_TABLE)) {
+			super.setDummy(true);
+		}
+	}
+
+	/**
 	 * Tenant Spouse constructor
 	 * */
 	public Spouse(int id, int fk, String firstName, String lastName, String phone, String email, String SSN, Date dateOfBirth) {
 		super(id, fk);
+		image = new Image("com/graham/apartmate/ui/res/Tenantimg_small.png");
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phone = phone;
@@ -87,6 +103,7 @@ public class Spouse extends Table {
 	 * */
 	public Spouse(int id, int fk, int fk2, String firstName, String lastName, String phone, String email, String SSN, Date dateOfBirth) {
 		super(id, 0, fk2);
+		image = new Image("com/graham/apartmate/ui/res/Tenantimg_small.png");
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phone = phone;
@@ -107,6 +124,36 @@ public class Spouse extends Table {
 	}
 
 	/**
+	 * Gets the main identifying name of an instance of a Table
+	 *
+	 * @return Table's "unique" name
+	 */
+	@Override
+	public String getGenericName() {
+		return getFullName();
+	}
+
+	/**
+	 * Gets the type of Table in question
+	 *
+	 * @return table type
+	 */
+	@Override
+	public DBTables getTableType() {
+		return DBTables.NONE;
+	}
+
+	/**
+	 * Returns the image related to a particular instance of a Table
+	 *
+	 * @return Table image
+	 */
+	@Override
+	public Image getImage() {
+		return image;
+	}
+
+	/**
 	 * Gives the full name of the Spouse
 	 * @return first name last name
 	 * */
@@ -120,6 +167,11 @@ public class Spouse extends Table {
 	 * */
 	public String getProperName() {
 		return lastName + ", " + firstName;
+	}
+
+	/***/
+	public boolean invalidName() {
+		return firstName.equals("") || lastName.equals("");
 	}
 
 	// *************************************************************

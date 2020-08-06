@@ -13,6 +13,8 @@ import com.graham.apartmate.database.utilities.saving.LocalDBSaving;
 import com.graham.apartmate.database.utilities.saving.SQLBridge;
 import com.graham.apartmate.main.Main;
 
+import javax.xml.stream.events.StartDocument;
+
 
 /**
  * Contains Lists of all tables and subTables (through their respective table)
@@ -28,6 +30,7 @@ import com.graham.apartmate.main.Main;
 //TODO: Finish modifying edit methods
 //TODO: Find better way of writing orderById & orderByName
 //TODO: Finish orderByDate
+// change Lists to ObservableLists and migrate OLListeners from UI Controllers to here
 public final class Database {
 
 	/**
@@ -35,56 +38,6 @@ public final class Database {
 	 * Is stored online or locally
 	 * */
 	private static final Database INSTANCE = new Database();
-
-	// Constant enums
-	/**
-	 * Sorting enumeration: holds sorting constants
-	 * */
-	enum DBSorting {
-		/**
-		 * Sorts by Ascending order
-		 * */
-		ASCENDING(0),
-
-		/**
-		 * Sorts by Descending order
-		 * */
-		DESCENDING(1),
-
-		/**
-		 * Orders tables by ID
-		 * */
-		ORDER_BY_ID(2),
-
-		/**
-		 * Orders tables by Name(or equivalent)
-		 * */
-		ORDER_BY_NAME(3),
-
-		/**
-		 * Orders tables by Date Created
-		 * */
-		ORDER_BY_DATE(4);
-
-		/**
-		 * DBSorting constructor; requires sorting number for saving reasons
-		 * */
-		DBSorting(int orderNumber) {
-			this.orderNumber = orderNumber;
-		}
-
-		/**
-		 * Sorting number
-		 * */
-		private final int orderNumber;
-
-		/**
-		 * Order number getter
-		 * */
-		public int getOrderNumber() {
-			return orderNumber;
-		}
-	}
 
 	/**
 	 * Contains whether or not a connection to previous data was made
@@ -112,18 +65,18 @@ public final class Database {
 	/**
 	 * Contains and manages server connections, querying, and loading
 	 * */
-	public SQLBridge sqlBridge;
+	public final SQLBridge sqlBridge;
 
 	/**
 	 * Manages reading/writing to/of files locally stored on the computer
 	 * */
-	private LocalDBSaving localSave;
+	private final LocalDBSaving localSave;
 
 	// Unordered utilities
 	/**
 	 * Manages all timed events an updates based on such
 	 * */
-	private Heck events;
+	private final Heck events;
 
 	// Main tables
 	/**
@@ -147,9 +100,15 @@ public final class Database {
 	private List<Contractor> contractors;
 
 	// Table pointers
-	//TODO: Utilize ListIterator to traverse and hold current Table
+	/***/
+	private Table currentTable;
+
+	/***/
+	private Table previousTable;
+
 	/**
-	 * Holds the currently selected Apartment*/
+	 * Holds the currently selected Apartment
+	 * */
 	private static Apartment currApt;
 
 	/**
@@ -323,7 +282,7 @@ public final class Database {
 		} else {
 			offlineLoad();
 			if (apartments.isEmpty() || tenants.isEmpty() || candidates.isEmpty() || contractors.isEmpty()) {
-				//Restore Lists
+				//If no data loaded, restore Lists
 				apartments = cloneA;
 				tenants = cloneT;
 				candidates = cloneCa;
@@ -400,6 +359,68 @@ public final class Database {
 
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
+	// find methods
+	// ---------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------
+	/***/
+	public Apartment find(Apartment target) {
+		for (Apartment apartment : apartments) {
+			if (apartment.equals(target)) {
+				return apartment;
+			}
+		}
+
+		return null;
+	}
+
+	/***/
+	public Tenant find(Tenant target) {
+		for (Tenant tenant : tenants) {
+			if (tenant.equals(target)) {
+				return tenant;
+			}
+		}
+
+		return null;
+	}
+
+	/***/
+	public Candidate find(Candidate target) {
+		for (Candidate candidate : candidates) {
+			if (candidate.equals(target)) {
+				return candidate;
+			}
+		}
+
+		return null;
+	}
+
+	/***/
+	public Contractor find(Contractor target) {
+		for (Contractor contractor : contractors) {
+			if (contractor.equals(target)) {
+				return contractor;
+			}
+		}
+
+		return null;
+	}
+
+	/***/
+	public Apartment getRelatedApartment(Table table) {
+		for (Apartment apartment : apartments) {
+			if (table.getFk() == apartment.getId()) {
+				return apartment;
+			}
+		}
+
+		return null;
+	}
+	// ---------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------
+
+	// ---------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------
 	// add methods
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
@@ -424,10 +445,11 @@ public final class Database {
 		for (Apartment apartment : apartments) {
 			if (apartment.getId() == tenant.getFk()) {
 				Invoice initialDue = new Invoice();
-				initialDue.setDues(tenant.getRent());
-				tenant.getInvoices().add(initialDue);
+				initialDue.setFk(tenant.getId());
 
 				tenants.add(tenant);
+				add(initialDue, DBTables.TENANTS);
+
 				apartment.setNumTenants(apartment.getNumTenants() + 1);
 				Collections.sort(tenants);
 
@@ -472,10 +494,11 @@ public final class Database {
 		for (Apartment apartment : apartments) {
 			if (apartment.getId() == contractor.getFk()) {
 				Invoice initialDue = new Invoice();
-				initialDue.setDues(contractor.getBill());
+				initialDue.setFk(contractor.getId());
 
-				contractor.getInvoices().add(initialDue);
 				contractors.add(contractor);
+				add(initialDue, DBTables.CONTRACTORS);
+
 				Collections.sort(contractors);
 
 				if (online)
@@ -540,10 +563,12 @@ public final class Database {
 		for (Apartment apartment : apartments) {
 			if (apartment.getId() == insurance.getFk()) { // Find respective apartment
 				Invoice initialDue = new Invoice();
-				initialDue.setDues(insurance.getBill());
-				insurance.getInvoices().add(initialDue);
+				initialDue.setFk(insurance.getId());
 
 				apartment.getInsurances().add(insurance);
+				add(initialDue, DBTables.INSURANCES);
+
+
 				Collections.sort(apartment.getInsurances());
 
 				if (online)
@@ -565,10 +590,11 @@ public final class Database {
 		for (Apartment apartment : apartments) {
 			if (apartment.getId() == bill.getFk()) { // Find respective apartment
 				Invoice initialDue = new Invoice();
-				initialDue.setDues(bill.getBill());
-				bill.getInvoices().add(initialDue);
+				initialDue.setFk(bill.getId());
 
 				apartment.getBills().add(bill);
+				add(initialDue, DBTables.BILLS);
+
 				Collections.sort(apartment.getInsurances());
 
 				if (online)
@@ -631,6 +657,7 @@ public final class Database {
 			case TENANTS:
 				for (Tenant tenant : tenants) {
 					if (tenant.getId() == invoice.getFk()) {
+						invoice.setDues(tenant.getRent());
 						tenant.getInvoices().add(invoice);
 						events.updateTotals(tenant.getInvoices());
 						Collections.sort(tenant.getInvoices());
@@ -646,6 +673,7 @@ public final class Database {
 			case CONTRACTORS:
 				for (Contractor contractor : contractors) {
 					if (contractor.getId() == invoice.getFk()) {
+						invoice.setDues(contractor.getBill());
 						contractor.getInvoices().add(invoice);
 						events.updateTotals(contractor.getInvoices());
 						Collections.sort(contractor.getInvoices());
@@ -662,6 +690,7 @@ public final class Database {
 				for (Apartment apartment : apartments) {
 					for (Bill bill : apartment.getBills()) {
 						if (bill.getId() == invoice.getFk()) {
+							invoice.setDues(bill.getBill());
 							bill.getInvoices().add(invoice);
 							events.updateTotals(bill.getInvoices());
 							Collections.sort(bill.getInvoices());
@@ -679,6 +708,7 @@ public final class Database {
 				for (Apartment apartment : apartments) {
 					for (Insurance insurance : apartment.getInsurances()) {
 						if (insurance.getId() == invoice.getFk()) {
+							invoice.setDues(insurance.getBill());
 							insurance.getInvoices().add(invoice);
 							events.updateTotals(insurance.getInvoices());
 							Collections.sort(insurance.getInvoices());
@@ -834,6 +864,7 @@ public final class Database {
 			uoe.printStackTrace();
 			return false;
 		}
+
 	}
 
 	/**
@@ -1684,6 +1715,62 @@ public final class Database {
 
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
+	// Constant enums
+	// ---------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------
+	/**
+	 * Sorting enumeration: holds sorting constants
+	 * */
+	enum DBSorting {
+		/**
+		 * Sorts by Ascending order
+		 * */
+		ASCENDING(0),
+
+		/**
+		 * Sorts by Descending order
+		 * */
+		DESCENDING(1),
+
+		/**
+		 * Orders tables by ID
+		 * */
+		ORDER_BY_ID(2),
+
+		/**
+		 * Orders tables by Name(or equivalent)
+		 * */
+		ORDER_BY_NAME(3),
+
+		/**
+		 * Orders tables by Date Created
+		 * */
+		ORDER_BY_DATE(4);
+
+		/**
+		 * DBSorting constructor; requires sorting number for saving reasons
+		 * */
+		DBSorting(int orderNumber) {
+			this.orderNumber = orderNumber;
+		}
+
+		/**
+		 * Sorting number
+		 * */
+		private final int orderNumber;
+
+		/**
+		 * Order number getter
+		 * */
+		public int getOrderNumber() {
+			return orderNumber;
+		}
+	}
+	// ---------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------
+
+	// ---------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------
 	// General Getters & Setters
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
@@ -1747,10 +1834,10 @@ public final class Database {
 	/**
 	 * Getter:
 	 * <p>
-	 * Gets list of Apartments in database
+	 * Gets a view of the Apartment list in the database
 	 * */
 	public List<Apartment> getApartments() {
-		return apartments;
+		return Collections.unmodifiableList(apartments);
 	}
 
 	/**
@@ -1765,10 +1852,10 @@ public final class Database {
 	/**
 	 * Getter:
 	 * <p>
-	 * Gets list of Tenants in database
+	 * Gets a view of the Tenant list in the database
 	 * */
 	public List<Tenant> getTenants() {
-		return tenants;
+		return Collections.unmodifiableList(tenants);
 	}
 
 	/**
@@ -1783,10 +1870,10 @@ public final class Database {
 	/**
 	 * Getter:
 	 * <p>
-	 * Gets list of Candidates in database
+	 * Gets a view of the Candidate list in the database
 	 * */
 	public List<Candidate> getCandidates() {
-		return candidates;
+		return Collections.unmodifiableList(candidates);
 	}
 
 	/**
@@ -1801,10 +1888,10 @@ public final class Database {
 	/**
 	 * Getter:
 	 * <p>
-	 * Gets list of Contractors in database
+	 * Gets a view of the Contractor list in the database
 	 * */
 	public List<Contractor> getContractors() {
-		return contractors;
+		return Collections.unmodifiableList(contractors);
 	}
 
 	/**
@@ -1814,6 +1901,26 @@ public final class Database {
 	 * */
 	public void setContractors(List<Contractor> contractors) {
 		this.contractors = contractors;
+	}
+
+	/***/
+	public Table getCurrentTable() {
+		return currentTable;
+	}
+
+	/***/
+	public void setCurrentTable(Table currentTable) {
+		this.currentTable = currentTable;
+	}
+
+	/***/
+	public Table getPreviousTable() {
+		return previousTable;
+	}
+
+	/***/
+	public void setPreviousTable(Table previousTable) {
+		this.previousTable = previousTable;
 	}
 
 	/**

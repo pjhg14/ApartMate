@@ -3,9 +3,11 @@ package com.graham.apartmate.database.tables.subTables;
 import java.util.Comparator;
 import java.util.Date;
 
+import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.mainTables.Table;
 import com.graham.apartmate.database.utilities.unordered.Heck;
 import com.graham.apartmate.main.Main;
+import javafx.scene.image.Image;
 
 /**
  * Overall Invoice object
@@ -73,6 +75,16 @@ public class Invoice extends Table {
 	}
 
 	/**
+	 * Dummy Invoice Constructor
+	 * */
+	public Invoice(String dummy) {
+		this();
+		if (dummy.equals(DUMMY_TABLE)) {
+			super.setDummy(true);
+		}
+	}
+
+	/**
 	 * Initial payment constructor
 	 * */
 	public Invoice(int id, int fk, double paymentAmount, double dues, Date paymentDate, Date dueDate) {
@@ -92,6 +104,32 @@ public class Invoice extends Table {
 		this.totalDue = totalDue;
 		this.paymentDate = paymentDate;
 		this.dueDate = dueDate;
+	}
+
+	/***/
+	@Override
+	public String getGenericName() {
+		return "";
+	}
+
+	/**
+	 * Gets the type of Table in question
+	 *
+	 * @return table type
+	 */
+	@Override
+	public DBTables getTableType() {
+		return DBTables.NONE;
+	}
+
+	/**
+	 * Returns the image related to a particular instance of a Table
+	 *
+	 * @return Table image
+	 */
+	@Override
+	public Image getImage() {
+		return new Image("");
 	}
 
 	/**
