@@ -1,17 +1,13 @@
 package com.graham.apartmate.database.tables.mainTables;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
-import com.graham.apartmate.database.tables.subTables.EContact;
-import com.graham.apartmate.database.tables.subTables.NoteLog;
-import com.graham.apartmate.database.tables.subTables.Spouse;
-import com.graham.apartmate.database.tables.subTables.Invoice;
-import com.graham.apartmate.database.utilities.unordered.Heck;
+import com.graham.apartmate.database.tables.subTables.*;
 import com.graham.apartmate.main.Main;
-import javafx.scene.image.Image;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 /**
  * Tenant object
@@ -22,63 +18,20 @@ import javafx.scene.image.Image;
  * @version {@value Main#VERSION}
  * @since Can we call this an alpha? (0.1)
  */
-//TODO: Replace all mentions of depreciated Date classes with java.time.LocalDate
-// Add boolean indicating whether the security deposit was sent
-// Possibly add address Tenant moved to for deposit mailing
-// Add interface for account logging?
-// Add loaded image constructor
-public class Tenant extends Table {
+public class Tenant extends Candidate {
 
 	/**
 	 * Serializable Long
 	 * */
 	private static final long serialVersionUID = 1L;
 
-	/***/
-	private Image image;
-
 	//------------------------------------------------------------
 	// Mandatory fields///////////////////////////////////////////
 	//------------------------------------------------------------
 	/**
-	 * First name of Tenant
-	 * */
-	private String firstName;
-
-	/**
-	 * Last name of Tenant
-	 * */
-	private String lastName;
-
-	/**
-	 * Phone # of Tenant
-	 * */
-	private String phone;
-
-	/**
-	 * Email address of Tenant
-	 * */
-	private String email;
-
-	/**
-	 * Tenant's ID number
-	 * */
-	private String SSN;
-
-	/**
-	 * Amount Tenant owes every month
-	 * */
-	private double rent; // amount tenant owes every month
-
-	/**
-	 * # of children the Tenant has
-	 * */
-	private int numChildren;
-
-	/**
 	 * Tenant's move-in date
 	 * */
-	private Date movInDate; // tenant's move in date
+	private final SimpleObjectProperty<LocalDate> movInDate; // tenant's move in date
 	//------------------------------------------------------------
 	//------------------------------------------------------------
 
@@ -86,29 +39,25 @@ public class Tenant extends Table {
 	// Optional/uninitialized fields//////////////////////////////
 	//------------------------------------------------------------
 	/**
-	 * Tenant's date of birth
-	 * */
-	private Date dateOfBirth;
-
-	/**
-	 * Tenant's annual income
-	 * */
-	private int annualIncome; // tenants's annual income(optional)
-
-	/**
 	 * True if the Tenant is slated for eviction/evicted
 	 * */
-	private boolean slatedForEviction;
+	private final SimpleBooleanProperty slatedForEviction;
 
 	/**
 	 * Eviction reason
 	 * */
-	private String evictReason;
+	private final SimpleStringProperty evictReason;
+
+	/***/
+	private final SimpleBooleanProperty securitySent;
 
 	/**
 	 * Date a Tenant has moved out of the Apartment
 	 * */
-	private Date movOutDate;
+	private final SimpleObjectProperty<LocalDate> movOutDate;
+
+	/***/
+	private final SimpleStringProperty addressMoved;
 	//------------------------------------------------------------
 	//------------------------------------------------------------
 
@@ -116,41 +65,26 @@ public class Tenant extends Table {
 	// Tenant sub-tables//////////////////////////////////////////
 	//------------------------------------------------------------
 	/**
-	 * Data of Tenant's Spouse (if any)
+	 * Tenant's Account
 	 * */
-	private Spouse spouse;
+	private final Account account;
 
 	/**
-	 * Tenant's first contact
+	 * Tenant's lease agreement
 	 * */
-	private EContact contact1;
-
-	/**
-	 * Tenant's second contact
-	 * */
-	private EContact contact2;
-
-	/**
-	 * List of the Tenant's invoices
-	 * */
-	private List<Invoice> invoices;
-
-	/**
-	 * List of the Tenant's inspections
-	 * */
-	private List<NoteLog> inspections;
+	private final Lease lease;
 	//------------------------------------------------------------
 	//------------------------------------------------------------
 
 	//------------------------------------------------------------
-	//Constructor/////////////////////////////////////////////////
+	//Constructors////////////////////////////////////////////////
 	//------------------------------------------------------------
 	/**
 	 * Default constructor:
 	 * */
 	public Tenant() {
-		this(0,0,"","","","",new Date(),-1,"",-1,0,
-				new Date(),new Spouse(DUMMY_TABLE), new EContact(DUMMY_TABLE), new EContact(DUMMY_TABLE));
+		this(0,0,"","","","",LocalDate.MIN,-1,"",-1,
+				LocalDate.MIN, null, null, new Account(), new Lease());
 	}
 
 	/**
@@ -165,21 +99,29 @@ public class Tenant extends Table {
 
 	/**
 	 * Candidate conversion constructor
-	 * @param id Id of tenant to be
-	 * @param candidate Candidate to convert
-	 * @param rent New Tenant's rent
-	 * @param movInDate New Tenant's move in date
 	 * */
-	public Tenant(int id, Candidate candidate, double rent, Date movInDate) {
-		this(id, candidate.getFk(), candidate.getFirstName(), candidate.getLastName(), candidate.getPhone(),
-				candidate.getEmail(),candidate.getDateOfBirth(),candidate.getAnnualIncome(),candidate.getSSN(),
-				rent,candidate.getNumChildren(), movInDate, candidate.getSpouse(), candidate.getContact1(),
-				candidate.getContact2());
+	public Tenant(Candidate candidate, LocalDate movInDate, Account initialAccount, Lease initialLease) {
+		this(candidate.getId(),
+				candidate.getFk(),
+				candidate.getFirstName(),
+				candidate.getLastName(),
+				candidate.getPhone(),
+				candidate.getEmail(),
+				candidate.getDateOfBirth(),
+				candidate.getAnnualIncome(),
+				candidate.getSsn(),
+				candidate.getNumChildren(),
+				movInDate,
+				candidate.getContact1(),
+				candidate.getContact2(),
+				initialAccount,
+				initialLease
+		);
 	}
 
-	// Constructor w/o Spouse
+	// Constructor
 	/**
-	 * Creates a Tenant object w/o a spouse
+	 * Creates a Tenant object
 	 * @param id Primary Key of Tenant
 	 * @param fk Foreign Key to Apartment
 	 * @param firstName Tenant's first name
@@ -188,64 +130,32 @@ public class Tenant extends Table {
 	 * @param email Tenant's email
 	 * @param dateOfBirth Tenant's date of birth
 	 * @param annualIncome Tenant's annual income
-	 * @param SSN Tenants's ID #
-	 * @param rent Tenants's monthly rent
+	 * @param SSN Tenant's ID #
 	 * @param numChildren Tenant's # of children
 	 * @param movInDate Tenant's move in date
 	 * */
-	public Tenant(int id, int fk, String firstName, String lastName, String phone, String email, Date dateOfBirth,
-			int annualIncome, String SSN, double rent, int numChildren, Date movInDate, EContact contact1,
-				  EContact contact2) {
-		this(id,fk,firstName,lastName,phone,email,dateOfBirth,annualIncome,SSN,rent,numChildren,movInDate,
-				new Spouse(DUMMY_TABLE), contact1, contact2);
-	}
+	public Tenant(int id, int fk, String firstName, String lastName, String phone, String email, LocalDate dateOfBirth,
+				  int annualIncome, String SSN, int numChildren, LocalDate movInDate,
+				  PersonalContact contact1, PersonalContact contact2, Account initialAccount, Lease initialLease) {
+		super(id, fk, firstName,lastName,phone,email,SSN,dateOfBirth,annualIncome,numChildren, contact1,contact2);
+		this.movInDate = new SimpleObjectProperty<>(movInDate);
+		super.setAccepted(true);
+		movOutDate = new SimpleObjectProperty<>(LocalDate.MIN);
+		slatedForEviction = new SimpleBooleanProperty(false);
+		evictReason = new SimpleStringProperty();
+		addressMoved = new SimpleStringProperty();
+		securitySent = new SimpleBooleanProperty(false);
 
-	// Constructor w/ Spouse
-	/**
-	 * Creates a Tenant object w/o a spouse
-	 * @param id Primary Key of Tenant
-	 * @param fk Foreign Key to Apartment
-	 * @param firstName Tenant's first name
-	 * @param lastName Tenant's last name
-	 * @param phone Tenant's phone #
-	 * @param email Tenant's email
-	 * @param dateOfBirth Tenant's date of birth
-	 * @param annualIncome Tenant's annnual income
-	 * @param SSN Tenants's ID #
-	 * @param rent Tenants's monthly rent
-	 * @param numChildren Tenant's # of children
-	 * @param movInDate Tenant's move in date
-	 * @param spouse Tenant's Spouse
-	 * */
-	public Tenant(int id, int fk, String firstName, String lastName, String phone, String email, Date dateOfBirth,
-				  int annualIncome, String SSN, double rent, int numChildren, Date movInDate, Spouse spouse,
-				  EContact contact1, EContact contact2) {
-		super(id, fk);
-		image = new Image("com/graham/apartmate/ui/res/Tenantimg_small.png");
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.phone = phone;
-		this.email = email;
-		this.dateOfBirth = dateOfBirth;
-		this.annualIncome = annualIncome;
-		this.SSN = SSN;
-		this.rent = rent;
-		this.numChildren = numChildren;
-		this.movInDate = movInDate;
-		movOutDate = Heck.MIN_DATE;
-		slatedForEviction = false;
-		evictReason = "";
+		this.lease = initialLease;
+		this.account = initialAccount;
 
-		this.spouse = spouse;
-		this.contact1 = contact1;
-		this.contact2 = contact2;
-		invoices = new ArrayList<>();
-		inspections = new ArrayList<>();
 	}
 	//------------------------------------------------------------
 	//------------------------------------------------------------
 
-	// ToString method; prints full name (last then first)
+	//------------------------------------------------------------
+	//Overrided & Utility Methods/////////////////////////////////
+	//------------------------------------------------------------
 	/**
 	 * Overrided toString() method:
 	 * <p>
@@ -254,7 +164,7 @@ public class Tenant extends Table {
 	 * */
 	@Override
 	public String toString() {
-		return String.format("Tenant %d: %s, %s", super.getId(), lastName, firstName);
+		return String.format("Tenant %d: %s, %s", super.getId(), super.getLastName(), super.getFirstName());
 	}
 
 	/***/
@@ -270,242 +180,23 @@ public class Tenant extends Table {
 	}
 
 	/***/
-	@Override
-	public Image getImage() {
-		return image;
+	public double getMonthlyRent() {
+		return lease.getRent();
 	}
+	//------------------------------------------------------------
+	//------------------------------------------------------------
 
-	/**
-	 * Gives the full name of the Tenant
-	 * @return first name last name
-	 * */
-	public String getFullName() {
-		return firstName + " " + lastName;
-	}
-
-	/**
-	 * Gives the full name of the Tenant; last first: first last
-	 * @return last name, first name
-	 * */
-	public String getProperName() {
-		return lastName + ", " + firstName;
-	}
-
-	/***/
-	public boolean invalidName() {
-		return firstName.equals("") || lastName.equals("");
-	}
-
-	/**
-	 * Returns whether or not a Tenant has a Spouse
-	 * @return <code>true</code> if Tenant has a Spouse <code>false</code> if not
-	 * */
-	public boolean hasSpouse() {
-		return !spouse.isDummy();
-	}
-
-	/**
-	 * Removes Tenant's Spouse
-	 * */
-	public void removeSpouse() {
-		spouse = new Spouse(DUMMY_TABLE);
-	}
 	//------------------------------------------------------------
 	// General getters and setters////////////////////////////////
 	//------------------------------------------------------------
-	/***/
-	public void setImage(Image image) {
-		this.image = image;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets first name of Tenant
-	 * @return first name
-	 * */
-	public String getFirstName() {
-		return firstName;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Tenant's first name
-	 * @param firstName New first name
-	 * */
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets last name of Tenant
-	 * @return last name
-	 * */
-	public String getLastName() {
-		return lastName;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets last name of Tenant
-	 * @param lastName New last name
-	 * */
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets Tenant's phone #
-	 * @return phone #
-	 * */
-	public String getPhone() {
-		return phone;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Tenant's phone #
-	 * @param phone New phone #
-	 * */
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets Tenant's Email
-	 * @return email
-	 * */
-	public String getEmail() {
-		return email;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Tenant's email
-	 * @param email New email
-	 * */
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets Tenant's date of birth
-	 * @return Date of birth
-	 * */
-	public Date getDateOfBirth() {
-		return dateOfBirth;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Tenant's date of birth
-	 * @param dateOfBirth New date of birth
-	 * */
-	public void setDateOfBirth(Date dateOfBirth) {
-		this.dateOfBirth = dateOfBirth;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets Tenant's annual income
-	 * @return annual income
-	 * */
-	public int getAnnualIncome() {
-		return annualIncome;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Tenant's annual income
-	 * @param annualIncome New annual income
-	 * */
-	public void setAnnualIncome(int annualIncome) {
-		this.annualIncome = annualIncome;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets Tenant's ID #
-	 * @return SSN
-	 * */
-	public String getSSN() {
-		return SSN;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Tenant's ID #
-	 * @param sSN New idn
-	 * */
-	public void setSSN(String sSN) {
-		SSN = sSN;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets Tenant's monthly rent
-	 * @return rent
-	 * */
-	public double getRent() {
-		return rent;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Tenant's monthly rent payment
-	 * @param rent New rent amount
-	 * */
-	public void setRent(double rent) {
-		this.rent = rent;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets Tenant's # of children
-	 * @return # of children
-	 * */
-	public int getNumChildren() {
-		return numChildren;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Tenant's # of children
-	 * @param numChildren New # of children
-	 * */
-	public void setNumChildren(int numChildren) {
-		this.numChildren = numChildren;
-	}
-
 	/**
 	 * Getter:
 	 * <p>
 	 * Gets Tenant's move in date
 	 * @return move in date
 	 * */
-	public Date getMovInDate() {
-		return movInDate;
+	public LocalDate getMovInDate() {
+		return movInDate.get();
 	}
 
 	/**
@@ -514,8 +205,44 @@ public class Tenant extends Table {
 	 * Sets Tenant's move in date
 	 * @param movInDate New move in date
 	 * */
-	public void setMovInDate(Date movInDate) {
-		this.movInDate = movInDate;
+	public void setMovInDate(LocalDate movInDate) {
+		this.movInDate.set(movInDate);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets move in date field property
+	 * @return move in date property
+	 * */
+	public SimpleObjectProperty<LocalDate> movInDateProperty() {
+		return movInDate;
+	}
+
+	/**
+	 * Getter:
+	 * Gets whether or not the security deposit was sent
+	 * */
+	public boolean isSecuritySent() {
+		return securitySent.get();
+	}
+
+	/**
+	 * Getter:
+	 * Gets the security deposit sent field property
+	 * @return security sent property
+	 * */
+	public SimpleBooleanProperty securitySentProperty() {
+		return securitySent;
+	}
+
+	/**
+	 * Setter:
+	 * Sets whether or not the Tenant's security deposit was sent
+	 * @param securitySent new state of security deposit sent
+	 * */
+	public void setSecuritySent(boolean securitySent) {
+		this.securitySent.set(securitySent);
 	}
 
 	/**
@@ -524,8 +251,8 @@ public class Tenant extends Table {
 	 * Gets Tenant's move out date
 	 * @return move out date
 	 * */
-	public Date getMovOutDate() {
-		return movOutDate;
+	public LocalDate getMovOutDate() {
+		return movOutDate.get();
 	}
 
 	/**
@@ -534,8 +261,18 @@ public class Tenant extends Table {
 	 * Sets Tenant's move out date
 	 * @param movOutDate New move out date
 	 * */
-	public void setMovOutDate(Date movOutDate) {
-		this.movOutDate = movOutDate;
+	public void setMovOutDate(LocalDate movOutDate) {
+		this.movOutDate.set(movOutDate);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets move out date field property
+	 * @return move out date property
+	 * */
+	public SimpleObjectProperty<LocalDate> movOutDateProperty() {
+		return movOutDate;
 	}
 
 	/**
@@ -545,7 +282,7 @@ public class Tenant extends Table {
 	 * @return annual income
 	 * */
 	public boolean isEvicted() {
-		return slatedForEviction;
+		return slatedForEviction.get();
 	}
 
 	/**
@@ -555,7 +292,17 @@ public class Tenant extends Table {
 	 * @param isEvicted New value
 	 * */
 	public void setEvicted(boolean isEvicted) {
-		this.slatedForEviction = isEvicted;
+		this.slatedForEviction.set(isEvicted);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets slated for eviction field property
+	 * @return slated for eviction property
+	 * */
+	public SimpleBooleanProperty evictionProperty() {
+		return slatedForEviction;
 	}
 
 	/**
@@ -565,7 +312,7 @@ public class Tenant extends Table {
 	 * @return eviction reason
 	 * */
 	public String getEvictReason() {
-		return evictReason;
+		return evictReason.get();
 	}
 
 	/**
@@ -575,63 +322,47 @@ public class Tenant extends Table {
 	 * @param evictReason New text
 	 * */
 	public void setEvictReason(String evictReason) {
-		this.evictReason = evictReason;
+		this.evictReason.set(evictReason);
 	}
 
 	/**
 	 * Getter:
 	 * <p>
-	 * Gets Tenant's Spouse (if any)
-	 * @return spouse
+	 * Gets eviction reason field property
+	 * @return eviction reason property
 	 * */
-	public Spouse getSpouse() {
-		return spouse;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Tenant's Spouse object
-	 * @param spouse New Spouse
-	 * */
-	public void setSpouse(Spouse spouse) {
-		this.spouse = spouse;
+	public SimpleStringProperty evictReasonProperty() {
+		return evictReason;
 	}
 
 	/**
 	 * Getter:
 	 * <p>
-	 * Gets Tenant's first Emergency Contact
+	 * Gets the address the Tenant moved to for security deposit mailing
+	 * @return address moved to
 	 * */
-	public EContact getContact1() {
-		return contact1;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Tenant's first Emergency Contact
-	 * */
-	public void setContact1(EContact contact1) {
-		this.contact1 = contact1;
+	public String getAddressMoved() {
+		return addressMoved.get();
 	}
 
 	/**
 	 * Getter:
 	 * <p>
-	 * Gets Tenant's second Emergency Contact
+	 * Gets the address moved field property
+	 * @return address moved property
 	 * */
-	public EContact getContact2() {
-		return contact2;
+	public SimpleStringProperty addressMovedProperty() {
+		return addressMoved;
 	}
 
 	/**
 	 * Setter:
 	 * <p>
-	 * Sets Tenant's second Emergency Contact
+	 * Sets the address the Tenant moved to for security deposit mailing
+	 * @param addressMoved the address the Tenant has moved to
 	 * */
-	public void setContact2(EContact contact2) {
-		this.contact2 = contact2;
+	public void setAddressMoved(String addressMoved) {
+		this.addressMoved.set(addressMoved);
 	}
 
 	/**
@@ -640,40 +371,19 @@ public class Tenant extends Table {
 	 * Gets Tenant's Invoice list
 	 * @return invoice list
 	 * */
-	public List<Invoice> getInvoices() {
-		return invoices;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Tenant's Invoice list
-	 * @param invoices New Invoice list
-	 * */
-	public void setInvoices(List<Invoice> invoices) {
-		this.invoices = invoices;
+	public Account getAccount() {
+		return account;
 	}
 
 	/**
 	 * Getter:
 	 * <p>
-	 * Gets list of Inspections related to a Tenant
-	 * @return inspections
+	 * Gets the Tenant's current lease
+	 * @return lease
 	 * */
-	public List<NoteLog> getInspections() {
-		return inspections;
+	public Lease getLease() {
+		return lease;
 	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Tenant's Inspection list
-	 * @param inspections New Inspection list
-	 * */
-	public void setInspections(List<NoteLog> inspections) {
-		this.inspections = inspections;
-	}
-
 	//------------------------------------------------------------
 	//------------------------------------------------------------
 }

@@ -25,12 +25,6 @@ public enum DBTables {
     CONTRACTORS,
 
     /**
-     * Insurance Table pointer
-     * Here for Invoices
-     * */
-    INSURANCES,
-
-    /**
      * Bill Table pointer
      * Also used for Invoices
      * */
@@ -46,8 +40,26 @@ public enum DBTables {
      * */
     ISSUES,
 
+    /***/
+    ROOMMATE,
+
+    /***/
+    PERSONALCONTACT,
+
+    /***/
+    ACCOUNT,
+
+    /***/
+    LEASE,
+
+    /***/
+    ROOM,
+
+    /***/
+    TRANSACTION,
+
     /**
      * Invalid Table pointer
      * */
-    NONE
+    INVALID
 }

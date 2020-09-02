@@ -1,10 +1,10 @@
 package com.graham.apartmate.database.dbMirror;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
+import java.util.Map;
 
 import com.graham.apartmate.database.tables.subTables.*;
 import com.graham.apartmate.database.tables.mainTables.*;
@@ -13,8 +13,8 @@ import com.graham.apartmate.database.utilities.saving.LocalDBSaving;
 import com.graham.apartmate.database.utilities.saving.SQLBridge;
 import com.graham.apartmate.main.Main;
 
-import javax.xml.stream.events.StartDocument;
-
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  * Contains Lists of all tables and subTables (through their respective table)
@@ -39,6 +39,9 @@ public final class Database {
 	 * */
 	private static final Database INSTANCE = new Database();
 
+	//------------------------------------------------------------------
+	//Database status flags/////////////////////////////////////////////
+	//------------------------------------------------------------------
 	/**
 	 * Contains whether or not a connection to previous data was made
 	 * */
@@ -59,13 +62,14 @@ public final class Database {
 	 * Default: Ascending, By Id
 	 * */
 	private final int[] currentOrder = { 0, 2 };
+	//------------------------------------------------------------------
 
 	// Utility objects
 	// Saving utilities
 	/**
 	 * Contains and manages server connections, querying, and loading
 	 * */
-	public final SQLBridge sqlBridge;
+	private final SQLBridge sqlBridge;
 
 	/**
 	 * Manages reading/writing to/of files locally stored on the computer
@@ -82,22 +86,22 @@ public final class Database {
 	/**
 	 * List of all Apartments
 	 * */
-	private List<Apartment> apartments;
+	private ObservableList<Apartment> apartments;
 
 	/**
 	 * List of all Tenants
 	 * */
-	private List<Tenant> tenants;
+	private ObservableList<Tenant> tenants;
 
 	/**
 	 * List of all Candidates
 	 * */
-	private List<Candidate> candidates;
+	private ObservableList<Candidate> candidates;
 
 	/**
 	 * List of all Contractors
 	 * */
-	private List<Contractor> contractors;
+	private ObservableList<Contractor> contractors;
 
 	// Table pointers
 	/***/
@@ -106,35 +110,15 @@ public final class Database {
 	/***/
 	private Table previousTable;
 
+	//Ledger
 	/**
-	 * Holds the currently selected Apartment
+	 * Database general ledger
+	 * <p>
+	 * contains all modified Tables and their modifications (added, edited, deleted)
+	 * </p>
+	 * Utilized if auto-save is disabled (tbi) or if program odes not have access to online components
 	 * */
-	private static Apartment currApt;
-
-	/**
-	 * Holds the currently selected Tenant
-	 * */
-	private static Tenant currTnant;
-
-	/**
-	 * Holds the currently selected Candidate
-	 * */
-	private static Candidate currCand;
-
-	/**
-	 * Holds the currently selected Contractor
-	 * */
-	private static Contractor currCont;
-
-	/**
-	 * Holds the currently selected Insurance
-	 * */
-	private static Insurance currIns;
-
-	/**
-	 * Holds the currently selected Bill
-	 * */
-	private static Bill currBill;
+	private Map<Table, String> ledger;
 
 	/**
 	 * Specifies the current Table type
@@ -147,10 +131,10 @@ public final class Database {
 	 * No other instances should exist
 	 * */
 	private Database() {
-		apartments = new ArrayList<>();
-		tenants = new ArrayList<>();
-		candidates = new ArrayList<>();
-		contractors = new ArrayList<>();
+		apartments = FXCollections.observableArrayList();
+		tenants = FXCollections.observableArrayList();
+		candidates = FXCollections.observableArrayList();
+		contractors = FXCollections.observableArrayList();
 
 		sqlBridge = new SQLBridge();
 		localSave = new LocalDBSaving();
@@ -198,7 +182,7 @@ public final class Database {
 	 * @return <code>true</code> if load was successful; <code>false</code> if not
 	 * */
 	public boolean open() {
-		if (sqlBridge.connect()) {	// Attempt to connect to Database
+		if (false) {	// Attempt to connect to Database; restore to sqlBridge.connect() later
 			// populate tables using query
 			onlineLoad();
 
@@ -210,7 +194,7 @@ public final class Database {
 				debug();
 
 			return true;
-		} else if (localSave.createDir()) {	//Attempt to load from local files
+		} else if (false) {	//Attempt to load from local files; restore to localSave.createDir() later
 			// populate tables using local save
 			offlineLoad();
 
@@ -269,10 +253,10 @@ public final class Database {
 	 * */
 	public boolean forceLoad(boolean retry) {
 		//Clone current lists
-		List<Apartment> cloneA = new ArrayList<>(apartments);
-		List<Tenant> cloneT = new ArrayList<>(tenants);
-		List<Candidate> cloneCa = new ArrayList<>(candidates);
-		List<Contractor> cloneCo = new ArrayList<>(contractors);
+		ObservableList<Apartment> cloneA = FXCollections.observableArrayList(apartments);
+		ObservableList<Tenant> cloneT = FXCollections.observableArrayList(tenants);
+		ObservableList<Candidate> cloneCa = FXCollections.observableArrayList(candidates);
+		ObservableList<Contractor> cloneCo = FXCollections.observableArrayList(contractors);
 
 		if (retry) {
 			//Load
@@ -294,8 +278,6 @@ public final class Database {
 		}
 	}
 
-
-
 	/**
 	 * Saves lists and closes server connection
 	 * */
@@ -307,6 +289,24 @@ public final class Database {
 				sqlBridge.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void updateOnlineDatabase() {
+		for (Table table : ledger.keySet()) {
+			switch (ledger.get(table)){
+				case "Added":
+					sqlBridge.insert(table);
+					break;
+				case "Deleted":
+					sqlBridge.delete(table);
+					break;
+				case "Edited":
+					sqlBridge.update(table);
+					break;
+				default:
+					//Ummmmm???
 			}
 		}
 	}
@@ -333,17 +333,101 @@ public final class Database {
 				case CONTRACTORS:
 					id = contractors.get(contractors.size() - 1).getId();
 					return id;
-				case INSURANCES:
-					id = currApt.getInsurances().get(currApt.getInsurances().size() - 1).getId();
-					return id;
 				case BILLS:
-					id = currApt.getBills().get(currApt.getBills().size() - 1).getId();
-					return id;
-				case INSPECTIONS:
-					id = currTnant.getInspections().get(currTnant.getInspections().size() - 1).getId();
+					for (Apartment apartment : apartments) {
+						for (Bill bill : apartment.getBills()) {
+							if (bill.getId() > id) {
+								id = bill.getId();
+							}
+						}
+					}
 					return id;
 				case ISSUES:
-					id = currApt.getIssues().get(currApt.getIssues().size() - 1).getId();
+					for (Apartment apartment : apartments) {
+						for (NoteLog issue : apartment.getIssues()) {
+							if (issue.getId() > id) {
+								id = issue.getId();
+							}
+						}
+					}
+					return id;
+				case INSPECTIONS:
+					for (Apartment apartment : apartments) {
+						for (Room room : apartment.getRooms()) {
+							for (NoteLog inspection : room.getInspections()) {
+								if (inspection.getId() > id) {
+									id = inspection.getId();
+								}
+							}
+						}
+					}
+					return id;
+				case ROOMMATE:
+					for (Tenant tenant : tenants) {
+						for (RoomMate roomMate : tenant.getRoomMates()) {
+							if (roomMate.getId() > id) {
+								id = roomMate.getId();
+							}
+						}
+
+					}
+
+					for (Candidate candidate : candidates) {
+						for (RoomMate roomMate : candidate.getRoomMates()) {
+							if (roomMate.getId() > id) {
+								id = roomMate.getId();
+							}
+						}
+
+					}
+					return id;
+				case ACCOUNT:
+					for (Tenant tenant : tenants) {
+						if (tenant.getAccount().getId() > id) {
+							id = tenant.getAccount().getId();
+						}
+					}
+
+					for (Contractor contractor : contractors) {
+						if (contractor.getAccount().getId() > id) {
+							id = contractor.getAccount().getId();
+						}
+					}
+
+					for (Apartment apartment : apartments) {
+						for (Bill bill : apartment.getBills()) {
+							if (bill.getAccount().getId() > id) {
+								id = bill.getAccount().getId();
+							}
+						}
+					}
+					return id;
+				case PERSONALCONTACT:
+					for (Tenant tenant : tenants) {
+						if (tenant.getContact1().getId() > id) {
+							id = tenant.getContact1().getId();
+						}
+
+						if (tenant.getContact2().getId() > id) {
+							id = tenant.getContact2().getId();
+						}
+					}
+
+					for (Candidate candidate : candidates) {
+						if (candidate.getContact1().getId() > id) {
+							id = candidate.getContact1().getId();
+						}
+
+						if (candidate.getContact2().getId() > id) {
+							id = candidate.getContact2().getId();
+						}
+					}
+
+					for (Contractor contractor : contractors) {
+						if (contractor.getContact().getId() > id) {
+							id = contractor.getContact().getId();
+						}
+					}
 					return id;
 				default:
 					id = -1;
@@ -356,7 +440,6 @@ public final class Database {
 			return id;
 		}
 	}
-
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
 	// find methods
@@ -425,15 +508,34 @@ public final class Database {
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
 	/**
+	 * Generic add method for main tables
+	 * */
+	public boolean add(Table instance) {
+		switch (instance.getTableType()) {
+			case APARTMENTS:
+				return add((Apartment) instance);
+			case TENANTS:
+				return add((Tenant) instance);
+			case CANDIDATES:
+				return add((Candidate) instance);
+			case CONTRACTORS:
+				return add((Contractor) instance);
+			default:
+				return false;
+		}
+	}
+
+	/**
 	 * Adds an Apartment to the Database
 	 * @param apartment Apartment to be added
 	 * */
-	public void add(Apartment apartment) {
-		apartments.add(apartment);
+	public boolean add(Apartment apartment) {
+		boolean added = apartments.add(apartment);
 		Collections.sort(apartments);
 
-		if (online)
-			sqlBridge.insert(apartment);
+		//Insert online method here
+
+		return added;
 	}
 
 	/**
@@ -444,17 +546,10 @@ public final class Database {
 	public boolean add(Tenant tenant) {
 		for (Apartment apartment : apartments) {
 			if (apartment.getId() == tenant.getFk()) {
-				Invoice initialDue = new Invoice();
-				initialDue.setFk(tenant.getId());
-
 				tenants.add(tenant);
-				add(initialDue, DBTables.TENANTS);
-
-				apartment.setNumTenants(apartment.getNumTenants() + 1);
 				Collections.sort(tenants);
 
-				if (online)
-					sqlBridge.insert(tenant);
+				//Insert online method here
 
 				return true;
 			}
@@ -475,8 +570,7 @@ public final class Database {
 				candidates.add(candidate);
 				Collections.sort(candidates);
 
-				if (online)
-					sqlBridge.insert(candidate);
+				//Insert online method here
 
 				return true;
 			}
@@ -493,16 +587,11 @@ public final class Database {
 	public boolean add(Contractor contractor) {
 		for (Apartment apartment : apartments) {
 			if (apartment.getId() == contractor.getFk()) {
-				Invoice initialDue = new Invoice();
-				initialDue.setFk(contractor.getId());
-
 				contractors.add(contractor);
-				add(initialDue, DBTables.CONTRACTORS);
 
 				Collections.sort(contractors);
 
-				if (online)
-					sqlBridge.insert(contractor);
+				//Insert online method here
 
 				return true;
 			}
@@ -521,17 +610,17 @@ public final class Database {
 	public boolean add(NoteLog issInsp, DBTables table) {
 		switch (table) {
 			case INSPECTIONS:
-				for (Tenant tenant : tenants) {
-					if (tenant.getId() == issInsp.getFk()) {
-						tenant.getInspections().add(issInsp);
-						Collections.sort(tenant.getInspections());
+				for (Apartment apartment : apartments) {
+					for (Room room : apartment.getRooms()) {
+						if (room.getId() == issInsp.getFk()) {
+							room.getInspections().add(issInsp);
+							Collections.sort(room.getInspections());
 
-						if (online)
-							sqlBridge.insert(issInsp,table);
+							//Insert online method here
 
-						return true;
+							return true;
+						}
 					}
-					// Respective apartment not found; cycle
 				}
 				break;
 			case ISSUES:
@@ -540,8 +629,7 @@ public final class Database {
 						apartment.getIssues().add(issInsp);
 						Collections.sort(apartment.getIssues());
 
-						if (online)
-							sqlBridge.insert(issInsp,table);
+						//Insert online method here
 
 						return true;
 					}
@@ -549,35 +637,9 @@ public final class Database {
 				}
 				break;
 			default:
-				break;
+				//Error catch here?
 		}
-		return false;
-	}
 
-	/**
-	 * Adds a Insurance to the Database
-	 * @param insurance Insurance to be added
-	 * @return <code>true</code> if Insurance was added, <code>false</code> otherwise
-	 * */
-	public boolean add(Insurance insurance) {
-		for (Apartment apartment : apartments) {
-			if (apartment.getId() == insurance.getFk()) { // Find respective apartment
-				Invoice initialDue = new Invoice();
-				initialDue.setFk(insurance.getId());
-
-				apartment.getInsurances().add(insurance);
-				add(initialDue, DBTables.INSURANCES);
-
-
-				Collections.sort(apartment.getInsurances());
-
-				if (online)
-					sqlBridge.insert(insurance);
-
-				return true;
-			}
-			// Respective apartment not found; cycle
-		}
 		return false;
 	}
 
@@ -589,16 +651,11 @@ public final class Database {
 	public boolean add(Bill bill) {
 		for (Apartment apartment : apartments) {
 			if (apartment.getId() == bill.getFk()) { // Find respective apartment
-				Invoice initialDue = new Invoice();
-				initialDue.setFk(bill.getId());
-
 				apartment.getBills().add(bill);
-				add(initialDue, DBTables.BILLS);
 
-				Collections.sort(apartment.getInsurances());
+				Collections.sort(apartment.getBills());
 
-				if (online)
-					sqlBridge.insert(bill);
+				//Insert online method here
 
 				return true;
 			}
@@ -607,126 +664,159 @@ public final class Database {
 		return false;
 	}
 
+	//TODO: Add method for adding Account payment, dues, and credits
+
+	//TODO: Add method for adding Personal Contact
+
 	/**
 	 * Adds a Spouse to the Database; uses table constants to select whether the added
 	 * spouse goes to a particular tenant or candidate
-	 * @param spouse The Spouse to add to the Database
+	 * @param roomMate The Spouse to add to the Database
 	 * @param table Table the Spouse is related to (Valid tables: Tenants & Candidates)
 	 * @return <code>true</code> if the spouse was added, <code>false</code> otherwise
 	 * */
-	public boolean add(Spouse spouse, DBTables table) {
+	public boolean add(RoomMate roomMate, DBTables table) {
 		switch (table) {
 		case TENANTS:
 			for (Tenant tenant : tenants) {
-				if ((tenant.getId() == spouse.getFk()) && tenant.getSpouse() == null) {
-					tenant.setSpouse(spouse);
+				if ((tenant.getId() == roomMate.getFk()) && tenant.getRoomMates() == null) {
+					tenant.addRoomMate(roomMate);
 
-					if (online)
-						sqlBridge.insert(spouse, DBTables.TENANTS);
+					//Insert online method here
+
 					return true;
 				}
 			}
-			return false;
+			break;
 		case CANDIDATES:
 			for (Candidate candidate : candidates) {
-				if ((candidate.getId() == spouse.getFk2()) && candidate.getSpouse() == null) {
-					candidate.setSpouse(spouse);
+				if ((candidate.getId() == roomMate.getFk2()) && candidate.getRoomMates() == null) {
+					candidate.addRoomMate(roomMate);
 
-					if (online)
-						sqlBridge.insert(spouse, DBTables.CANDIDATES);
+					//Insert online method here
 
 					return true;
 				}
 			}
-			return false;
+			break;
 		default:
 			System.out.println("Invalid table operand");
-			return false;
 		}
+
+		return false;
 	}
 
-	/**
-	 * Adds an Invoice to the Database; uses table constants to select whether the added
-	 * Invoice goes to a particular Tenant or Candidate
-	 * @param invoice The Invoice to add to the Database
-	 * @param table Table the Spouse is related to (Valid tables: Tenants, Contractors, Insurances, & Bills)
-	 * @return <code>true</code> if the spouse was added, <code>false</code> otherwise
-	 * */
-	public boolean add(Invoice invoice, DBTables table) {
-		switch (table) {
+	public boolean add(Room room) {
+		for (Apartment apartment : apartments) {
+			if (apartment.getId() == room.getFk()) {
+				return apartment.addRoom(room);
+			}
+		}
+
+		return false;
+	}
+
+	public boolean add(Lease lease) {
+		for (Tenant tenant : tenants) {
+			if (tenant.getId() == lease.getFk()) {
+				tenant.getLease().renew(lease);
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public boolean add(TransactionLog log, DBTables parent, boolean credit) {
+		switch (parent) {
 			case TENANTS:
 				for (Tenant tenant : tenants) {
-					if (tenant.getId() == invoice.getFk()) {
-						invoice.setDues(tenant.getRent());
-						tenant.getInvoices().add(invoice);
-						events.updateTotals(tenant.getInvoices());
-						Collections.sort(tenant.getInvoices());
-
-						if (online)
-							sqlBridge.insert(invoice, table);
-
-						return true;
+					if (tenant.getId() == log.getFk()) {
+						if (credit) {
+							return tenant.getAccount().addCreditFine(log);
+						} else {
+							return tenant.getAccount().addTransaction(log);
+						}
 					}
 				}
-				//Related Tenant not found; returning false
-				return false;
+				break;
 			case CONTRACTORS:
 				for (Contractor contractor : contractors) {
-					if (contractor.getId() == invoice.getFk()) {
-						invoice.setDues(contractor.getBill());
-						contractor.getInvoices().add(invoice);
-						events.updateTotals(contractor.getInvoices());
-						Collections.sort(contractor.getInvoices());
-
-						if (online)
-							sqlBridge.insert(invoice, table);
-
-						return true;
+					if (contractor.getId() == log.getFk()) {
+						if (credit) {
+							return contractor.getAccount().addCreditFine(log);
+						} else {
+							return contractor.getAccount().addTransaction(log);
+						}
 					}
 				}
-				//Related Contractor not found; returning false
-				return false;
+				break;
 			case BILLS:
 				for (Apartment apartment : apartments) {
 					for (Bill bill : apartment.getBills()) {
-						if (bill.getId() == invoice.getFk()) {
-							invoice.setDues(bill.getBill());
-							bill.getInvoices().add(invoice);
-							events.updateTotals(bill.getInvoices());
-							Collections.sort(bill.getInvoices());
-
-							if (online)
-								sqlBridge.insert(invoice, table);
-
-							return true;
+						if (bill.getId() == log.getFk()) {
+							if (credit) {
+								return bill.getAccount().addCreditFine(log);
+							} else {
+								return bill.getAccount().addTransaction(log);
+							}
 						}
 					}
 				}
-				//Related Bill not found; returning false
-				return false;
-			case INSURANCES:
-				for (Apartment apartment : apartments) {
-					for (Insurance insurance : apartment.getInsurances()) {
-						if (insurance.getId() == invoice.getFk()) {
-							invoice.setDues(insurance.getBill());
-							insurance.getInvoices().add(invoice);
-							events.updateTotals(insurance.getInvoices());
-							Collections.sort(insurance.getInvoices());
-
-							if (online)
-								sqlBridge.insert(invoice, table);
-
-							return true;
-						}
-					}
-				}
-				//Related insurance not found; returning false
-				return false;
+				break;
 			default:
 				if (Main.DEBUG)
-					System.out.println("Invalid Table operand");
-				return false;
+					System.out.println("invalid Table operand");
 		}
+
+		return false;
+	}
+
+	public boolean add(PersonalContact contact, DBTables parent) {
+		switch (parent) {
+			case TENANTS:
+				for (Tenant tenant : tenants) {
+					if (tenant.getId() == contact.getFk()) {
+						if (tenant.getContact1() == null) {
+							tenant.setContact1(contact);
+							return true;
+						} else if (tenant.getContact2() == null) {
+							tenant.setContact2(contact);
+							return true;
+						}
+					}
+				}
+				break;
+			case CANDIDATES:
+				for (Candidate candidate : candidates) {
+					if (candidate.getId() == contact.getFk()) {
+						if (candidate.getContact1() == null) {
+							candidate.setContact1(contact);
+							return true;
+						} else if (candidate.getContact2() == null) {
+							candidate.setContact2(contact);
+							return true;
+						}
+					}
+				}
+				break;
+			case CONTRACTORS:
+				for (Contractor contractor : contractors) {
+					if (contractor.getId() == contact.getFk()) {
+						if (contractor.getContact() == null) {
+							contractor.setContact(contact);
+							return true;
+						}
+					}
+				}
+				break;
+			default:
+				if (Main.DEBUG)
+					System.out.println("invalid Table operand");
+		}
+
+		return false;
 	}
 
 	// ---------------------------------------------------------------------------------
@@ -734,6 +824,24 @@ public final class Database {
 	// remove methods
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
+	/**
+	 * Generic remove method for main tables
+	 * */
+	public boolean remove(Table instance) {
+		switch (instance.getTableType()) {
+			case APARTMENTS:
+				return remove((Apartment) instance);
+			case TENANTS:
+				return remove((Tenant) instance);
+			case CANDIDATES:
+				return remove((Candidate) instance);
+			case CONTRACTORS:
+				return remove((Contractor) instance);
+			default:
+				return false;
+		}
+	}
+
 	/**
 	 * Removes an Apartment from the Database
 	 * @param apartment Apartment to be removed
@@ -747,8 +855,7 @@ public final class Database {
 				candidates.removeIf(can -> (can.getFk() == apartment.getId()));
 				contractors.removeIf(cont -> (cont.getFk() == apartment.getId()));
 
-				if (online)
-					sqlBridge.delete(apartment);
+				//Insert online method here
 
 				return true;
 			}
@@ -777,15 +884,13 @@ public final class Database {
 	public boolean remove(Tenant tenant) {
 		try {
 			if (tenants.remove(tenant)) {
-				//TODO: Change when room data is added
 				for (Apartment apartment : apartments) {
-					if ((apartment.getId() == tenant.getFk()) && apartment.getNumTenants() != 0) {
-						apartment.decrementNumTenants();
+					for (Room room : apartment.getRooms()) {
+						if (room.getOccupant().equals(tenant)) {
+							//Insert online method here
 
-						if (online)
-							sqlBridge.delete(tenant);
-
-						return true;
+							return room.removeOccupant();
+						}
 					}
 				}
 			}
@@ -813,14 +918,9 @@ public final class Database {
 	 * */
 	public boolean remove(Candidate candidate) {
 		try {
-			if (candidates.remove(candidate)) {
-				if (online)
-					sqlBridge.delete(candidate);
+			//Insert online method here
+			return candidates.remove(candidate);
 
-				return true;
-			}
-
-			return false;
 		} catch (NullPointerException npe) {
 			if (Main.DEBUG)
 				System.out.println("Error in remove method construction");
@@ -843,14 +943,9 @@ public final class Database {
 	 * */
 	public boolean remove(Contractor contractor) {
 		try {
-			if (contractors.remove(contractor)){
-				if (online)
-					sqlBridge.delete(contractor);
+			//Insert online method here
+			return contractors.remove(contractor);
 
-				return true;
-			}
-
-			return false;
 		} catch (NullPointerException npe) {
 			if (Main.DEBUG)
 				System.out.println("Error in remove method construction");
@@ -877,30 +972,30 @@ public final class Database {
 		try {
 			switch (table) {
 				case INSPECTIONS:
-					for (Tenant tenant : tenants) {
-						if (tenant.getInspections().remove(issInsp)) {
+					for (Apartment apartment : apartments) {
+						for (Room room : apartment.getRooms()) {
+							if (room.getInspections().remove(issInsp)) {
+								//Insert online method here
 
-							if (online)
-								sqlBridge.delete(issInsp,table);
-
-							return true;
+								return true;
+							}
 						}
+
 					}
 					break;
 				case ISSUES:
 					for (Apartment apartment : apartments) {
 						if (apartment.getIssues().remove(issInsp)) {
-
-							if (online)
-								sqlBridge.delete(issInsp,table);
+							//Insert online method here
 
 							return true;
 						}
 					}
 					break;
 				default:
-					break;
+					//sout here
 			}
+
 			return false;
 		} catch (NullPointerException npe) {
 			if (Main.DEBUG)
@@ -918,37 +1013,6 @@ public final class Database {
 	}
 
 	/**
-	 * Removes an Insurance from the Database
-	 * @param insurance Insurance to be removed
-	 * @return <code>true</code> if the Insurance was removed <code>false</code> otherwise
-	 * */
-	public boolean remove(Insurance insurance) {
-		try {
-			for (Apartment apartment : apartments) {
-				if (apartment.getInsurances().remove(insurance)) {
-					if (online)
-						sqlBridge.delete(insurance);
-
-					return true;
-				}
-			}
-			return false;
-		} catch (NullPointerException npe) {
-			if (Main.DEBUG)
-				System.out.println("Error in remove method construction");
-
-			npe.printStackTrace();
-			return false;
-		} catch (UnsupportedOperationException uoe) {
-			if (Main.DEBUG)
-				System.out.println("Error removing Insurance");
-
-			uoe.printStackTrace();
-			return false;
-		}
-	}
-
-	/**
 	 * Removes an Bill from the Database
 	 * @param bill Bill to be removed
 	 * @return <code>true</code> if the Bill was removed <code>false</code> otherwise
@@ -957,8 +1021,7 @@ public final class Database {
 		try {
 			for (Apartment apartment : apartments) {
 				if (apartment.getBills().remove(bill)) {
-					if (online)
-						sqlBridge.delete(bill);
+					//Insert online method here
 
 					return true;
 				}
@@ -979,124 +1042,71 @@ public final class Database {
 		}
 	}
 
+	//TODO: Add remove method for Account payments, dues, and credits
+
+	//TODO: Add method for removing Personal Contact
+
 	/**
 	 * Removes an Spouse from the Database
-	 * @param spouse Spouse to be removed
+	 * @param roomMate Spouse to be removed
 	 * @param table Table the Spouse is related to (Valid tables: Tenants & Candidates)
 	 * @return <code>true</code> if the Issue or Inspection was removed <code>false</code> otherwise
 	 * */
-	public boolean remove(Spouse spouse, DBTables table) {
+	public boolean remove(RoomMate roomMate, DBTables table) {
 		switch (table) {
 		case TENANTS:
 			for (Tenant tenant : tenants) {
-				if (tenant.getId() == spouse.getFk()) {
+				if (tenant.getId() == roomMate.getFk()) {
 					tenant.setSpouse(null);
 
-					if (online)
-						sqlBridge.delete(spouse, table);
+					//Insert online method here
 
 					return true;
 				}
 			}
-			return false;
+			break;
 		case CANDIDATES:
 			for (Candidate candidate : candidates) {
-				if (candidate.getId() == spouse.getFk2()) {
+				if (candidate.getId() == roomMate.getFk2()) {
 					candidate.setSpouse(null);
 
-					if (online)
-						sqlBridge.delete(spouse, table);
+					//Insert online method here
 
 					return true;
 				}
 			}
-			return false;
+			break;
 		default:
 			if (Main.DEBUG)
 				System.out.println("Invalid table operand");
 
-			return false;
 		}
+
+		return false;
 	}
-
-	/**
-	 * Removes an Invoice from the Database
-	 * @param invoice Invoice to be removed
-	 * @param table Table the Invoice is related to (Valid tables: Tenants, Contractors, Insurances, & Bills)
-	 * @return <code>true</code> if the Invoice was removed <code>false</code> otherwise
-	 * */
-	public boolean remove(Invoice invoice, DBTables table) {
-		try {
-			switch (table) {
-				case TENANTS:
-					for (Tenant tenant : tenants) {
-						if (tenant.getInvoices().remove(invoice)) {
-							if (online)
-								sqlBridge.delete(invoice, table);
-
-							return true;
-						}
-					}
-					return false;
-				case CONTRACTORS:
-					for (Contractor contractor : contractors) {
-						if (contractor.getInvoices().remove(invoice)) {
-							if (online)
-								sqlBridge.delete(invoice, table);
-
-							return true;
-						}
-					}
-					return false;
-				case BILLS:
-					for (Apartment apartment : apartments) {
-						for (Bill bill : apartment.getBills()) {
-							if (bill.getInvoices().remove(invoice)) {
-								if (online)
-									sqlBridge.delete(invoice, table);
-
-								return true;
-							}
-						}
-					}
-					return false;
-				case INSURANCES:
-					for (Apartment apartment : apartments) {
-						for (Insurance insurance : apartment.getInsurances()) {
-							if (insurance.getInvoices().remove(invoice)) {
-								if (online)
-									sqlBridge.delete(invoice, table);
-
-								return true;
-							}
-						}
-					}
-					return false;
-				default:
-					if (Main.DEBUG)
-						System.out.println("Invalid table operand");
-					return false;
-			}
-		} catch (NullPointerException npe) {
-			if (Main.DEBUG)
-				System.out.println("Error in remove method construction");
-
-			npe.printStackTrace();
-			return false;
-		} catch (UnsupportedOperationException uoe) {
-			if (Main.DEBUG)
-				System.out.println("Error removing Invoice");
-
-			uoe.printStackTrace();
-			return false;
-		}
-	}
-
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
 	// edit methods
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
+	/**
+	 * Generic edit method for main tables
+	 * */
+	public boolean edit(Table instance) {
+		switch (instance.getTableType()) {
+			case APARTMENTS:
+				return edit((Apartment) instance);
+			case TENANTS:
+				return edit((Tenant) instance);
+			case CANDIDATES:
+				return edit((Candidate) instance);
+			case CONTRACTORS:
+				return edit((Contractor) instance);
+			default:
+				return false;
+		}
+	}
+
 	/**
 	 * Edits an Apartment that already exists in the Database
 	 * @param apartment Apartment to edit
@@ -1111,10 +1121,7 @@ public final class Database {
 
 			events.upDateModified(apartment);
 
-			if (online) {
-				sqlBridge.update(apartment);
-				apartment.setEdited(false);
-			}
+			//Insert online method here
 
 			return true;
 		}
@@ -1137,10 +1144,7 @@ public final class Database {
 
 			events.upDateModified(tenant);
 
-			if (online) {
-				sqlBridge.update(tenant);
-				tenant.setEdited(false);
-			}
+			//Insert online method here
 
 			return true;
 		}
@@ -1162,10 +1166,7 @@ public final class Database {
 
 			events.upDateModified(candidate);
 
-			if (online) {
-				sqlBridge.update(candidate);
-				candidate.setEdited(false);
-			}
+			//Insert online method here
 
 			return true;
 		}
@@ -1187,10 +1188,7 @@ public final class Database {
 
 			events.upDateModified(contractor);
 
-			if (online) {
-				sqlBridge.update(contractor);
-				contractor.setEdited(false);
-			}
+			//Insert online method here
 
 			return true;
 		}
@@ -1200,45 +1198,44 @@ public final class Database {
 
 	/**
 	 * Edits Spouse details that already exists in the Database
-	 * @param spouse Spouse to edit
+	 * @param roomMate Spouse to edit
 	 * @param table Selects the related Table (Valid Tables: Tenants & Candidates)
 	 * @return <code>true</code> if Spouse exists and changes are made, <code>false</code> if not
 	 * */
-	public boolean edit(Spouse spouse, DBTables table) {
+	public boolean edit(RoomMate roomMate, DBTables table) {
 		switch (table){
 			case TENANTS:
 				for (Tenant tnant : tenants) {
-					if (tnant.getSpouse().equals(spouse)) {
-						spouse.setEdited(true);
-						tnant.setSpouse(spouse);
+					if (tnant.getRoomMates().equals(roomMate)) {
+						roomMate.setEdited(true);
+						tnant.removeRoomMate(roomMate);
 
-						if (online) {
-							sqlBridge.update(spouse,table);
-							spouse.setEdited(false);
-						}
+						//Insert online method here
 
 						return true;
 					}
 				}
-				return false;
+				break;
 			case CANDIDATES:
 				for (Candidate cand : candidates) {
-					if (cand.getSpouse().equals(spouse)) {
-						spouse.setEdited(true);
-						cand.setSpouse(spouse);
+					if (cand.getRoomMates().equals(roomMate)) {
+						roomMate.setEdited(true);
+						cand.removeRoomMate(roomMate);
 
 						if (online) {
-							sqlBridge.update(spouse,table);
-							spouse.setEdited(false);
+							sqlBridge.update(roomMate,table);
+							roomMate.setEdited(false);
 						}
 
 						return true;
 					}
 				}
-				return false;
+				break;
 			default:
-				return false;
+				//sout here
 		}
+
+		return false;
 	}
 
 	/**
@@ -1250,22 +1247,22 @@ public final class Database {
 	public boolean edit(NoteLog issInsp, DBTables table) {
 		switch (table) {
 			case INSPECTIONS:
-				for (Tenant tenant : tenants) {
-					int index = tenant.getInspections().indexOf(issInsp);
+				for (Apartment apartment : apartments) {
+					for (Room room : apartment.getRooms()) {
+						int index = room.getInspections().indexOf(issInsp);
 
-					if (index > 0) {
-						issInsp.setEdited(true);
-						tenant.getInspections().set(index,issInsp);
+						if (index > 0) {
+							issInsp.setEdited(true);
+							room.getInspections().set(index,issInsp);
 
-						events.upDateModified(issInsp);
+							events.upDateModified(issInsp);
 
-						if (online) {
-							sqlBridge.update(issInsp,table);
-							issInsp.setEdited(false);
+							//Insert online method here
+
+							return true;
 						}
-
-						return true;
 					}
+
 
 				}
 				break;
@@ -1279,10 +1276,7 @@ public final class Database {
 
 						events.upDateModified(issInsp);
 
-						if (online) {
-							sqlBridge.update(issInsp,table);
-							issInsp.setEdited(false);
-						}
+						//Insert online method here
 
 					return true;
 				}
@@ -1292,34 +1286,6 @@ public final class Database {
 				break;
 		}
 
-
-		return false;
-	}
-
-	/**
-	 * Edits Insurance details that already exists in the Database
-	 * @param insurance Insurance to edit
-	 * @return <code>true</code> if Insurance exists and changes are made, <code>false</code> if not
-	 * */
-	public boolean edit(Insurance insurance) {
-		for (Apartment apartment : apartments) {
-			int index = apartment.getInsurances().indexOf(insurance);
-
-			if (index > 0) {
-				insurance.setEdited(true);
-				apartment.getInsurances().set(index,insurance);
-
-				events.upDateModified(insurance);
-
-				if (online) {
-					sqlBridge.update(insurance);
-					insurance.setEdited(false);
-				}
-
-				return true;
-			}
-
-		}
 
 		return false;
 	}
@@ -1339,10 +1305,7 @@ public final class Database {
 
 				events.upDateModified(bill);
 
-				if (online) {
-					sqlBridge.update(bill);
-					bill.setEdited(false);
-				}
+				//Insert online method here
 
 				return true;
 			}
@@ -1351,85 +1314,9 @@ public final class Database {
 		return false;
 	}
 
-	/**
-	 * Edits Invoice details that already exists in the Database
-	 * @param invoice Invoice to edit
-	 * @param table Table the Invoice is related to (Valid tables: Tenants, Contractors, Insurances, & Bills)
-	 * @return <code>true</code> if Invoice exists and changes are made, <code>false</code> if not
-	 * */
-	public boolean edit(Invoice invoice, DBTables table) {
-		switch (table) {
-			case TENANTS:
-				for (Tenant tenant : tenants) {
-					int index = tenant.getInvoices().indexOf(invoice);
+	//TODO: Add edit method for Account payment, dues, and credits
 
-					if (index > 0) {
-						invoice.setEdited(true);
-						tenant.getInvoices().set(index,invoice);
-
-						updateInvoice(invoice, table);
-
-						return true;
-					}
-				}
-
-				return false;
-			case CONTRACTORS:
-				for (Contractor contractor : contractors) {
-					int index = contractor.getInvoices().indexOf(invoice);
-
-					if (index > 0) {
-						invoice.setEdited(true);
-						contractor.getInvoices().set(index,invoice);
-
-						updateInvoice(invoice, table);
-
-						return true;
-					}
-				}
-
-				return false;
-			case BILLS:
-				for (Apartment apartment : apartments) {
-					for (Bill bill : apartment.getBills()) {
-						int index = bill.getInvoices().indexOf(invoice);
-
-						if (index > 0) {
-							invoice.setEdited(true);
-							bill.getInvoices().set(index, invoice);
-
-							updateInvoice(invoice, table);
-
-							return true;
-						}
-					}
-				}
-
-				return false;
-			case INSURANCES:
-				for (Apartment apartment : apartments) {
-					for (Insurance insurance : apartment.getInsurances()) {
-						int index = insurance.getInvoices().indexOf(invoice);
-
-						if (index > 0) {
-							invoice.setEdited(true);
-							insurance.getInvoices().set(index, invoice);
-
-							updateInvoice(invoice, table);
-
-							return true;
-						}
-					}
-				}
-
-				return false;
-			default:
-				if (Main.DEBUG)
-					System.out.println("Invalid table operand");
-
-				return false;
-		}
-	}
+	//TODO: Add method for editing Personal Contact
 
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
@@ -1470,7 +1357,6 @@ public final class Database {
 				orderByName();
 				break;
 			case ORDER_BY_DATE:
-				orderInvByDueDate();
 				break;
 			default:
 				System.out.println("Invalid constant");
@@ -1497,10 +1383,10 @@ public final class Database {
 	 * Loads Database elements from server
 	 * */
 	private void onlineLoad() {
-		apartments = sqlBridge.queryApartments();
-		tenants = sqlBridge.queryTenants();
-		candidates = sqlBridge.queryCandidates();
-		contractors = sqlBridge.queryContractors();
+		apartments = FXCollections.observableArrayList(sqlBridge.queryApartments());
+		tenants = FXCollections.observableArrayList(sqlBridge.queryTenants());
+		candidates = FXCollections.observableArrayList(sqlBridge.queryCandidates());
+		contractors = FXCollections.observableArrayList(sqlBridge.queryContractors());
 
 		// Extraneous sort, to make sure that all lists are in order
 		orderAscending();
@@ -1510,10 +1396,10 @@ public final class Database {
 	 * Loads Database elements from local files
 	 * */
 	private void offlineLoad() {
-		apartments = localSave.loadApartments();
-		tenants = localSave.loadTenants();
-		candidates = localSave.loadCandidates();
-		contractors = localSave.loadContractors();
+		apartments = FXCollections.observableArrayList(localSave.loadApartments());
+		tenants = FXCollections.observableArrayList(localSave.loadTenants());
+		candidates = FXCollections.observableArrayList(localSave.loadCandidates());
+		contractors = FXCollections.observableArrayList(localSave.loadContractors());
 
 		// Extraneous sort, to make sure that all lists are in order
 		orderAscending();
@@ -1588,18 +1474,6 @@ public final class Database {
 	}
 
 	/**
-	 * Updates the passed Invoice
-	 * */
-	private void updateInvoice(Invoice invoice, DBTables table) {
-		events.upDateModified(invoice);
-
-		if (online) {
-			sqlBridge.update(invoice, table);
-			invoice.setEdited(false);
-		}
-	}
-
-	/**
 	 * Sorts all lists by ascending order
 	 * */
 	private void orderAscending() {
@@ -1608,15 +1482,11 @@ public final class Database {
 		Collections.sort(candidates);
 		Collections.sort(contractors);
 
-		apartments.forEach(a -> Collections.sort(a.getInsurances()));
+		apartments.forEach(a -> Collections.sort(a.getRooms()));
 
 		apartments.forEach(a -> Collections.sort(a.getIssues()));
 
-		tenants.forEach(t -> Collections.sort(t.getInvoices()));
-
-		tenants.forEach(t -> Collections.sort(t.getInspections()));
-
-		contractors.forEach(c -> Collections.sort(c.getInvoices()));
+		apartments.forEach(a -> a.getRooms().forEach(r -> Collections.sort(r.getInspections())));
 	}
 
 	/**
@@ -1628,15 +1498,9 @@ public final class Database {
 		candidates.sort(Collections.reverseOrder());
 		contractors.sort(Collections.reverseOrder());
 
-		apartments.forEach(a -> a.getInsurances().sort(Collections.reverseOrder()));
+		apartments.forEach(a -> a.getRooms().forEach(r -> r.getInspections().sort(Collections.reverseOrder())));
 
 		apartments.forEach(a -> a.getIssues().sort(Collections.reverseOrder()));
-
-		tenants.forEach(t -> t.getInvoices().sort(Collections.reverseOrder()));
-
-		tenants.forEach(t -> t.getInspections().sort(Collections.reverseOrder()));
-
-		contractors.forEach(c -> c.getInvoices().sort(Collections.reverseOrder()));
 	}
 
 	/**
@@ -1695,20 +1559,6 @@ public final class Database {
 	 * */
 	private void orderByDate() {
 		//TODO: Order By Date Method
-	}
-
-	/**
-	 * Orders Invoice lists by Due Date
-	 * */
-	private void orderInvByDueDate() {
-		apartments.forEach(a -> {
-			a.getInsurances().forEach(inv -> inv.getInvoices().sort(Invoice.INVOICE_BY_DATE));
-			a.getBills().forEach(bill -> bill.getInvoices().sort(Invoice.INVOICE_BY_DATE));
-		});
-
-		tenants.forEach(t -> t.getInvoices().sort(Invoice.INVOICE_BY_DATE));
-
-		contractors.forEach(c -> c.getInvoices().sort(Invoice.INVOICE_BY_DATE));
 	}
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
@@ -1817,6 +1667,7 @@ public final class Database {
 	 * Setter:
 	 * <p>
 	 * Sets online variable
+	 * @param online new online state
 	 * */
 	public static void setOnline(boolean online) {
 		Database.online = online;
@@ -1826,6 +1677,7 @@ public final class Database {
 	 * Getter:
 	 * <p>
 	 * Gets timed events and updates
+	 * @return database events
 	 * */
 	public Heck getEvents() {
 		return events;
@@ -1835,17 +1687,19 @@ public final class Database {
 	 * Getter:
 	 * <p>
 	 * Gets a view of the Apartment list in the database
+	 * @return Apartment list
 	 * */
-	public List<Apartment> getApartments() {
-		return Collections.unmodifiableList(apartments);
+	public ObservableList<Apartment> getApartments() {
+		return FXCollections.unmodifiableObservableList(apartments);
 	}
 
 	/**
 	 * Setter:
 	 * <p>
 	 * Sets list of Apartments from an existing list
+	 * @param apartments new list of apartments
 	 * */
-	public void setApartments(List<Apartment> apartments) {
+	public void setApartments(ObservableList<Apartment> apartments) {
 		this.apartments = apartments;
 	}
 
@@ -1853,9 +1707,10 @@ public final class Database {
 	 * Getter:
 	 * <p>
 	 * Gets a view of the Tenant list in the database
+	 * @return Tenant list
 	 * */
-	public List<Tenant> getTenants() {
-		return Collections.unmodifiableList(tenants);
+	public ObservableList<Tenant> getTenants() {
+		return FXCollections.unmodifiableObservableList(tenants);
 	}
 
 	/**
@@ -1863,7 +1718,7 @@ public final class Database {
 	 * <p>
 	 * Sets list of Tenants from an existing list
 	 * */
-	public void setTenants(List<Tenant> tenants) {
+	public void setTenants(ObservableList<Tenant> tenants) {
 		this.tenants = tenants;
 	}
 
@@ -1872,8 +1727,8 @@ public final class Database {
 	 * <p>
 	 * Gets a view of the Candidate list in the database
 	 * */
-	public List<Candidate> getCandidates() {
-		return Collections.unmodifiableList(candidates);
+	public ObservableList<Candidate> getCandidates() {
+		return FXCollections.unmodifiableObservableList(candidates);
 	}
 
 	/**
@@ -1881,7 +1736,7 @@ public final class Database {
 	 * <p>
 	 * Sets list of Candidates from an existing list
 	 * */
-	public void setCandidates(List<Candidate> candidates) {
+	public void setCandidates(ObservableList<Candidate> candidates) {
 		this.candidates = candidates;
 	}
 
@@ -1890,8 +1745,8 @@ public final class Database {
 	 * <p>
 	 * Gets a view of the Contractor list in the database
 	 * */
-	public List<Contractor> getContractors() {
-		return Collections.unmodifiableList(contractors);
+	public ObservableList<Contractor> getContractors() {
+		return FXCollections.unmodifiableObservableList(contractors);
 	}
 
 	/**
@@ -1899,7 +1754,7 @@ public final class Database {
 	 * <p>
 	 * Sets list of Contractors from an existing list
 	 * */
-	public void setContractors(List<Contractor> contractors) {
+	public void setContractors(ObservableList<Contractor> contractors) {
 		this.contractors = contractors;
 	}
 
@@ -1918,7 +1773,9 @@ public final class Database {
 		return previousTable;
 	}
 
-	/***/
+	/**
+	 * Setter:
+	 * */
 	public void setPreviousTable(Table previousTable) {
 		this.previousTable = previousTable;
 	}
@@ -1926,109 +1783,11 @@ public final class Database {
 	/**
 	 * Getter:
 	 * <p>
-	 * Gets the currently selected Apartment
+	 * Gets the database ledger
+	 * @return ledger
 	 * */
-	public Apartment getCurrApt() {
-		return currApt;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets the currently selected Apartment
-	 * */
-	public void setCurrApt(Apartment currApt) {
-		Database.currApt = currApt;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets the currently selected Tenant
-	 * */
-	public Tenant getCurrTnant() {
-		return currTnant;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets the currently selected Tenant
-	 * */
-	public void setCurrTnant(Tenant currTant) {
-		Database.currTnant = currTant;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets the currently selected Candidate
-	 * */
-	public Candidate getCurrCand() {
-		return currCand;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets the currently selected Candidate
-	 * */
-	public void setCurrCand(Candidate currCand) {
-		Database.currCand = currCand;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets the currently selected Contractor
-	 * */
-	public Contractor getCurrCont() {
-		return currCont;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets the currently selected Contractor
-	 * */
-	public void setCurrCont(Contractor currCont) {
-		Database.currCont = currCont;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets the currently selected Insurance
-	 * */
-	public Insurance getCurrIns() {
-		return currIns;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets the currently selected Insurance
-	 * */
-	public void setCurrIns(Insurance currIns) {
-		Database.currIns = currIns;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets the currently selected Bill
-	 * */
-	public Bill getCurrBill() {
-		return currBill;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets the currently selected Bill
-	 * */
-	public void setCurrBill(Bill currBill) {
-		Database.currBill = currBill;
+	public Map<Table, String> getLedger() {
+		return ledger;
 	}
 
 	/**

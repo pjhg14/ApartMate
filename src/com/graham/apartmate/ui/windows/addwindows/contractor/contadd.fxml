@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+      prefWidth="600.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.graham.apartmate.ui.windows.addwindows.contractor.ContAddController">
+    <children>
+        <HBox>
+            <children>
+                <VBox>
+                    <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="New Contractor:">
+                            <font>
+                                <Font size="24.0"/>
+                            </font>
+                        </Text>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Select related Apartment:"/>
+                    </children>
+                </VBox>
+                <HBox prefHeight="52.0" prefWidth="260.0"/>
+                <HBox alignment="BOTTOM_LEFT" prefHeight="100.0" prefWidth="200.0">
+                    <children>
+                        <CheckBox fx:id="isUsingCurrApt" contentDisplay="TOP" mnemonicParsing="false"
+                                  onAction="#useCurrApt" prefHeight="21.0" prefWidth="207.0"
+                                  text="Use Current Apartment" textOverrun="CLIP">
+                            <HBox.margin>
+                                <Insets/>
+                            </HBox.margin>
+                            <padding>
+                                <Insets bottom="5.0"/>
+                            </padding>
+                        </CheckBox>
+                    </children>
+                    <HBox.margin>
+                        <Insets right="5.0"/>
+                    </HBox.margin>
+                </HBox>
+            </children>
+        </HBox>
+        <VBox>
+            <children>
+                <ListView fx:id="apartmentChoice" prefHeight="192.0" prefWidth="642.0"/>
+            </children>
+            <VBox.margin>
+                <Insets left="5.0" right="5.0"/>
+            </VBox.margin>
+        </VBox>
+        <VBox>
+            <children>
+                <HBox prefHeight="210.0" prefWidth="600.0" spacing="10.0">
+                    <children>
+                        <VBox alignment="CENTER" prefHeight="196.0" prefWidth="294.0" spacing="14.0">
+                            <children>
+                                <TextField fx:id="nameTextField" prefHeight="31.0" prefWidth="165.0"
+                                           promptText="Contractor Name"/>
+                                <TextField fx:id="phoneTextField" promptText="Phone#"/>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="196.0" prefWidth="327.0" spacing="14.0">
+                            <children>
+                                <TextField fx:id="billTextField" promptText="Monthly Bill"/>
+                                <TextField fx:id="emailTextField" promptText="Email"/>
+                            </children>
+                        </VBox>
+                    </children>
+                    <padding>
+                        <Insets left="5.0" top="5.0"/>
+                    </padding>
+                </HBox>
+                <HBox prefHeight="0.0" prefWidth="600.0">
+                    <children>
+                        <HBox alignment="BOTTOM_LEFT">
+                            <children>
+                                <Text fx:id="errorText" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0"
+                                      text="Generic Error" visible="false"/>
+                            </children>
+                        </HBox>
+                        <HBox prefHeight="31.0" prefWidth="457.0"/>
+                        <HBox alignment="CENTER_RIGHT">
+                            <children>
+                                <Button fx:id="addButton" mnemonicParsing="false" onAction="#addToTenants" text="Add"/>
+                            </children>
+                        </HBox>
+                    </children>
+                    <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0"/>
+                    </VBox.margin>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</VBox>

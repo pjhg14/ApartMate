@@ -1,13 +1,14 @@
-Current Version: Unnamed 0.8.5
+Current Version: v???
+GUI revamp still ongoing, Database pending rework, will re-think roadmap when program is (completely) functional
 
-0.8.6- GUI revamp
+v??? (0.8.6) - GUI revamp
     Change GUI to be more user friendly and ascetically pleasing
 
-0.8.7 -> 0.8.9- Form saving and loading
+v??? (0.8.7) -> (0.8.9) - Form saving and loading
     Add forms for various circumstances that a user might need
 
-0.9- Form printing
+v??? (0.9) - Form printing
     Add ability to print forms using pdfbox
 
-0.9.5-
+v??? (0.9.5) -
     ...

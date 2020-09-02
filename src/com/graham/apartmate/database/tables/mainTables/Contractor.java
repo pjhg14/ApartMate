@@ -1,11 +1,11 @@
 package com.graham.apartmate.database.tables.mainTables;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.graham.apartmate.database.dbMirror.DBTables;
-import com.graham.apartmate.database.tables.subTables.Invoice;
+import com.graham.apartmate.database.tables.subTables.Account;
+import com.graham.apartmate.database.tables.subTables.PersonalContact;
 import com.graham.apartmate.main.Main;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
 
 /**
@@ -19,38 +19,49 @@ import javafx.scene.image.Image;
  */
 public class Contractor extends Table {
 
+	//------------------------------------------------------------
+	//Fields//////////////////////////////////////////////////////
+	//------------------------------------------------------------
 	/**
-	 * Serialization long*/
+	 * Serialization long
+	 * */
 	private static final long serialVersionUID = 1L;
-
-	/***/
-	private Image image;
 
 	/**
 	 * Contractor's name
 	 * */
-	private String name;
+	private final SimpleStringProperty name;
 
 	/**
 	 * Monthly payment
 	 * */
-	private double bill;
+	private final SimpleDoubleProperty bill;
 
 	/**
 	 * Contractor's phone number
 	 * */
-	private String phone;
+	private final SimpleStringProperty phone;
 
 	/**
 	 * Contractor's email
 	 * */
-	private String email;
+	private final SimpleStringProperty email;
+
+	/**
+	 * Personal contact information of contractor
+	 * */
+	private PersonalContact contact;
 
 	/**
 	 * List of Contractor's Invoices
 	 * */
-	private List<Invoice> invoices;
+	private final Account account;
+	//------------------------------------------------------------
+	//------------------------------------------------------------
 
+	//------------------------------------------------------------
+	//Constructor/////////////////////////////////////////////////
+	//------------------------------------------------------------
 	/**
 	 * Default constructor
 	 * */
@@ -74,16 +85,19 @@ public class Contractor extends Table {
 	public Contractor(int id, int fk, String name, double bill, String phone, String email) {
 		super(id, fk);
 		image = new Image("com/graham/apartmate/ui/res/Tenantimg_small.png");
-		this.name = name;
-		this.bill = bill;
-		this.phone = phone;
-		this.email = email;
+		this.name = new SimpleStringProperty(name);
+		this.bill = new SimpleDoubleProperty(bill);
+		this.phone = new SimpleStringProperty(phone);
+		this.email = new SimpleStringProperty(email);
 
-		invoices = new ArrayList<>();
+		account = new Account();
 	}
+	//------------------------------------------------------------
+	//------------------------------------------------------------
 
-
-
+	//------------------------------------------------------------
+	//Overrided & Utility Methods/////////////////////////////////
+	//------------------------------------------------------------
 	/**
 	 * Overrided toString() method:
 	 * <p>
@@ -94,35 +108,36 @@ public class Contractor extends Table {
 		return String.format("Contractor: id; %s, name; %s", super.getId() ,name);
 	}
 
+	/**
+	 * Gets the main identifying name of an instance of a Table
+	 * @return Table's "generic" name
+	 * */
 	@Override
 	public String getGenericName() {
-		return name;
+		return getName();
 	}
 
+	/**
+	 * Gets the type of Table in question
+	 * @return table type
+	 * */
 	@Override
 	public DBTables getTableType() {
 		return DBTables.CONTRACTORS;
 	}
+	//------------------------------------------------------------
+	//------------------------------------------------------------
 
-	@Override
-	public Image getImage() {
-		return image;
-	}
-
-	// *************************************************************
-	// General getters and setters
-	/***/
-	public void setImage(Image image) {
-		this.image = image;
-	}
-
+	//------------------------------------------------------------
+	//General getters and setters/////////////////////////////////
+	//------------------------------------------------------------
 	/**
 	 * Getter:
 	 * Gets Contractor's business name
 	 * @return name
 	 * */
 	public String getName() {
-		return name;
+		return name.get();
 	}
 
 	/**
@@ -131,7 +146,17 @@ public class Contractor extends Table {
 	 * @param name New name
 	 * */
 	public void setName(String name) {
-		this.name = name;
+		this.name.set(name);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets name field property
+	 * @return name property
+	 * */
+	public SimpleStringProperty nameProperty() {
+		return name;
 	}
 
 	/**
@@ -140,7 +165,7 @@ public class Contractor extends Table {
 	 * @return bill
 	 * */
 	public double getBill() {
-		return bill;
+		return bill.get();
 	}
 
 	/**
@@ -149,7 +174,17 @@ public class Contractor extends Table {
 	 * @param bill New bill
 	 * */
 	public void setBill(double bill) {
-		this.bill = bill;
+		this.bill.set(bill);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets bill field property
+	 * @return bill property
+	 * */
+	public SimpleDoubleProperty billProperty() {
+		return bill;
 	}
 
 	/**
@@ -158,7 +193,7 @@ public class Contractor extends Table {
 	 * @return phone #
 	 * */
 	public String getPhone() {
-		return phone;
+		return phone.get();
 	}
 
 	/**
@@ -167,7 +202,17 @@ public class Contractor extends Table {
 	 * @param phone New phone #
 	 * */
 	public void setPhone(String phone) {
-		this.phone = phone;
+		this.phone.set(phone);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets phone field property
+	 * @return phone property
+	 * */
+	public SimpleStringProperty phoneProperty() {
+		return phone;
 	}
 
 	/**
@@ -176,7 +221,7 @@ public class Contractor extends Table {
 	 * @return email
 	 * */
 	public String getEmail() {
-		return email;
+		return email.get();
 	}
 
 	/**
@@ -185,7 +230,17 @@ public class Contractor extends Table {
 	 * @param email New email
 	 * */
 	public void setEmail(String email) {
-		this.email = email;
+		this.email.set(email);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets email field property
+	 * @return email property
+	 * */
+	public SimpleStringProperty emailProperty() {
+		return email;
 	}
 
 	/**
@@ -193,17 +248,25 @@ public class Contractor extends Table {
 	 * Gets list of Invoices for Contractor
 	 * @return list of Invoices
 	 * */
-	public List<Invoice> getInvoices() {
-		return invoices;
+	public Account getAccount() {
+		return account;
+	}
+
+	/**
+	 * Getter:
+	 * Gets the personal contact information of the contractor
+	 * */
+	public PersonalContact getContact() {
+		return contact;
 	}
 
 	/**
 	 * Setter:
-	 * Sets list of Invoices for Contractor
-	 * @param invoices New list of Invoices
+	 * Sets the personal contact information of the contractor
 	 * */
-	public void setInvoices(List<Invoice> invoices) {
-		this.invoices = invoices;
+	public void setContact(PersonalContact contact) {
+		this.contact = contact;
 	}
-	// *************************************************************
+	//------------------------------------------------------------
+	//------------------------------------------------------------
 }

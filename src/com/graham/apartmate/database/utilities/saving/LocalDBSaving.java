@@ -10,12 +10,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import com.graham.apartmate.database.tables.mainTables.Apartment;
-import com.graham.apartmate.database.tables.mainTables.Candidate;
-import com.graham.apartmate.database.tables.mainTables.Contractor;
-import com.graham.apartmate.database.tables.mainTables.Tenant;
+import com.graham.apartmate.database.tables.mainTables.*;
 import com.graham.apartmate.main.Main;
 
 /**
@@ -230,6 +229,10 @@ public class LocalDBSaving {
 		}
 	}
 
+	public Map<Table, String> loadLedger() {
+		//Load ledger from file
+		return new HashMap<>();
+	}
 
 //	public boolean loadUsers() {
 //		try(ObjectInputStream input = new ObjectInputStream(new

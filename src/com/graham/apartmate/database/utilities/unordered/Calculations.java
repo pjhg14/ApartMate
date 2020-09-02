@@ -1,7 +1,6 @@
 package com.graham.apartmate.database.utilities.unordered;
 
 import com.graham.apartmate.database.tables.mainTables.Table;
-import com.graham.apartmate.database.tables.subTables.Invoice;
 import com.graham.apartmate.main.Main;
 
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.List;
  * */
 public class Calculations {
 
-    public static void updateInvoices(List<Invoice> invoices) {
+    public static void updateInvoices() {
 
     }
 

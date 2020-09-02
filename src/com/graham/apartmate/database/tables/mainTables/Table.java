@@ -2,9 +2,12 @@ package com.graham.apartmate.database.tables.mainTables;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.main.Main;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -16,11 +19,6 @@ import java.util.Date;
  * @version {@value Main#VERSION}
  * @since Can we call this an alpha? (0.1)
  */
-//TODO: Replace all mentions of depreciated Date classes with java.time.LocalDate
-// Make all constructors succinct
-// Revamp dummy constructor setting and detection
-// Revamp ID assignment w/ static & final methods
-// abstract methods?
 public abstract class Table implements Serializable, Comparable<Table> {
 
 	//----------------------------------------------------------------
@@ -30,6 +28,11 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * Serialization long
 	 * */
 	private static final long serialVersionUID = 2L;
+
+	/**
+	 * Image of this Table instance
+	 * */
+	protected Image image;
 
 	/**
 	 * Primary Key of Table
@@ -53,12 +56,12 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	/**
 	 * Date Table was created
 	 * */
-	private Date dateCreated;
+	private final SimpleObjectProperty<LocalDateTime> dateCreated;
 
 	/**
 	 * Date Table was modified
 	 * */
-	private Date dateModified;
+	private final SimpleObjectProperty<LocalDateTime> dateModified;
 
 	//Status fields
 	/**
@@ -90,7 +93,6 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * */
 	public Table() {
 		this(0,0,0);
-		dummy = true;
 	}
 
 	/**
@@ -121,10 +123,8 @@ public abstract class Table implements Serializable, Comparable<Table> {
 		this.fk = fk;
 		this.fk2 = fk2;
 
-		dateCreated = new Date();
-		dateModified = new Date();
-		dateCreated.setTime(System.currentTimeMillis());
-		dateModified.setTime(System.currentTimeMillis());
+		dateCreated = new SimpleObjectProperty<>(LocalDateTime.now());
+		dateModified = new SimpleObjectProperty<>(LocalDateTime.now());
 		dummy = false;
 		edited = false;
 
@@ -158,12 +158,6 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * @return table type
 	 * */
 	public abstract DBTables getTableType();
-
-	/**
-	 * Returns the image related to a particular instance of a Table
-	 * @return Table image
-	 * */
-	public abstract Image getImage();
 	//----------------------------------------------------------------
 
 	//----------------------------------------------------------------
@@ -175,7 +169,20 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * */
 	@Override
 	public int compareTo(Table other) {
-		if (this.getId() == other.getId()) {
+		int buffer = Integer.compare(this.id, other.id);
+
+		if (buffer == 0) {
+			buffer = Integer.compare(this.fk, other.fk);
+
+			if (buffer == 0) {
+				return Integer.compare(this.fk2, other.fk);
+			}
+		}
+
+		return buffer;
+
+		/*
+		* if (this.getId() == other.getId()) {
 			if (this.getFk() == other.getFk()) {
 				if (this.getFk2() == other.getFk2()) {
 					return 0;
@@ -193,7 +200,7 @@ public abstract class Table implements Serializable, Comparable<Table> {
 			return 1;
 		} else {
 			return -1;
-		}
+		}*/
 	}
 
 	/**
@@ -203,16 +210,15 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * */
 	@Override
 	public boolean equals(Object o) {
-
-		// If the Table is compared with itself then return true
 		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
 
-		//If o is null or the class of o does not match Table then returns false
-		if (!(o instanceof Table)) return false;
+		Table other = (Table) o;
 
-		//If ids match, return true; false if otherwise
-		Table table = (Table) o;
-		return id == table.id;
+		if (id != other.id) return false;
+		if (fk != other.fk) return false;
+		if (fk2 == other.fk2) return false;
+		return getTableType().equals(other.getTableType());
 	}
 
 	/**
@@ -221,12 +227,10 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-
-		result = prime * result + id + fk + fk2;
-
-		return result;
+		int result = id;
+		result = 31 * result + fk;
+		result = 31 * result + fk2;
+		return 31 * result + getTableType().hashCode();
 	}
 
 	/**
@@ -242,6 +246,26 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	//----------------------------------------------------------------
 	// General getters and setters////////////////////////////////////
 	//----------------------------------------------------------------
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets the image related to this particular Table
+	 * @return image
+	 * */
+	public Image getImage() {
+		return image;
+	}
+
+	/**
+	 * Setter:
+	 * <p>
+	 * Sets the image related to this particular Table
+	 * @param image new Image
+	 * */
+	public void setImage(Image image) {
+		this.image = image;
+	}
+
 	/**
 	 * Getter:
 	 * Gives the primary key
@@ -301,8 +325,8 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * Gives the date and time the Table was created
 	 * @return dateCreated
 	 * */
-	public Date getDateCreated() {
-		return dateCreated;
+	public LocalDateTime getDateCreated() {
+		return dateCreated.get();
 	}
 
 	/**
@@ -311,8 +335,12 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * <p><i>Don't know if this is needed... </i></p>
 	 * @param dateCreated ...
 	 * */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+	public void setDateCreated(LocalDateTime dateCreated) {
+		this.dateCreated.set(dateCreated);
+	}
+
+	public SimpleObjectProperty<LocalDateTime> dateCreatedProperty() {
+		return dateCreated;
 	}
 
 	/**
@@ -320,8 +348,8 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * Gives the date and time the Table was last modified
 	 * @return dateModified
 	 * */
-	public Date getDateModified() {
-		return dateModified;
+	public LocalDateTime getDateModified() {
+		return dateModified.get();
 	}
 
 	/**
@@ -329,8 +357,12 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * Sets the date and time the Table was last modified
 	 * @param dateModified new date the Table was modified
 	 * */
-	public void setDateModified(Date dateModified) {
-		this.dateModified = dateModified;
+	public void setDateModified(LocalDateTime dateModified) {
+		this.dateModified.set(dateModified);
+	}
+
+	public SimpleObjectProperty<LocalDateTime> dateModifiedProperty() {
+		return dateModified;
 	}
 
 	/**

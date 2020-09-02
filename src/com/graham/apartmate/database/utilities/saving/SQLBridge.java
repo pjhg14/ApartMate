@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
-import com.graham.apartmate.database.tables.mainTables.Apartment;
-import com.graham.apartmate.database.tables.mainTables.Candidate;
-import com.graham.apartmate.database.tables.mainTables.Contractor;
-import com.graham.apartmate.database.tables.mainTables.Tenant;
+import com.graham.apartmate.database.tables.mainTables.*;
 import com.graham.apartmate.database.tables.subTables.*;
 import com.graham.apartmate.main.Main;
 
@@ -1425,7 +1422,7 @@ public class SQLBridge {
 	/**
 	 * Invoice(Tenant) insert prepared statement
 	 * */
-	private PreparedStatement insertTnantInvoice;
+	private PreparedStatement insertTnantAccount;
 
 	/**
 	 * Inspection insert prepared statement
@@ -1450,7 +1447,7 @@ public class SQLBridge {
 	/**
 	 * Invoice(Contractor) insert prepared statement
 	 * */
-	private PreparedStatement insertContInvoice;
+	private PreparedStatement insertContAccount;
 
 	/**
 	 * Insurance insert prepared statement
@@ -1470,7 +1467,7 @@ public class SQLBridge {
 	/**
 	 * Invoice(Bill) insert prepared statement
 	 * */
-	private PreparedStatement insertBillInvoice;
+	private PreparedStatement insertBillAccount;
 
 	/**
 	 * Issue insert prepared statement
@@ -1728,66 +1725,18 @@ public class SQLBridge {
 
 				// Set fields
 				app.setId(rs.getInt(COLUMN_APT_ID));
-				app.setDateCreated(rs.getTimestamp(COLUMN_APT_DATE_CREATED));
-				app.setDateModified(rs.getTimestamp(COLUMN_APT_DATE_MODIFIED));
+				app.setDateCreated(rs.getTimestamp(COLUMN_APT_DATE_CREATED).toLocalDateTime());
+				app.setDateModified(rs.getTimestamp(COLUMN_APT_DATE_MODIFIED).toLocalDateTime());
 				app.setAddress(rs.getString(COLUMN_APT_ADDRESS));
 				app.setCity(rs.getString(COLUMN_APT_CITY));
 				app.setState(rs.getString(COLUMN_APT_STATE));
 				app.setZipCode(rs.getString(COLUMN_APT_ZIP));
-				app.setCapacity(rs.getInt(COLUMN_APT_CAPACITY));
-				app.setNumTenants(rs.getInt(COLUMN_APT_NUM_TENANTS));
+
 
 				queriedApartments.add(app);
 			}
 
 			// Set foreign tables:
-			// Insurances
-			rs = statement.executeQuery(QUERY_INSURANCES);
-
-			while (rs.next()) {
-				Insurance insurance = new Insurance();
-
-				insurance.setId(rs.getInt(COLUMN_INSURANCE_ID));
-				insurance.setFk(rs.getInt(COLUMN_INSURANCE_APT_ID));
-				insurance.setDateCreated(rs.getTimestamp(COLUMN_INSURANCE_DATE_CREATED));
-				insurance.setDateModified(rs.getTimestamp(COLUMN_INSURANCE_DATE_MODIFIED));
-				insurance.setName(rs.getString(COLUMN_INSURANCE_NAME));
-				insurance.setBill(rs.getDouble(COLUMN_INSURANCE_BILL));
-				insurance.setPhone(rs.getString(COLUMN_INSURANCE_PHONE));
-				insurance.setEmail(rs.getString(COLUMN_INSURANCE_EMAIL));
-
-				queriedApartments.forEach(apt -> {
-					if (insurance.getFk() == apt.getId()) {
-						apt.getInsurances().add(insurance);
-					}
-				});
-			}
-
-			// Insurance Invoices
-			rs = statement.executeQuery(QUERY_INS_INVOICES);
-
-			while (rs.next()) {
-				Invoice insInvoice = new Invoice();
-
-				insInvoice.setId(rs.getInt(COLUMN_INS_INVOICE_ID));
-				insInvoice.setFk(rs.getInt(COLUMN_INS_INVOICE_APT_ID));
-				insInvoice.setDateCreated(rs.getTimestamp(COLUMN_INS_INVOICE_DATE_CREATED));
-				insInvoice.setDateModified(rs.getTimestamp(COLUMN_INS_INVOICE_DATE_MODIFIED));
-				insInvoice.setPayment(rs.getDouble(COLUMN_INS_INVOICE_PAYMENT));
-				insInvoice.setDues(rs.getDouble(COLUMN_INS_INVOICE_DUES));
-				insInvoice.setBalance(rs.getDouble(COLUMN_INS_INVOICE_BALANCE));
-				insInvoice.setTotalPaid(rs.getDouble(COLUMN_INS_INVOICE_TOTAL_PAID));
-				insInvoice.setTotalDue(rs.getDouble(COLUMN_INS_INVOICE_TOTAL_DUE));
-				insInvoice.setPaymentDate(rs.getTimestamp(COLUMN_INS_INVOICE_PMT_DATE));
-				insInvoice.setDueDate(rs.getTimestamp(COLUMN_INS_INVOICE_DUE_DATE));
-
-				queriedApartments.forEach(apt -> apt.getInsurances().forEach(ins -> {
-					if (insInvoice.getFk() == ins.getId()) {
-						ins.getInvoices().add(insInvoice);
-					}
-				}));
-			}
-
 			// Bills
 			rs = statement.executeQuery(QUERY_BILLS);
 
@@ -1796,8 +1745,8 @@ public class SQLBridge {
 
 				bill.setId(rs.getInt(COLUMN_BILL_ID));
 				bill.setFk(rs.getInt(COLUMN_BILL_APT_ID));
-				bill.setDateCreated(rs.getTimestamp(COLUMN_BILL_DATE_CREATED));
-				bill.setDateModified(rs.getTimestamp(COLUMN_BILL_DATE_MODIFIED));
+				bill.setDateCreated(rs.getTimestamp(COLUMN_BILL_DATE_CREATED).toLocalDateTime());
+				bill.setDateModified(rs.getTimestamp(COLUMN_BILL_DATE_MODIFIED).toLocalDateTime());
 				bill.setCompanyName(rs.getString(COLUMN_BILL_NAME));
 				bill.setAddress(rs.getString(COLUMN_BILL_ADDRESS));
 				bill.setPhone(rs.getString(COLUMN_BILL_PHONE));
@@ -1810,43 +1759,50 @@ public class SQLBridge {
 				});
 			}
 
+			//Rooms
+
+			// Inspection
+			rs = statement.executeQuery(QUERY_INSPECTIONS);
+
+			while (rs.next()) {
+				NoteLog inspection = new NoteLog(false);
+
+				inspection.setId(rs.getInt(COLUMN_INSPECTION_ID));
+				inspection.setFk(rs.getInt(COLUMN_INSPECTION_TNANT_ID));
+				inspection.setDateCreated(rs.getTimestamp(COLUMN_INSPECTION_DATE_CREATED).toLocalDateTime());
+				inspection.setDateModified(rs.getTimestamp(COLUMN_INSPECTION_DATE_MODIFIED).toLocalDateTime());
+				inspection.setLog(rs.getString(COLUMN_INSPECTION_DESCRIPTION));
+				inspection.setLogDate(rs.getDate(COLUMN_INSPECTION_DATE).toLocalDate());
+
+				queriedApartments.forEach(apt -> {
+					apt.getRooms().forEach(room -> {
+						if (inspection.getFk() == room.getId()) {
+							room.getInspections().add(inspection);
+						}
+					});
+				});
+			}
+
 			// Bill Invoices
+			//TODO: refactor to bill account
 			rs = statement.executeQuery(QUERY_BILL_INVOICES);
 
 			while (rs.next()) {
-				Invoice billInvoice = new Invoice();
-
-				billInvoice.setId(rs.getInt(COLUMN_BILL_INVOICE_ID));
-				billInvoice.setFk(rs.getInt(COLUMN_BILL_INVOICE_APT_ID));
-				billInvoice.setDateCreated(rs.getTimestamp(COLUMN_BILL_INVOICE_DATE_CREATED));
-				billInvoice.setDateModified(rs.getTimestamp(COLUMN_BILL_INVOICE_DATE_MODIFIED));
-				billInvoice.setPayment(rs.getDouble(COLUMN_BILL_INVOICE_PAYMENT));
-				billInvoice.setDues(rs.getDouble(COLUMN_BILL_INVOICE_DUES));
-				billInvoice.setBalance(rs.getDouble(COLUMN_BILL_INVOICE_BALANCE));
-				billInvoice.setTotalPaid(rs.getDouble(COLUMN_BILL_INVOICE_TOTAL_PAID));
-				billInvoice.setTotalDue(rs.getDouble(COLUMN_BILL_INVOICE_TOTAL_DUE));
-				billInvoice.setPaymentDate(rs.getTimestamp(COLUMN_BILL_INVOICE_PMT_DATE));
-				billInvoice.setDueDate(rs.getTimestamp(COLUMN_BILL_INVOICE_DUE_DATE));
-
-				queriedApartments.forEach(apt -> apt.getBills().forEach(bill -> {
-					if (billInvoice.getFk() == bill.getId()) {
-						bill.getInvoices().add(billInvoice);
-					}
-				}));
+				Account billAccount = new Account();
 			}
 
 			// Issues
 			rs = statement.executeQuery(QUERY_ISSUES);
 
 			while (rs.next()) {
-				NoteLog issue = new NoteLog();
+				NoteLog issue = new NoteLog(true);
 
 				issue.setId(rs.getInt(COLUMN_ISSUE_ID));
 				issue.setFk(rs.getInt(COLUMN_ISSUE_APT_ID));
-				issue.setDateCreated(rs.getTimestamp(COLUMN_ISSUE_DATE_CREATED));
-				issue.setDateModified(rs.getTimestamp(COLUMN_ISSUE_DATE_MODIFIED));
+				issue.setDateCreated(rs.getTimestamp(COLUMN_ISSUE_DATE_CREATED).toLocalDateTime());
+				issue.setDateModified(rs.getTimestamp(COLUMN_ISSUE_DATE_MODIFIED).toLocalDateTime());
 				issue.setLog(rs.getString(COLUMN_ISSUE_DESCRIPTION));
-				issue.setLogDate(rs.getDate(COLUMN_ISSUE_DATE));
+				issue.setLogDate(rs.getDate(COLUMN_ISSUE_DATE).toLocalDate());
 
 				queriedApartments.forEach(apt -> {
 					if (issue.getFk() == apt.getId()) {
@@ -1883,21 +1839,20 @@ public class SQLBridge {
 
 				tenant.setId(rs.getInt(COLUMN_TNANT_ID));
 				tenant.setFk(rs.getInt(COLUMN_TNANT_APT));
-				tenant.setDateCreated(rs.getTimestamp(COLUMN_TNANT_DATE_CREATED));
-				tenant.setDateModified(rs.getTimestamp(COLUMN_TNANT_DATE_MODIFIED));
+				tenant.setDateCreated(rs.getTimestamp(COLUMN_TNANT_DATE_CREATED).toLocalDateTime());
+				tenant.setDateModified(rs.getTimestamp(COLUMN_TNANT_DATE_MODIFIED).toLocalDateTime());
 				tenant.setFirstName(rs.getString(COLUMN_TNANT_FNAME));
 				tenant.setLastName(rs.getString(COLUMN_TNANT_LNAME));
 				tenant.setPhone(rs.getString(COLUMN_TNANT_PHONE));
 				tenant.setEmail(rs.getString(COLUMN_TNANT_EMAIL));
-				tenant.setSSN(rs.getString(COLUMN_TNANT_IDN));
-				tenant.setRent(rs.getDouble(COLUMN_TNANT_RENT));
+				tenant.setSsn(rs.getString(COLUMN_TNANT_IDN));
 				tenant.setNumChildren(rs.getInt(COLUMN_TNANT_NUM_CHILDREN));
-				tenant.setMovInDate(rs.getDate(COLUMN_TNANT_MOVE_IN_DATE));
-				tenant.setDateOfBirth(rs.getDate(COLUMN_TNANT_DOB));
+				tenant.setMovInDate(rs.getDate(COLUMN_TNANT_MOVE_IN_DATE).toLocalDate());
+				tenant.setDateOfBirth(rs.getDate(COLUMN_TNANT_DOB).toLocalDate());
 				tenant.setAnnualIncome(rs.getInt(COLUMN_TNANT_ANNUAL_INCOME));
 				tenant.setEvicted(rs.getBoolean(COLUMN_TNANT_SLATED_FOR_EVICTION));
 				tenant.setEvictReason(rs.getString(COLUMN_TNANT_EVICT_REASON));
-				tenant.setMovOutDate(rs.getDate(COLUMN_TNANT_MOV_OUT_DATE));
+				tenant.setMovOutDate(rs.getDate(COLUMN_TNANT_MOV_OUT_DATE).toLocalDate());
 
 				queriedTenants.add(tenant);
 			}
@@ -1906,23 +1861,23 @@ public class SQLBridge {
 			rs = statement.executeQuery(QUERY_TNANT_SPOUSES);
 
 			while (rs.next()) {
-				Spouse tnantSpouse = new Spouse();
+				RoomMate tnantRoomMate = new RoomMate();
 
-				tnantSpouse.setId(rs.getInt(COLUMN_SPOUSE_ID));
-				tnantSpouse.setFk(rs.getInt(COLUMN_SPOUSE_TNANT_ID));
-				tnantSpouse.setDateCreated(rs.getTimestamp(COLUMN_SPOUSE_DATE_CREATED));
-				tnantSpouse.setDateModified(rs.getTimestamp(COLUMN_SPOUSE_DATE_MODIFIED));
-				tnantSpouse.setFirstName(rs.getString(COLUMN_SPOUSE_FNAME));
-				tnantSpouse.setLastName(rs.getString(COLUMN_SPOUSE_LNAME));
-				tnantSpouse.setPhone(rs.getString(COLUMN_SPOUSE_PHONE));
-				tnantSpouse.setEmail(rs.getString(COLUMN_SPOUSE_EMAIL));
-				tnantSpouse.setSSN(rs.getString(COLUMN_SPOUSE_IDN));
-				tnantSpouse.setDateOfBirth(rs.getDate(COLUMN_SPOUSE_DOB));
-				tnantSpouse.setAnnualIncome(rs.getInt(COLUMN_SPOUSE_ANNUAL_INCOME));
+				tnantRoomMate.setId(rs.getInt(COLUMN_SPOUSE_ID));
+				tnantRoomMate.setFk(rs.getInt(COLUMN_SPOUSE_TNANT_ID));
+				tnantRoomMate.setDateCreated(rs.getTimestamp(COLUMN_SPOUSE_DATE_CREATED).toLocalDateTime());
+				tnantRoomMate.setDateModified(rs.getTimestamp(COLUMN_SPOUSE_DATE_MODIFIED).toLocalDateTime());
+				tnantRoomMate.setFirstName(rs.getString(COLUMN_SPOUSE_FNAME));
+				tnantRoomMate.setLastName(rs.getString(COLUMN_SPOUSE_LNAME));
+				tnantRoomMate.setPhone(rs.getString(COLUMN_SPOUSE_PHONE));
+				tnantRoomMate.setEmail(rs.getString(COLUMN_SPOUSE_EMAIL));
+				tnantRoomMate.setSsn(rs.getString(COLUMN_SPOUSE_IDN));
+				tnantRoomMate.setDateOfBirth(rs.getDate(COLUMN_SPOUSE_DOB).toLocalDate());
+				tnantRoomMate.setAnnualIncome(rs.getInt(COLUMN_SPOUSE_ANNUAL_INCOME));
 
 				queriedTenants.forEach(tnant -> {
-					if (tnantSpouse.getFk() == tnant.getId()) {
-						tnant.setSpouse(tnantSpouse);
+					if (tnantRoomMate.getFk() == tnant.getId()) {
+						tnant.addRoomMate(tnantRoomMate);
 					}
 				});
 			}
@@ -1930,46 +1885,11 @@ public class SQLBridge {
 			// Invoices
 			rs = statement.executeQuery(QUERY_TNANT_INVOICES);
 			while (rs.next()) {
-				Invoice tnantInvoice = new Invoice();
+				Account tnantAccount = new Account();
 
-				tnantInvoice.setId(rs.getInt(COLUMN_TNANT_INVOICE_ID));
-				tnantInvoice.setFk(rs.getInt(COLUMN_TNANT_INVOICE_TNANT_ID));
-				tnantInvoice.setDateCreated(rs.getTimestamp(COLUMN_TNANT_INVOICE_DATE_CREATED));
-				tnantInvoice.setDateModified(rs.getTimestamp(COLUMN_TNANT_INVOICE_DATE_MODIFIED));
-				tnantInvoice.setPayment(rs.getDouble(COLUMN_TNANT_INVOICE_PMT_AMOUNT));
-				tnantInvoice.setDues(rs.getDouble(COLUMN_TNANT_INVOICE_DUES));
-				tnantInvoice.setBalance(rs.getDouble(COLUMN_TNANT_INVOICE_BALANCE));
-				tnantInvoice.setTotalPaid(rs.getDouble(COLUMN_TNANT_INVOICE_TOTAL_PAID));
-				tnantInvoice.setTotalDue(rs.getDouble(COLUMN_TNANT_INVOICE_TOTAL_DUE));
-				tnantInvoice.setPaymentDate(rs.getTimestamp(COLUMN_TNANT_INVOICE_PAYMENT_DATE));
-				tnantInvoice.setDueDate(rs.getTimestamp(COLUMN_TNANT_INVOICE_PMT_DUE_DATE));
-
-				queriedTenants.forEach(tnant -> {
-					if (tnantInvoice.getFk() == tnant.getId()) {
-						tnant.getInvoices().add(tnantInvoice);
-					}
-				});
 			}
 
-			// Inspection
-			rs = statement.executeQuery(QUERY_INSPECTIONS);
 
-			while (rs.next()) {
-				NoteLog inspection = new NoteLog();
-
-				inspection.setId(rs.getInt(COLUMN_INSPECTION_ID));
-				inspection.setFk(rs.getInt(COLUMN_INSPECTION_TNANT_ID));
-				inspection.setDateCreated(rs.getTimestamp(COLUMN_INSPECTION_DATE_CREATED));
-				inspection.setDateModified(rs.getTimestamp(COLUMN_INSPECTION_DATE_MODIFIED));
-				inspection.setLog(rs.getString(COLUMN_INSPECTION_DESCRIPTION));
-				inspection.setLogDate(rs.getDate(COLUMN_INSPECTION_DATE));
-
-				queriedTenants.forEach(tnant -> {
-					if (inspection.getFk() == tnant.getId()) {
-						tnant.getInspections().add(inspection);
-					}
-				});
-			}
 
 			rs.close();
 
@@ -1998,17 +1918,16 @@ public class SQLBridge {
 
 				candidate.setId(rs.getInt(COLUMN_CAND_ID));
 				candidate.setFk(rs.getInt(COLUMN_CAND_APT));
-				candidate.setDateCreated(rs.getTimestamp(COLUMN_CAND_DATE_CREATED));
-				candidate.setDateModified(rs.getTimestamp(COLUMN_CAND_DATE_MODIFIED));
+				candidate.setDateCreated(rs.getTimestamp(COLUMN_CAND_DATE_CREATED).toLocalDateTime());
+				candidate.setDateModified(rs.getTimestamp(COLUMN_CAND_DATE_MODIFIED).toLocalDateTime());
 				candidate.setFirstName(rs.getString(COLUMN_CAND_FNAME));
 				candidate.setLastName(COLUMN_CAND_LNAME);
 				candidate.setPhone(rs.getString(COLUMN_CAND_PHONE));
 				candidate.setEmail(rs.getString(COLUMN_CAND_EMAIL));
-				candidate.setDateOfBirth(rs.getDate(COLUMN_CAND_DOB));
-				candidate.setSSN(rs.getString(COLUMN_CAND_IDN));
+				candidate.setDateOfBirth(rs.getDate(COLUMN_CAND_DOB).toLocalDate());
+				candidate.setSsn(rs.getString(COLUMN_CAND_IDN));
 				candidate.setNumChildren(rs.getInt(COLUMN_CAND_NUM_CHILDREN));
 				candidate.setAnnualIncome(rs.getInt(COLUMN_CAND_ANNUAL_INCOME));
-				candidate.setAccepted(rs.getBoolean(COLUMN_CAND_ACCEPTED));
 
 				queriedCandidates.add(candidate);
 			}
@@ -2017,23 +1936,23 @@ public class SQLBridge {
 
 			// Should only run once
 			while (rs.next()) {
-				Spouse candSpouse = new Spouse();
+				RoomMate candRoomMate = new RoomMate();
 
-				candSpouse.setId(rs.getInt(COLUMN_SPOUSE_ID));
-				candSpouse.setFk2(rs.getInt(COLUMN_SPOUSE_CAND_ID));
-				candSpouse.setDateCreated(rs.getTimestamp(COLUMN_SPOUSE_DATE_CREATED));
-				candSpouse.setDateModified(rs.getTimestamp(COLUMN_SPOUSE_DATE_MODIFIED));
-				candSpouse.setFirstName(rs.getString(COLUMN_SPOUSE_FNAME));
-				candSpouse.setLastName(rs.getString(COLUMN_SPOUSE_LNAME));
-				candSpouse.setPhone(rs.getString(COLUMN_SPOUSE_PHONE));
-				candSpouse.setEmail(rs.getString(COLUMN_SPOUSE_EMAIL));
-				candSpouse.setSSN(rs.getString(COLUMN_SPOUSE_IDN));
-				candSpouse.setDateOfBirth(rs.getDate(COLUMN_SPOUSE_DOB));
-				candSpouse.setAnnualIncome(rs.getInt(COLUMN_SPOUSE_ANNUAL_INCOME));
+				candRoomMate.setId(rs.getInt(COLUMN_SPOUSE_ID));
+				candRoomMate.setFk2(rs.getInt(COLUMN_SPOUSE_CAND_ID));
+				candRoomMate.setDateCreated(rs.getTimestamp(COLUMN_SPOUSE_DATE_CREATED).toLocalDateTime());
+				candRoomMate.setDateModified(rs.getTimestamp(COLUMN_SPOUSE_DATE_MODIFIED).toLocalDateTime());
+				candRoomMate.setFirstName(rs.getString(COLUMN_SPOUSE_FNAME));
+				candRoomMate.setLastName(rs.getString(COLUMN_SPOUSE_LNAME));
+				candRoomMate.setPhone(rs.getString(COLUMN_SPOUSE_PHONE));
+				candRoomMate.setEmail(rs.getString(COLUMN_SPOUSE_EMAIL));
+				candRoomMate.setSsn(rs.getString(COLUMN_SPOUSE_IDN));
+				candRoomMate.setDateOfBirth(rs.getDate(COLUMN_SPOUSE_DOB).toLocalDate());
+				candRoomMate.setAnnualIncome(rs.getInt(COLUMN_SPOUSE_ANNUAL_INCOME));
 
 				queriedCandidates.forEach(cand -> {
-					if (candSpouse.getFk2() == cand.getId()) {
-						cand.setSpouse(candSpouse);
+					if (candRoomMate.getFk2() == cand.getId()) {
+						cand.addRoomMate(candRoomMate);
 					}
 				});
 			}
@@ -2063,8 +1982,8 @@ public class SQLBridge {
 
 				contractor.setId(rs.getInt(COLUMN_CONT_ID));
 				contractor.setFk(rs.getInt(COLUMN_CONT_APT));
-				contractor.setDateCreated(rs.getTimestamp(COLUMN_CONT_DATE_CREATED));
-				contractor.setDateModified(rs.getTimestamp(COLUMN_CONT_DATE_MODIFIED));
+				contractor.setDateCreated(rs.getTimestamp(COLUMN_CONT_DATE_CREATED).toLocalDateTime());
+				contractor.setDateModified(rs.getTimestamp(COLUMN_CONT_DATE_MODIFIED).toLocalDateTime());
 				contractor.setName(rs.getString(COLUMN_CONT_NAME));
 				contractor.setBill(rs.getDouble(COLUMN_CONT_BILL));
 				contractor.setPhone(rs.getString(COLUMN_CONT_PHONE));
@@ -2076,25 +1995,7 @@ public class SQLBridge {
 			// Invoices
 			rs = statement.executeQuery(QUERY_CONT_INVOICES);
 			while (rs.next()) {
-				Invoice contInvoice = new Invoice();
-
-				contInvoice.setId(rs.getInt(COLUMN_CONT_INVOICE_ID));
-				contInvoice.setFk(rs.getInt(COLUMN_CONT_INVOICE_CONT_ID));
-				contInvoice.setDateCreated(rs.getTimestamp(COLUMN_CONT_INVOICE_DATE_CREATED));
-				contInvoice.setDateModified(rs.getDate(COLUMN_CONT_INVOICE_DATE_MODIFIED));
-				contInvoice.setPayment(rs.getDouble(COLUMN_CONT_INVOICE_PMT_AMOUNT));
-				contInvoice.setDues(rs.getDouble(COLUMN_CONT_INVOICE_DUES));
-				contInvoice.setBalance(rs.getDouble(COLUMN_CONT_INVOICE_BALANCE));
-				contInvoice.setTotalPaid(rs.getDouble(COLUMN_CONT_INVOICE_TOTAL_PAID));
-				contInvoice.setTotalDue(rs.getDouble(COLUMN_CONT_INVOICE_TOTAL_DUE));
-				contInvoice.setPaymentDate(rs.getTimestamp(COLUMN_CONT_INVOICE_PAYMENT_DATE));
-				contInvoice.setDueDate(rs.getTimestamp(COLUMN_CONT_INVOICE_PMT_DUE_DATE));
-
-				queriedContractors.forEach(cont -> {
-					if (contInvoice.getFk() == cont.getId()) {
-						cont.getInvoices().add(contInvoice);
-					}
-				});
+				Account contInvoice = new Account();
 			}
 
 			rs.close();
@@ -2111,6 +2012,32 @@ public class SQLBridge {
 
 	// ---------------------------------------------------------------------------------
 	// Insert Methods
+	public void insert(Table table) {
+		switch (table.getTableType()){
+			case APARTMENTS:
+				insert((Apartment) table);
+				break;
+			case TENANTS:
+				insert((Tenant) table);
+				break;
+			case CANDIDATES:
+				insert((Candidate) table);
+				break;
+			case CONTRACTORS:
+				insert((Contractor) table);
+				break;
+			case BILLS:
+				insert((Bill) table);
+				break;
+			case INSPECTIONS:
+			case ISSUES:
+				insert((NoteLog) table, table.getTableType());
+				break;
+			default:
+				System.out.println("Table does not have the functionality to be inserted into database");
+		}
+	}
+
 	/**
 	 * Inserts a new Apartment and related tables (Insurances, Bills, associated Invoices, and Issues) into the server
 	 * @param apartment Apartment to insert
@@ -2122,8 +2049,8 @@ public class SQLBridge {
 				System.out.println("Saving Apartment");
 			
 			insertApartment.setInt(1, apartment.getId());
-			insertApartment.setTimestamp(2, new Timestamp(apartment.getDateCreated().getTime()));
-			insertApartment.setTimestamp(3, new Timestamp(apartment.getDateModified().getTime()));
+			insertApartment.setTimestamp(2, Timestamp.valueOf(apartment.getDateCreated()));
+			insertApartment.setTimestamp(3, Timestamp.valueOf(apartment.getDateModified()));
 			insertApartment.setString(4, apartment.getAddress());
 			insertApartment.setString(5, apartment.getCity());
 			insertApartment.setString(6, apartment.getState());
@@ -2134,12 +2061,14 @@ public class SQLBridge {
 			insertApartment.execute();
 			insertApartment.clearParameters();
 
-			// Save sub-tables
-			// Insurance
-			for (Insurance insurance : apartment.getInsurances()) {
-				insert(insurance);
+			// Inspection
+			for (Room room : apartment.getRooms()) {
+				for (NoteLog inspection : room.getInspections()) {
+					insert(inspection, apartment.getTableType());
+				}
 			}
 
+			// Save sub-tables
 			//Bill
 			for (Bill bill : apartment.getBills()) {
 				insert(bill);
@@ -2168,38 +2097,32 @@ public class SQLBridge {
 			
 			insertTenant.setInt(1, tenant.getId());
 			insertTenant.setInt(2, tenant.getFk());
-			insertTenant.setTimestamp(3, new Timestamp(tenant.getDateCreated().getTime()));
-			insertTenant.setTimestamp(4, new Timestamp(tenant.getDateModified().getTime()));
+			insertTenant.setTimestamp(3, Timestamp.valueOf(tenant.getDateCreated()));
+			insertTenant.setTimestamp(4, Timestamp.valueOf(tenant.getDateModified()));
 			insertTenant.setString(5, tenant.getFirstName());
 			insertTenant.setString(6, tenant.getLastName());
 			insertTenant.setString(7, tenant.getPhone());
 			insertTenant.setString(8, tenant.getEmail());
-			insertTenant.setString(9, tenant.getSSN());
-			insertTenant.setDouble(10, tenant.getRent());
+			insertTenant.setString(9, tenant.getSsn());
 			insertTenant.setInt(11, tenant.getNumChildren());
-			insertTenant.setDate(12, new Date(tenant.getMovInDate().getTime()));
-			insertTenant.setDate(13, new Date(tenant.getDateOfBirth().getTime()));
+			insertTenant.setDate(12, Date.valueOf(tenant.getMovInDate()));
+			insertTenant.setDate(13, Date.valueOf(tenant.getDateOfBirth()));
 			insertTenant.setInt(14, tenant.getAnnualIncome());
 			insertTenant.setBoolean(15, tenant.isEvicted());
 			insertTenant.setString(16, tenant.getEvictReason());
-			insertTenant.setDate(17, new Date(tenant.getMovOutDate().getTime()));
+			insertTenant.setDate(17, Date.valueOf(tenant.getMovOutDate()));
 
 			insertTenant.execute();
 			insertTenant.clearParameters();
 
 			// Spouse
-			if (!tenant.getSpouse().getFirstName().equals("") && !tenant.getSpouse().getLastName().equals(""))
-				insert(tenant.getSpouse(), DBTables.TENANTS);
-
-			// Tnant_Invoice
-			for (Invoice invoice : tenant.getInvoices()) {
-				insert(invoice, DBTables.TENANTS);
+			if (!tenant.getRoomMates().isEmpty()) {
+				tenant.getRoomMates().forEach(roomMate -> insert(roomMate, tenant.getTableType()));
 			}
 
-			// Inspection
-			for (NoteLog inspection : tenant.getInspections()) {
-				insert(inspection, DBTables.INSPECTIONS);
-			}
+			// Tnant_Account
+			insert(tenant.getAccount(), tenant.getTableType());
+
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
@@ -2217,24 +2140,25 @@ public class SQLBridge {
 			
 			insertCandidate.setInt(1, candidate.getId());
 			insertCandidate.setInt(2, candidate.getFk());
-			insertCandidate.setTimestamp(3, new Timestamp(candidate.getDateCreated().getTime()));
-			insertCandidate.setTimestamp(4, new Timestamp(candidate.getDateModified().getTime()));
+			insertCandidate.setTimestamp(3, Timestamp.valueOf(candidate.getDateCreated()));
+			insertCandidate.setTimestamp(4, Timestamp.valueOf(candidate.getDateModified()));
 			insertCandidate.setString(5, candidate.getFirstName());
 			insertCandidate.setString(6, candidate.getLastName());
 			insertCandidate.setString(7, candidate.getPhone());
 			insertCandidate.setString(8, candidate.getEmail());
-			insertCandidate.setDate(9, new Date(candidate.getDateOfBirth().getTime()));
+			insertCandidate.setDate(9, Date.valueOf(candidate.getDateOfBirth()));
 			insertCandidate.setInt(10, candidate.getAnnualIncome());
-			insertCandidate.setString(11, candidate.getSSN());
+			insertCandidate.setString(11, candidate.getSsn());
 			insertCandidate.setInt(12, candidate.getNumChildren());
 			insertCandidate.setBoolean(13, candidate.isAccepted());
 
 			insertCandidate.execute();
 			insertCandidate.clearParameters();
 
-			// Spouse
-			if (!candidate.getSpouse().getFirstName().equals("") && !candidate.getSpouse().getLastName().equals(""))
-				insert(candidate.getSpouse(), DBTables.CANDIDATES);
+			// Roommate
+			if (!candidate.getRoomMates().isEmpty()) {
+				candidate.getRoomMates().forEach(roomMate -> insert(roomMate, candidate.getTableType()));
+			}
 
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
@@ -2253,47 +2177,15 @@ public class SQLBridge {
 			
 			insertContractor.setInt(1, contractor.getId());
 			insertContractor.setInt(2, contractor.getFk());
-			insertContractor.setTimestamp(3, new Timestamp(contractor.getDateCreated().getTime()));
-			insertContractor.setTimestamp(4, new Timestamp(contractor.getDateModified().getTime()));
+			insertContractor.setTimestamp(3, Timestamp.valueOf(contractor.getDateCreated()));
+			insertContractor.setTimestamp(4, Timestamp.valueOf(contractor.getDateModified()));
 			insertContractor.setString(5, contractor.getName());
 			insertContractor.setDouble(6, contractor.getBill());
 			insertContractor.setString(7, contractor.getPhone());
 			insertContractor.setString(8, contractor.getEmail());
 
 			// Invoice
-			for (Invoice invoice : contractor.getInvoices()) {
-				insert(invoice, DBTables.CONTRACTORS);
-			}
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-	}
-
-	/**
-	 * Inserts a new Insurance and associated Invoices into the server
-	 * @param insurance Insurance to insert
-	 * */
-	public void insert(Insurance insurance) {
-		try {
-			if (Main.DEBUG)
-				System.out.println("Saving Insurance");
-			
-			insertInsurance.setInt(1, insurance.getId());
-			insertInsurance.setInt(2, insurance.getFk());
-			insertInsurance.setTimestamp(3, new Timestamp(insurance.getDateCreated().getTime()));
-			insertInsurance.setTimestamp(4, new Timestamp(insurance.getDateModified().getTime()));
-			insertInsurance.setString(5, insurance.getName());
-			insertInsurance.setDouble(6, insurance.getBill());
-			insertInsurance.setString(7, insurance.getPhone());
-			insertInsurance.setString(8, insurance.getEmail());
-
-			insertInsurance.execute();
-			insertInsurance.clearParameters();
-
-			for (Invoice invoice : insurance.getInvoices()) {
-				insert(invoice, DBTables.INSURANCES);
-			}
-
+			insert(contractor.getAccount(), contractor.getTableType());
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
@@ -2313,10 +2205,10 @@ public class SQLBridge {
 					
 					insertInspection.setInt(1, issInsp.getId());
 					insertInspection.setInt(2, issInsp.getFk());
-					insertInspection.setTimestamp(3, new Timestamp(issInsp.getDateCreated().getTime()));
-					insertInspection.setTimestamp(4, new Timestamp(issInsp.getDateModified().getTime()));
+					insertInspection.setTimestamp(3, Timestamp.valueOf(issInsp.getDateCreated()));
+					insertInspection.setTimestamp(4, Timestamp.valueOf(issInsp.getDateModified()));
 					insertInspection.setString(5, issInsp.getLog());
-					insertInspection.setDate(6, new Date(issInsp.getLogDate().getTime()));
+					insertInspection.setDate(6, Date.valueOf(issInsp.getLogDate()));
 
 					insertInspection.execute();
 					insertInspection.clearParameters();
@@ -2327,10 +2219,10 @@ public class SQLBridge {
 					
 					insertIssue.setInt(1, issInsp.getId());
 					insertIssue.setInt(2, issInsp.getFk());
-					insertIssue.setTimestamp(3, new Timestamp(issInsp.getDateCreated().getTime()));
-					insertIssue.setTimestamp(4, new Timestamp(issInsp.getDateModified().getTime()));
+					insertIssue.setTimestamp(3, Timestamp.valueOf(issInsp.getDateCreated()));
+					insertIssue.setTimestamp(4, Timestamp.valueOf(issInsp.getDateModified()));
 					insertIssue.setString(5, issInsp.getLog());
-					insertIssue.setDate(6, new Date(issInsp.getLogDate().getTime()));
+					insertIssue.setDate(6, Date.valueOf(issInsp.getLogDate()));
 
 					insertIssue.execute();
 					insertIssue.clearParameters();
@@ -2356,8 +2248,8 @@ public class SQLBridge {
 			
 			insertBill.setInt(1, bill.getId());
 			insertBill.setInt(2, bill.getFk());
-			insertBill.setTimestamp(3, new Timestamp(bill.getDateCreated().getTime()));
-			insertBill.setTimestamp(4, new Timestamp(bill.getDateModified().getTime()));
+			insertBill.setTimestamp(3, Timestamp.valueOf(bill.getDateCreated()));
+			insertBill.setTimestamp(4, Timestamp.valueOf(bill.getDateModified()));
 			insertBill.setString(5, bill.getCompanyName());
 			insertBill.setString(6, bill.getAddress());
 			insertBill.setString(7, bill.getPhone());
@@ -2372,27 +2264,27 @@ public class SQLBridge {
 
 	/**
 	 * Inserts a new Tenant/Candidate Spouse into the server
-	 * @param spouse Spouse to insert
+	 * @param roomMate Spouse to insert
 	 * @param table Specifies table to insert into   
 	 * */
-	public void insert(Spouse spouse, DBTables table) {
+	public void insert(RoomMate roomMate, DBTables table) {
 		try {
 			switch(table) {
 				case TENANTS:
 					if (Main.DEBUG)
 						System.out.println("Saving Spouse(tenant)");
 					
-					insertTnantSpouse.setInt(1, spouse.getId());
-					insertTnantSpouse.setInt(2, spouse.getFk());
-					insertTnantSpouse.setTimestamp(3, new Timestamp(spouse.getDateCreated().getTime()));
-					insertTnantSpouse.setTimestamp(4, new Timestamp(spouse.getDateModified().getTime()));
-					insertTnantSpouse.setString(5, spouse.getFirstName());
-					insertTnantSpouse.setString(6, spouse.getLastName());
-					insertTnantSpouse.setString(7, spouse.getPhone());
-					insertTnantSpouse.setString(8, spouse.getEmail());
-					insertTnantSpouse.setString(9, spouse.getSSN());
-					insertTnantSpouse.setDate(10, new Date(spouse.getDateOfBirth().getTime()));
-					insertTnantSpouse.setInt(11, spouse.getAnnualIncome());
+					insertTnantSpouse.setInt(1, roomMate.getId());
+					insertTnantSpouse.setInt(2, roomMate.getFk());
+					insertTnantSpouse.setTimestamp(3, Timestamp.valueOf(roomMate.getDateCreated()));
+					insertTnantSpouse.setTimestamp(4, Timestamp.valueOf(roomMate.getDateModified()));
+					insertTnantSpouse.setString(5, roomMate.getFirstName());
+					insertTnantSpouse.setString(6, roomMate.getLastName());
+					insertTnantSpouse.setString(7, roomMate.getPhone());
+					insertTnantSpouse.setString(8, roomMate.getEmail());
+					insertTnantSpouse.setString(9, roomMate.getSsn());
+					insertTnantSpouse.setDate(10, Date.valueOf(roomMate.getDateOfBirth()));
+					insertTnantSpouse.setInt(11, roomMate.getAnnualIncome());
 
 					insertTnantSpouse.execute();
 					insertTnantSpouse.clearParameters();
@@ -2401,17 +2293,17 @@ public class SQLBridge {
 					if (Main.DEBUG)
 						System.out.println("Saving Spouse(candidate)");
 					
-					insertCandSpouse.setInt(1, spouse.getId());
-					insertCandSpouse.setInt(2, spouse.getFk());
-					insertCandSpouse.setTimestamp(3, new Timestamp(spouse.getDateCreated().getTime()));
-					insertCandSpouse.setTimestamp(4, new Timestamp(spouse.getDateModified().getTime()));
-					insertCandSpouse.setString(5, spouse.getFirstName());
-					insertCandSpouse.setString(6, spouse.getLastName());
-					insertCandSpouse.setString(7, spouse.getPhone());
-					insertCandSpouse.setString(8, spouse.getEmail());
-					insertCandSpouse.setString(9, spouse.getSSN());
-					insertCandSpouse.setDate(10, new Date(spouse.getDateOfBirth().getTime()));
-					insertCandSpouse.setInt(11, spouse.getAnnualIncome());
+					insertCandSpouse.setInt(1, roomMate.getId());
+					insertCandSpouse.setInt(2, roomMate.getFk());
+					insertCandSpouse.setTimestamp(3, Timestamp.valueOf(roomMate.getDateCreated()));
+					insertCandSpouse.setTimestamp(4, Timestamp.valueOf(roomMate.getDateModified()));
+					insertCandSpouse.setString(5, roomMate.getFirstName());
+					insertCandSpouse.setString(6, roomMate.getLastName());
+					insertCandSpouse.setString(7, roomMate.getPhone());
+					insertCandSpouse.setString(8, roomMate.getEmail());
+					insertCandSpouse.setString(9, roomMate.getSsn());
+					insertCandSpouse.setDate(10, Date.valueOf(roomMate.getDateOfBirth()));
+					insertCandSpouse.setInt(11, roomMate.getAnnualIncome());
 
 					insertCandSpouse.execute();
 					insertCandSpouse.clearParameters();
@@ -2422,89 +2314,53 @@ public class SQLBridge {
 		}
 	}
 
+	//TODO: Delete anything related to Invoice class for new Account class
 	/**
 	 * Inserts a new Invoice into the server
-	 * @param invoice Invoice to insert
+	 * @param account Invoice to insert
 	 * @param table Selects table to insert into   
 	 * */
-	public void insert(Invoice invoice, DBTables table) {
+	public void insert(Account account, DBTables table) {
 		try {
 			switch (table) {
 				case TENANTS:
 					if (Main.DEBUG)
 						System.out.println("Saving Invoice(tenant)");
 					
-					insertTnantInvoice.setInt(1, invoice.getId());
-					insertTnantInvoice.setInt(2, invoice.getFk());
-					insertTnantInvoice.setTimestamp(3, new Timestamp(invoice.getDateCreated().getTime()));
-					insertTnantInvoice.setTimestamp(4, new Timestamp(invoice.getDateModified().getTime()));
-					insertTnantInvoice.setDouble(5, invoice.getPayment());
-					insertTnantInvoice.setDouble(6,invoice.getDues());
-					insertTnantInvoice.setDouble(7, invoice.getBalance());
-					insertTnantInvoice.setDouble(8, invoice.getTotalPaid());
-					insertTnantInvoice.setDouble(9, invoice.getTotalDue());
-					insertTnantInvoice.setTimestamp(10, new Timestamp(invoice.getPaymentDate().getTime()));
-					insertTnantInvoice.setTimestamp(11, new Timestamp(invoice.getDueDate().getTime()));
+					insertTnantAccount.setInt(1, account.getId());
+					insertTnantAccount.setInt(2, account.getFk());
+					insertTnantAccount.setTimestamp(3, Timestamp.valueOf(account.getDateCreated()));
+					insertTnantAccount.setTimestamp(4, Timestamp.valueOf(account.getDateModified()));
 
-					insertTnantInvoice.execute();
-					insertTnantInvoice.clearParameters();
+
+					insertTnantAccount.execute();
+					insertTnantAccount.clearParameters();
 					break;
 				case CONTRACTORS:
 					if (Main.DEBUG)
 						System.out.println("Saving Invoice (Contractor)");
 					
-					insertContInvoice.setInt(1, invoice.getId());
-					insertContInvoice.setInt(2, invoice.getFk());
-					insertContInvoice.setTimestamp(3, new Timestamp(invoice.getDateCreated().getTime()));
-					insertContInvoice.setTimestamp(4, new Timestamp(invoice.getDateModified().getTime()));
-					insertContInvoice.setDouble(5, invoice.getPayment());
-					insertContInvoice.setDouble(6,invoice.getDues());
-					insertContInvoice.setDouble(7, invoice.getBalance());
-					insertContInvoice.setDouble(8, invoice.getTotalPaid());
-					insertContInvoice.setDouble(9, invoice.getTotalDue());
-					insertContInvoice.setTimestamp(10, new Timestamp(invoice.getPaymentDate().getTime()));
-					insertContInvoice.setTimestamp(11, new Timestamp(invoice.getDueDate().getTime()));
+					insertContAccount.setInt(1, account.getId());
+					insertContAccount.setInt(2, account.getFk());
+					insertContAccount.setTimestamp(3, Timestamp.valueOf(account.getDateCreated()));
+					insertContAccount.setTimestamp(4, Timestamp.valueOf(account.getDateModified()));
 
-					insertContInvoice.execute();
-					insertContInvoice.clearParameters();
-					break;
-				case INSURANCES:
-					if (Main.DEBUG)
-						System.out.println("Saving Invoice (Insurance)");
-					
-					insertInsInvoice.setInt(1, invoice.getId());
-					insertInsInvoice.setInt(2, invoice.getFk());
-					insertInsInvoice.setTimestamp(3, new Timestamp(invoice.getDateCreated().getTime()));
-					insertInsInvoice.setTimestamp(4, new Timestamp(invoice.getDateModified().getTime()));
-					insertInsInvoice.setDouble(5, invoice.getPayment());
-					insertInsInvoice.setDouble(6,invoice.getDues());
-					insertInsInvoice.setDouble(7, invoice.getBalance());
-					insertInsInvoice.setDouble(8, invoice.getTotalPaid());
-					insertInsInvoice.setDouble(9, invoice.getTotalDue());
-					insertInsInvoice.setTimestamp(10, new Timestamp(invoice.getPaymentDate().getTime()));
-					insertInsInvoice.setTimestamp(11, new Timestamp(invoice.getDueDate().getTime()));
 
-					insertInsInvoice.execute();
-					insertInsInvoice.clearParameters();
+					insertContAccount.execute();
+					insertContAccount.clearParameters();
 					break;
 				case BILLS:
 					if (Main.DEBUG)
 						System.out.println("Saving Invoice (Bill)");
 					
-					insertBillInvoice.setInt(1, invoice.getId());
-					insertBillInvoice.setInt(2, invoice.getFk());
-					insertBillInvoice.setTimestamp(3, new Timestamp(invoice.getDateCreated().getTime()));
-					insertBillInvoice.setTimestamp(4, new Timestamp(invoice.getDateModified().getTime()));
-					insertBillInvoice.setDouble(5, invoice.getPayment());
-					insertBillInvoice.setDouble(6,invoice.getDues());
-					insertBillInvoice.setDouble(7, invoice.getBalance());
-					insertBillInvoice.setDouble(8, invoice.getTotalPaid());
-					insertBillInvoice.setDouble(9, invoice.getTotalDue());
-					insertBillInvoice.setTimestamp(10, new Timestamp(invoice.getPaymentDate().getTime()));
-					insertBillInvoice.setTimestamp(11, new Timestamp(invoice.getDueDate().getTime()));
+					insertBillAccount.setInt(1, account.getId());
+					insertBillAccount.setInt(2, account.getFk());
+					insertBillAccount.setTimestamp(3, Timestamp.valueOf(account.getDateCreated()));
+					insertBillAccount.setTimestamp(4, Timestamp.valueOf(account.getDateModified()));
 
-					insertBillInvoice.execute();
-					insertBillInvoice.clearParameters();
+
+					insertBillAccount.execute();
+					insertBillAccount.clearParameters();
 					break;
 				default:
 					//stuff
@@ -2519,6 +2375,32 @@ public class SQLBridge {
 
 	// ---------------------------------------------------------------------------------
 	// Update methods
+	public void update(Table table) {
+		switch (table.getTableType()){
+			case APARTMENTS:
+				update((Apartment) table);
+				break;
+			case TENANTS:
+				update((Tenant) table);
+				break;
+			case CANDIDATES:
+				update((Candidate) table);
+				break;
+			case CONTRACTORS:
+				update((Contractor) table);
+				break;
+			case BILLS:
+				update((Bill) table);
+				break;
+			case INSPECTIONS:
+			case ISSUES:
+				update((NoteLog) table, table.getTableType());
+				break;
+			default:
+				System.out.println("Table does not have the functionality to be inserted into database");
+		}
+	}
+
 	/**
 	 * Updates existing Apartment in the server
 	 * @param apartment Apartment to be updated
@@ -2603,25 +2485,6 @@ public class SQLBridge {
 	}
 
 	/**
-	 * Updates existing Insurance in the server
-	 * @param insurance Insurance to be updated
-	 * */
-	public void update(Insurance insurance) {
-		try {
-			if (Main.DEBUG)
-				System.out.println("Updating Apartment");
-			
-			connection.setAutoCommit(false);
-			delete(insurance);
-			insert(insurance);
-			connection.commit();
-			connection.setAutoCommit(true);
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-	}
-
-	/**
 	 * Updates existing Bill in the server
 	 * @param bill Bill to be updated
 	 * */
@@ -2663,17 +2526,17 @@ public class SQLBridge {
 
 	/**
 	 * Updates existing Spouse in the server
-	 * @param spouse Spouse to be updated
+	 * @param roomMate Spouse to be updated
 	 * @param table Selects table to update
 	 * */
-	public void update(Spouse spouse, DBTables table) {
+	public void update(RoomMate roomMate, DBTables table) {
 		try {
 			if (Main.DEBUG)
 				System.out.println("Updating Apartment");
 			
 			connection.setAutoCommit(false);
-			delete(spouse,table);
-			insert(spouse,table);
+			delete(roomMate,table);
+			insert(roomMate,table);
 			connection.commit();
 			connection.setAutoCommit(true);
 		} catch (SQLException e) {
@@ -2686,7 +2549,7 @@ public class SQLBridge {
 	 * @param invoice Invoice to be updated
 	 * @param table Selects table to update
 	 * */
-	public void update(Invoice invoice, DBTables table) {
+	public void update(Account invoice, DBTables table) {
 		try {
 			if (Main.DEBUG)
 				System.out.println("Updating Apartment");
@@ -2704,6 +2567,39 @@ public class SQLBridge {
 
 	// ---------------------------------------------------------------------------------
 	// Delete methods
+	/***/
+	public void delete(Table table) {
+		switch (table.getTableType()) {
+			case APARTMENTS:
+				delete((Apartment) table);
+				break;
+			case TENANTS:
+				delete((Tenant) table);
+				break;
+			case CANDIDATES:
+				delete((Candidate) table);
+				break;
+			case CONTRACTORS:
+				delete((Contractor) table);
+				break;
+			case ACCOUNT:
+				//Insert account deletion
+				break;
+			case ROOMMATE:
+				delete((RoomMate) table, table.getTableType());
+				break;
+			case BILLS:
+				delete((Bill) table);
+				break;
+			case INSPECTIONS:
+			case ISSUES:
+				delete((NoteLog) table, table.getTableType());
+				break;
+			default:
+				break;
+		}
+	}
+
 	/**
 	 * Deletes Apartment in the server
 	 * @param apartment Apartment to be deleted
@@ -2773,22 +2669,6 @@ public class SQLBridge {
 	}
 
 	/**
-	 * Deletes Insurance in the server
-	 * @param insurance Insurance to be deleted
-	 * */
-	public void delete(Insurance insurance) {
-		try {
-			if (Main.DEBUG)
-				System.out.println("Deleting Apartment");
-			
-			deleteInsurance.setInt(1, insurance.getId());
-			deleteInsurance.execute();
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-	}
-
-	/**
 	 * Deletes Issue/Inspection in the server
 	 * @param issInsp Issue/Inspection to be deleted
 	 * @param table Selects table to delete from
@@ -2838,24 +2718,24 @@ public class SQLBridge {
 
 	/**
 	 * Deletes Spouse in the server
-	 * @param spouse Spouse to be deleted
+	 * @param roomMate Spouse to be deleted
 	 * @param table Selects table to delete from
 	 * */
-	public void delete(Spouse spouse, DBTables table) {
+	public void delete(RoomMate roomMate, DBTables table) {
 		try {
 			switch(table){
 				case TENANTS:
 					if (Main.DEBUG)
 						System.out.println("Deleting Apartment");
 					
-					deleteTnantSpouse.setInt(1, spouse.getId());
+					deleteTnantSpouse.setInt(1, roomMate.getId());
 					deleteInspection.execute();
 					break;
 				case CANDIDATES:
 					if (Main.DEBUG)
 						System.out.println("Deleting Apartment");
 					
-					deleteCandSpouse.setInt(1, spouse.getId());
+					deleteCandSpouse.setInt(1, roomMate.getId());
 					deleteInspection.execute();
 					break;
 				default:
@@ -2869,38 +2749,38 @@ public class SQLBridge {
 
 	/**
 	 * Deletes Invoice in the server
-	 * @param invoice Invoice to be deleted
+	 * @param account Invoice to be deleted
 	 * @param table Selects table to delete from
 	 * */
-	public void delete(Invoice invoice, DBTables table) {
+	public void delete(Account account, DBTables table) {
 		try {
 			switch (table) {
 				case TENANTS:
 					if (Main.DEBUG)
 						System.out.println("Deleting Apartment");
 					
-					deleteTnantInvoice.setInt(1, invoice.getId());
+					deleteTnantInvoice.setInt(1, account.getId());
 					deleteTnantInvoice.execute();
 					break;
 				case CONTRACTORS:
 					if (Main.DEBUG)
 						System.out.println("Deleting Apartment");
 					
-					deleteContInvoice.setInt(1, invoice.getId());
+					deleteContInvoice.setInt(1, account.getId());
 					deleteContInvoice.execute();
 					break;
-				case INSURANCES:
-					if (Main.DEBUG)
-						System.out.println("Deleting Apartment");
-					
-					deleteInsInvoice.setInt(1, invoice.getId());
-					deleteInsInvoice.execute();
-					break;
+//				case INSURANCES:
+//					if (Main.DEBUG)
+//						System.out.println("Deleting Apartment");
+//
+//					deleteInsInvoice.setInt(1, account.getId());
+//					deleteInsInvoice.execute();
+//					break;
 				case BILLS:
 					if (Main.DEBUG)
 						System.out.println("Deleting Apartment");
 					
-					deleteBillInvoice.setInt(1, invoice.getId());
+					deleteBillInvoice.setInt(1, account.getId());
 					deleteInsInvoice.execute();
 					break;
 				default:
@@ -2925,16 +2805,16 @@ public class SQLBridge {
 			insertApartment = connection.prepareStatement(INSERT_INTO_APARTMENTS);
 			insertTenant = connection.prepareStatement(INSERT_INTO_TENANTS);
 			insertTnantSpouse = connection.prepareStatement(INSERT_INTO_TNANT_SPOUSES);
-			insertTnantInvoice = connection.prepareStatement(INSERT_INTO_TNANT_INVOICES);
+			insertTnantAccount = connection.prepareStatement(INSERT_INTO_TNANT_INVOICES);
 			insertInspection = connection.prepareStatement(INSERT_INTO_INSPECTIONS);
 			insertCandidate = connection.prepareStatement(INSERT_INTO_CANDIDATES);
 			insertCandSpouse = connection.prepareStatement(INSERT_INTO_CAND_SPOUSES);
 			insertContractor = connection.prepareStatement(INSERT_INTO_CONTRACTORS);
-			insertContInvoice = connection.prepareStatement(INSERT_INTO_CONT_INVOICES);
+			insertContAccount = connection.prepareStatement(INSERT_INTO_CONT_INVOICES);
 			insertInsurance = connection.prepareStatement(INSERT_INTO_INSURANCES);
 			insertInsInvoice = connection.prepareStatement(INSERT_INTO_INS_INVOICES);
 			insertBill = connection.prepareStatement(INSERT_INTO_BILLS);
-			insertBillInvoice = connection.prepareStatement(INSERT_INTO_BILL_INVOICES);
+			insertBillAccount = connection.prepareStatement(INSERT_INTO_BILL_INVOICES);
 			insertIssue = connection.prepareStatement(INSERT_INTO_ISSUES);
 
 			//Updates
@@ -2987,16 +2867,16 @@ public class SQLBridge {
 				insertApartment.close();
 				insertTenant.close();
 				insertTnantSpouse.close();
-				insertTnantInvoice.close();
+				insertTnantAccount.close();
 				insertInspection.close();
 				insertCandidate.close();
 				insertCandSpouse.close();
 				insertContractor.close();
-				insertContInvoice.close();
+				insertContAccount.close();
 				insertInsurance.close();
 				insertInsInvoice.close();
 				insertBill.close();
-				insertBillInvoice.close();
+				insertBillAccount.close();
 				insertIssue.close();
 
 				//Update Prepared Statements

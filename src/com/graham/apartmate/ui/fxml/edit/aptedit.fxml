@@ -10,7 +10,7 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="417.0"
       prefWidth="402.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.graham.apartmate.ui.editwindows.apartment.AptEditController">
+      fx:controller="com.graham.apartmate.ui.windows.editwindows.apartment.AptEditController">
     <children>
         <HBox prefHeight="359.0" prefWidth="402.0">
             <children>

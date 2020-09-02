@@ -1,12 +1,20 @@
 package com.graham.apartmate.database.tables.mainTables;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
-import com.graham.apartmate.database.tables.subTables.EContact;
-import com.graham.apartmate.database.tables.subTables.Spouse;
+import com.graham.apartmate.database.tables.subTables.Account;
+import com.graham.apartmate.database.tables.subTables.Lease;
+import com.graham.apartmate.database.tables.subTables.PersonalContact;
+import com.graham.apartmate.database.tables.subTables.RoomMate;
 
 import com.graham.apartmate.main.Main;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 
 /**
@@ -15,90 +23,95 @@ import javafx.scene.image.Image;
  * Records the information of a candidate looking to rent a specific Apartment
  *
  * @see Table
- * @see Spouse
+ * @see RoomMate
  * @author Paul Graham Jr (pjhg14@gmail.com)
  * @version {@value Main#VERSION}
  * @since Can we call this an alpha? (0.1)
  */
 public class Candidate extends Table {
 
+	//------------------------------------------------------------
+	//Fields//////////////////////////////////////////////////////
+	//------------------------------------------------------------
 	/**
 	 * Serialization long
 	 * */
 	private static final long serialVersionUID = 1L;
 
-	/***/
-	private Image image;
-
 	// Mandatory fields
 	/**
 	 * First name of Candidate
 	 * */
-	private String firstName;
+	private final SimpleStringProperty firstName;
 
 	/**
 	 * Last name of Candidate
 	 * */
-	private String lastName;
+	private final SimpleStringProperty lastName;
 
 	/**
 	 * Candidate's phone number
 	 * */
-	private String phone;
+	private final SimpleStringProperty phone;
 
 	/**
 	 * Candidate's email
 	 * */
-	private String email;
+	private final SimpleStringProperty email;
 
 	/**
 	 * Candidate's ID number
 	 * */
-	private String SSN;
+	private final SimpleStringProperty ssn;
+
+	/**
+	 * Candidates number of children
+	 * */
+	private final SimpleIntegerProperty numChildren;
 
 	// Optional fields
 	/**
 	 * Candidate's date of birth
 	 * */
-	private Date dateOfBirth;
+	private final SimpleObjectProperty<LocalDate> dateOfBirth;
 
 	/**
 	 * Candidate's annual Income
 	 * */
-	private int annualIncome;
-
-	/**
-	 * Candidates number of children
-	 * */
-	private int numChildren;
+	private final SimpleIntegerProperty annualIncome;
 
 	/**
 	 * Whether the Candidate is accepted or not (used to convert a candidate to a tenant)
 	 * */
-	private boolean accepted;
+	private final SimpleBooleanProperty accepted;
 
 	// Candidate sub-tables
 	/**
 	 * Data of Candidate's Spouse (if any)
 	 * */
-	private Spouse spouse;
+	private ObservableList<RoomMate> roomMates;
 
 	/**
 	 * Candidate's first contact
 	 * */
-	private EContact contact1;
+	private PersonalContact contact1;
 
 	/**
 	 * Candidate's second contact
 	 * */
-	private EContact contact2;
+	private PersonalContact contact2;
+	//------------------------------------------------------------
+	//------------------------------------------------------------
 
+	//------------------------------------------------------------
+	//Constructor/////////////////////////////////////////////////
+	//------------------------------------------------------------
 	/**
 	 * Default Constructor
 	 * */
 	public Candidate() {
-		this(0,0,"","","","","",new Date(),0,0,
-				new Spouse(DUMMY_TABLE),new EContact(DUMMY_TABLE), new EContact(DUMMY_TABLE));
+		this(0,0,"","","","","",LocalDate.MIN,0,0,
+				null, null);
 	}
 
 	/**
@@ -114,52 +127,48 @@ public class Candidate extends Table {
 	/**
 	 * Mandatory field constructor w/o spouse
 	 * */
-	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, String SSN,
-					 EContact contact1, EContact contact2) {
-		this(id, fk, firstName, lastName, phone, email, SSN, new Date(), 0,0,
-				new Spouse(DUMMY_TABLE), contact1, contact2);
+	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, String ssn,
+					 PersonalContact contact1, PersonalContact contact2) {
+		this(id, fk, firstName, lastName, phone, email, ssn, LocalDate.MIN, 0,0,
+				contact1, contact2);
 	}
 
 	/**
-	 * Mandatory field constructor w/ spouse
+	 * ... constructor
 	 * */
-	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, String SSN,
-			Spouse spouse, EContact contact1, EContact contact2) {
-		this(id, fk, firstName, lastName, phone, email, SSN, new Date(),0,0,
-				spouse, contact1,contact2);
+	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, LocalDate dateOfBirth,
+					 int annualIncome, String ssn, int numChildren, PersonalContact contact1, PersonalContact contact2) {
+		this(id, fk, firstName, lastName, phone, email, ssn, dateOfBirth ,annualIncome, numChildren,
+				contact1, contact2);
 	}
 
 	/**
-	 * Full constructor w/o spouse
+	 * Full constructor
 	 * */
-	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, Date dateOfBirth,
-			int annualIncome, String SSN, int numChildren, EContact contact1, EContact contact2) {
-		this(id, fk, firstName, lastName, phone, email, SSN, dateOfBirth ,annualIncome, numChildren,
-				new Spouse(DUMMY_TABLE),contact1, contact2);
-	}
-
-	/**
-	 * Full constructor w/ spouse
-	 * */
-	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email,String SSN,
-					 Date dateOfBirth, int annualIncome,  int numChildren, Spouse spouse, EContact contact1,
-					 EContact contact2) {
+	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, String ssn,
+					 LocalDate dateOfBirth, int annualIncome, int numChildren, PersonalContact contact1,
+					 PersonalContact contact2) {
 		super(id, fk);
 		image = new Image("com/graham/apartmate/ui/res/Tenantimg_small.png");
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.phone = phone;
-		this.email = email;
-		this.dateOfBirth = dateOfBirth;
-		this.annualIncome = annualIncome;
-		this.SSN = SSN;
-		this.numChildren = numChildren;
-		accepted = false;
-		this.spouse = spouse;
+		this.firstName = new SimpleStringProperty(firstName);
+		this.lastName = new SimpleStringProperty(lastName);
+		this.phone = new SimpleStringProperty(phone);
+		this.email = new SimpleStringProperty(email);
+		this.dateOfBirth = new SimpleObjectProperty<>(dateOfBirth);
+		this.annualIncome = new SimpleIntegerProperty(annualIncome);
+		this.ssn = new SimpleStringProperty(ssn);
+		this.numChildren = new SimpleIntegerProperty(numChildren);
+		accepted = new SimpleBooleanProperty(false);
+		this.roomMates = FXCollections.observableArrayList();
 		this.contact1 = contact1;
 		this.contact2 = contact2;
 	}
+	//------------------------------------------------------------
+	//------------------------------------------------------------
 
+	//------------------------------------------------------------
+	//Overrided & Utility Methods/////////////////////////////////
+	//------------------------------------------------------------
 	/**
 	 * Overrided toString() method
 	 * <p>
@@ -167,25 +176,25 @@ public class Candidate extends Table {
 	 * */
 	@Override
 	public String toString() {
-		return String.format("Candidate: %s; %s, %s", super.getId() ,lastName, firstName);
+		return String.format("Candidate: %s; %s, %s", super.getId() ,getLastName(), getFirstName());
 	}
 
-	/***/
+	/**
+	 * Gets the main identifying name of an instance of a Table
+	 * @return Table's "generic" name
+	 * */
 	@Override
 	public String getGenericName() {
 		return getFullName();
 	}
 
-	/***/
+	/**
+	 * Gets the type of Table in question
+	 * @return table type
+	 * */
 	@Override
 	public DBTables getTableType() {
 		return DBTables.CANDIDATES;
-	}
-
-	/***/
-	@Override
-	public Image getImage() {
-		return image;
 	}
 
 	/**
@@ -193,7 +202,7 @@ public class Candidate extends Table {
 	 * @return first name, last name
 	 * */
 	public String getFullName() {
-		return firstName + " " + lastName;
+		return getFirstName() + " " + getLastName();
 	}
 
 	/**
@@ -201,7 +210,23 @@ public class Candidate extends Table {
 	 * @return last name, first name
 	 * */
 	public String getProperName() {
-		return lastName + ", " + firstName;
+		return getLastName() + ", " + getFirstName();
+	}
+
+	/**
+	 * Tests whether the current candidate has an invalid name
+	 * @return <code>false</code> if either first name or last name is empty, <code>true</code> if not
+	 * */
+	public boolean hasInvalidName() {
+		return getFirstName().equals("") || getLastName().equals("");
+	}
+
+	/**
+	 * Accepts the Candidate and converts it to a Tenant
+	 * @return New Tenant from current Candidate
+	 * */
+	public Tenant accept(Account account, Lease lease, LocalDate movInDate) {
+		return new Tenant(this, movInDate, account, lease);
 	}
 
 	/**
@@ -209,30 +234,41 @@ public class Candidate extends Table {
 	 * @return <code>true</code> if Candidate has a Spouse <code>false</code> if not
 	 * */
 	public boolean hasSpouse() {
-		return !spouse.isDummy();
+		for (RoomMate roomMate : roomMates) {
+			if (roomMate.isSpouse())
+				return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Adds a roommate to the candidate
+	 * */
+	public void addRoomMate(RoomMate roomMate) {
+		roomMates.add(roomMate);
 	}
 
 	/**
 	 * Removes Candidate's Spouse
 	 * */
-	public void removeSpouse() {
-		spouse = new Spouse(DUMMY_TABLE);
+	public void removeRoomMate(RoomMate roomMate) {
+		roomMates.remove(roomMate);
 	}
+	//------------------------------------------------------------
+	//------------------------------------------------------------
+
 	//------------------------------------------------------------
 	// General getters and setters////////////////////////////////
 	//------------------------------------------------------------
-	/***/
-	public void setImage(Image image) {
-		this.image = image;
-	}
-
 	/**
 	 * Getter:
 	 * <p>
 	 * Gets first name of Candidate
-	 * @return first name*/
+	 * @return first name
+	 * */
 	public String getFirstName() {
-		return firstName;
+		return firstName.get();
 	}
 
 	/**
@@ -242,7 +278,17 @@ public class Candidate extends Table {
 	 * @param firstName New first name
 	 * */
 	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+		this.firstName.set(firstName);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets first name field property
+	 * @return first name property
+	 * */
+	public SimpleStringProperty firstNameProperty() {
+		return firstName;
 	}
 
 	/**
@@ -252,7 +298,7 @@ public class Candidate extends Table {
 	 * @return last name
 	 * */
 	public String getLastName() {
-		return lastName;
+		return lastName.get();
 	}
 
 	/**
@@ -262,7 +308,17 @@ public class Candidate extends Table {
 	 * @param lastName New last name
 	 * */
 	public void setLastName(String lastName) {
-		this.lastName = lastName;
+		this.lastName.set(lastName);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets last name field property
+	 * @return last name property
+	 * */
+	public SimpleStringProperty lastNameProperty() {
+		return lastName;
 	}
 
 	/**
@@ -272,7 +328,7 @@ public class Candidate extends Table {
 	 * @return phone #
 	 * */
 	public String getPhone() {
-		return phone;
+		return phone.get();
 	}
 
 	/**
@@ -282,7 +338,17 @@ public class Candidate extends Table {
 	 * @param phone New phone #
 	 * */
 	public void setPhone(String phone) {
-		this.phone = phone;
+		this.phone.set(phone);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets phone field property
+	 * @return phone property
+	 * */
+	public SimpleStringProperty phoneProperty() {
+		return phone;
 	}
 
 	/**
@@ -292,7 +358,7 @@ public class Candidate extends Table {
 	 * @return email
 	 * */
 	public String getEmail() {
-		return email;
+		return email.get();
 	}
 
 	/**
@@ -302,7 +368,17 @@ public class Candidate extends Table {
 	 * @param email New email
 	 * */
 	public void setEmail(String email) {
-		this.email = email;
+		this.email.set(email);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets email field property
+	 * @return email property
+	 * */
+	public SimpleStringProperty emailProperty() {
+		return email;
 	}
 
 	/**
@@ -311,8 +387,8 @@ public class Candidate extends Table {
 	 * Gets Candidate's Id number
 	 * @return idn
 	 * */
-	public String getSSN() {
-		return SSN;
+	public String getSsn() {
+		return ssn.get();
 	}
 
 	/**
@@ -321,8 +397,18 @@ public class Candidate extends Table {
 	 * Sets Candidate's idn
 	 * @param sSN New idn
 	 * */
-	public void setSSN(String sSN) {
-		SSN = sSN;
+	public void setSsn(String sSN) {
+		ssn.set(sSN);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets ssn field property
+	 * @return ssn property
+	 * */
+	public SimpleStringProperty ssnProperty() {
+		return ssn;
 	}
 
 	/**
@@ -331,8 +417,8 @@ public class Candidate extends Table {
 	 * Gets Candidate's date of birth
 	 * @return date of birth
 	 * */
-	public Date getDateOfBirth() {
-		return dateOfBirth;
+	public LocalDate getDateOfBirth() {
+		return dateOfBirth.get();
 	}
 
 	/**
@@ -341,8 +427,18 @@ public class Candidate extends Table {
 	 * Sets Candidate's date of birth
 	 * @param dateOfBirth New date of birth
 	 * */
-	public void setDateOfBirth(Date dateOfBirth) {
-		this.dateOfBirth = dateOfBirth;
+	public void setDateOfBirth(LocalDate dateOfBirth) {
+		this.dateOfBirth.set(dateOfBirth);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets date of birth field property
+	 * @return date of birth property
+	 * */
+	public SimpleObjectProperty<LocalDate> dateOfBirthProperty() {
+		return dateOfBirth;
 	}
 
 	/**
@@ -352,7 +448,7 @@ public class Candidate extends Table {
 	 * @return annual income
 	 * */
 	public int getAnnualIncome() {
-		return annualIncome;
+		return annualIncome.get();
 	}
 
 	/**
@@ -362,7 +458,17 @@ public class Candidate extends Table {
 	 * @param annualIncome New annual income
 	 * */
 	public void setAnnualIncome(int annualIncome) {
-		this.annualIncome = annualIncome;
+		this.annualIncome.set(annualIncome);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets annual income field property
+	 * @return annual income property
+	 * */
+	public SimpleIntegerProperty annualIncomeProperty() {
+		return annualIncome;
 	}
 
 	/**
@@ -372,7 +478,7 @@ public class Candidate extends Table {
 	 * @return # of children
 	 * */
 	public int getNumChildren() {
-		return numChildren;
+		return numChildren.get();
 	}
 
 	/**
@@ -382,7 +488,17 @@ public class Candidate extends Table {
 	 * @param numChildren New # of children
 	 * */
 	public void setNumChildren(int numChildren) {
-		this.numChildren = numChildren;
+		this.numChildren.set(numChildren);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets number of children field property
+	 * @return number of children property
+	 * */
+	public SimpleIntegerProperty numChildrenProperty() {
+		return numChildren;
 	}
 
 	/**
@@ -393,7 +509,7 @@ public class Candidate extends Table {
 	 * <code>false</code> if not so
 	 * */
 	public boolean isAccepted() {
-		return accepted;
+		return accepted.get();
 	}
 
 	/**
@@ -402,8 +518,18 @@ public class Candidate extends Table {
 	 * Sets whether the Candidate has been accepted or not
 	 * @param accepted New value
 	 * */
-	public void setAccepted(boolean accepted) {
-		this.accepted = accepted;
+	protected void setAccepted(boolean accepted) {
+		this.accepted.set(accepted);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets accepted field property
+	 * @return accepted property
+	 * */
+	public SimpleBooleanProperty acceptedProperty() {
+		return accepted;
 	}
 
 	/**
@@ -412,18 +538,18 @@ public class Candidate extends Table {
 	 * Gets the Candidate's Spouse
 	 * @return Spouse information
 	 * */
-	public Spouse getSpouse() {
-		return spouse;
+	public ObservableList<RoomMate> getRoomMates() {
+		return FXCollections.unmodifiableObservableList(roomMates);
 	}
 
 	/**
 	 * Setter:
 	 * <p>
 	 * Sets the Candidate's Spouse
-	 * @param spouse New Spouse
+	 * @param roomMate New Spouse
 	 * */
-	public void setSpouse(Spouse spouse) {
-		this.spouse = spouse;
+	public void setSpouse(ObservableList<RoomMate> roomMate) {
+		this.roomMates = roomMate;
 	}
 
 	/**
@@ -431,7 +557,7 @@ public class Candidate extends Table {
 	 * <p>
 	 * Gets Candidate's first Emergency Contact
 	 * */
-	public EContact getContact1() {
+	public PersonalContact getContact1() {
 		return contact1;
 	}
 
@@ -440,7 +566,7 @@ public class Candidate extends Table {
 	 * <p>
 	 * Sets Candidate's first Emergency Contact
 	 * */
-	public void setContact1(EContact contact1) {
+	public void setContact1(PersonalContact contact1) {
 		this.contact1 = contact1;
 	}
 
@@ -449,7 +575,7 @@ public class Candidate extends Table {
 	 * <p>
 	 * Gets Candidate's second Emergency Contact
 	 * */
-	public EContact getContact2() {
+	public PersonalContact getContact2() {
 		return contact2;
 	}
 
@@ -458,9 +584,9 @@ public class Candidate extends Table {
 	 * <p>
 	 * Sets Candidate's second Emergency Contact
 	 * */
-	public void setContact2(EContact contact2) {
+	public void setContact2(PersonalContact contact2) {
 		this.contact2 = contact2;
 	}
-
+	//------------------------------------------------------------
 	//------------------------------------------------------------
 }

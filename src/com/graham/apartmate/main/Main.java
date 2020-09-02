@@ -1,7 +1,7 @@
 package com.graham.apartmate.main;
 
-import com.graham.apartmate.ui.windows.FXMLLocation;
-import com.graham.apartmate.ui.windows.WindowLibrary;
+import com.graham.apartmate.ui.libraries.FXMLLocation;
+import com.graham.apartmate.ui.libraries.WindowLibrary;
 
 import javafx.application.Application;
 import javafx.stage.Stage;

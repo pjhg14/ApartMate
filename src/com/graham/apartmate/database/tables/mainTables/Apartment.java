@@ -1,14 +1,15 @@
 package com.graham.apartmate.database.tables.mainTables;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.subTables.Bill;
-import com.graham.apartmate.database.tables.subTables.Insurance;
 import com.graham.apartmate.database.tables.subTables.NoteLog;
+import com.graham.apartmate.database.tables.subTables.Room;
 import com.graham.apartmate.main.Main;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 
 /**
@@ -18,7 +19,6 @@ import javafx.scene.image.Image;
  * Insurance, Bill, and Issue
  *
  * @see Table
- * @see Insurance
  * @see Bill
  * @see NoteLog
  * @author Paul Graham Jr (pjhg14@gmail.com)
@@ -27,68 +27,80 @@ import javafx.scene.image.Image;
  */
 public class Apartment extends Table {
 
+	//--------------------------------------------------------------------
+	//Fields//////////////////////////////////////////////////////////////
+	//--------------------------------------------------------------------
 	/**
 	 * Serialization long
 	 * */
 	private static final long serialVersionUID = 1L;
 
-	/***/
-	private Image image;
-
 	/**
 	 * Name of Apartment
 	 * */
-	private String address;
+	private final SimpleStringProperty address;
 
 	/**
 	 * Name of City
 	 * */
-	private String city;
+	private final SimpleStringProperty city;
 
 	/**
 	 * Name of State
 	 * */
-	private String state;
+	private final SimpleStringProperty state;
 
 	/**
 	 * Zip-Code String
 	 * */
-	private String zipCode;
-
-	/**
-	 * # of occupants the Apartment can hold
-	 * */
-	private int capacity;
-
-	/**
-	 * # of Tenants currently within the Apartment
-	 * */
-	private int numTenants;
+	private final SimpleStringProperty zipCode;
 
 	// Sub-tables
 	/**
-	 * List of Insurances
-	 * (TO BE REMOVED)
-	 * */
-	private List<Insurance> insurances;
-
-	/**
-	 * List of Issues
-	 * */
-	private List<NoteLog> issues;
-
-	/**
 	 * List of Bills
 	 * */
-	private List<Bill> bills;
-
-//	 /***/
-//	 private List<Room> rooms;
+	private ObservableList<Bill> bills;
 
 	/**
+	 * List of issues
+	 * */
+	private ObservableList<NoteLog> issues;
+
+	/**
+	 * List of rooms
+	 * */
+	private ObservableList<Room> rooms;
+	//--------------------------------------------------------------------
+	//--------------------------------------------------------------------
+
+	//--------------------------------------------------------------------
+	//Order Constants/////////////////////////////////////////////////////
+	//--------------------------------------------------------------------
+	/**
+	 * Sorts Apartment by address
 	 * */
 	public static final Comparator<Apartment> APT_BY_ADDRESS = Comparator.comparing(Apartment::getAddress);
 
+	/**
+	 * Sorts Apartment by city
+	 * */
+	public static final Comparator<Apartment> APT_BY_CITY = Comparator.comparing(Apartment::getCity);
+
+	/**
+	 * Sorts Apartment by state
+	 * */
+	public static final Comparator<Apartment> APT_BY_STATE = Comparator.comparing(Apartment::getState);
+
+	/**
+	 * Sorts Apartment by capacity (number of rooms)
+	 * */
+	public static final Comparator<Apartment> APT_BY_CAPACITY = Comparator.comparing(Apartment::getCapacity);
+	//--------------------------------------------------------------------
+	//--------------------------------------------------------------------
+
+	//--------------------------------------------------------------------
+	//Constructors////////////////////////////////////////////////////////
+	//--------------------------------------------------------------------
 	/**
 	 * Default constructor:
 	 * */
@@ -114,50 +126,53 @@ public class Apartment extends Table {
 	 * @param city city the Apartment is located in
 	 * @param state state the Apartment is located in
 	 * @param zipCode zip-code of the Apartment
-	 * @param capacity Apartment's occupant capacity
+	 * @param initialCapacity Apartment's occupant capacity
 	 * */
-	public Apartment(int id, String address, String city, String state, String zipCode, int capacity) {
+	public Apartment(int id, String address, String city, String state, String zipCode, int initialCapacity) {
 		super(id);
 		image = new Image("com/graham/apartmate/ui/res/Apartmentimg_small.png");
-		this.address = address;
-		this.city = city;
-		this.state = state;
-		this.zipCode = zipCode;
-		this.capacity = capacity;
-		numTenants = 0;
+		this.address = new SimpleStringProperty(address);
+		this.city = new SimpleStringProperty(city);
+		this.state = new SimpleStringProperty(state);
+		this.zipCode = new SimpleStringProperty(zipCode);
 
-		insurances = new ArrayList<>();
-		issues = new ArrayList<>();
-		bills = new ArrayList<>();
-		// rooms = new ArrayList<>();
+		bills = FXCollections.observableArrayList();
+		rooms = FXCollections.observableArrayList();
+		for (int i = 0; i < initialCapacity; i++) {
+			rooms.add(new Room());
+		}
 	}
+	//--------------------------------------------------------------------
+	//--------------------------------------------------------------------
 
+	//--------------------------------------------------------------------
+	//Overrided & Utility Methods/////////////////////////////////////////
+	//--------------------------------------------------------------------
 	/**
 	 * Gives all identifying information for the Apartment
 	 * @return id & location data
 	 * */
 	@Override
 	public String toString() {
-		return String.format("Apartment %d %s %s %s %s", super.getId(),
-				address, city, state, zipCode);
+		return String.format("Apartment %d %s %s %s %s", super.getId(), address, city, state, zipCode);
 	}
 
-	/***/
+	/**
+	 * Gets the main identifying name of an instance of a Table
+	 * @return Table's "generic" name
+	 * */
 	@Override
 	public String getGenericName() {
-		return address;
+		return getAddress();
 	}
 
-	/***/
+	/**
+	 * Gets the type of Table in question
+	 * @return table type
+	 * */
 	@Override
 	public DBTables getTableType() {
 		return DBTables.APARTMENTS;
-	}
-
-	/***/
-	@Override
-	public Image getImage() {
-		return image;
 	}
 
 	/**
@@ -165,46 +180,79 @@ public class Apartment extends Table {
 	 * @return address, city, state, & zipcode
 	 * */
 	public String getLocation() {
-		return address + " " + city + "," + state + " " + zipCode;
+		return getAddress() + " " + getCity() + "," + getState() + " " + getZipCode();
 	}
 
 	/**
-	 * Increments the number of Tenants within the Apartment and returns such
-	 * @return numTenants + 1
+	 * Gives the number of Tenants in the Apartment
+	 * @return # of Tenants
 	 * */
-	public int incrementNumTenants() {
-		return ++numTenants;
-	}
+	public int getNumTenants() {
+		int numTenants = 0;
 
-	/**
-	 * Decrements the number of Tenants within the Apartment and returns such
-	 * @return numTenants - 1
-	 * */
-	public int decrementNumTenants() {
-		if (numTenants > 0) {
-			return --numTenants;
+		for (Room room : rooms) {
+			if (room.hasOccupant()){
+				numTenants++;
+			}
 		}
 
-		return -1;
+		return numTenants;
 	}
 
-//	/***/
-//	public boolean addBill(Bill bill) {
-//		return bills.add(bill);
-//	}
-//
-//	/***/
-//	public boolean removeBill(Bill bill) {
-//		return bills.remove(bill);
-//	}
+	/**
+	 * Gets the capacity (number of rooms) in an Apartment
+	 * */
+	public int getCapacity() {
+		return rooms.size();
+	}
 
-	// *************************************************************
-	// General getters and setters
 	/***/
-	public void setImage(Image image) {
-		this.image = image;
+	public boolean addRoom(Room room) {
+		return rooms.add(room);
 	}
 
+	/***/
+	public boolean removeRoom(Room room) {
+		return rooms.remove(room);
+	}
+
+	/**
+	 * Adds a bill to the bill list
+	 * @return whether or not the bill was successfully added to the list
+	 * */
+	public boolean addBill(Bill bill) {
+		return bills.add(bill);
+	}
+
+	/**
+	 * Removes a bill from the bill list
+	 * @return whether or not the bill was successfully removed from the list
+	 * */
+	public boolean removeBill(Bill bill) {
+		return bills.remove(bill);
+	}
+
+	/**
+	 * Adds an Issue to the issue list
+	 * @return whether or not the issue was successfully added to the list
+	 * */
+	public boolean addIssue(NoteLog issue) {
+		return issues.add(issue);
+	}
+
+	/**
+	 * Removes an Issue from the issue list
+	 * @return whether or not the issue was successfully removed from the list
+	 * */
+	public boolean removeIssue(NoteLog issue) {
+		return issues.remove(issue);
+	}
+	//--------------------------------------------------------------------
+	//--------------------------------------------------------------------
+
+	//--------------------------------------------------------------------
+	//General Getters and setters/////////////////////////////////////////
+	//--------------------------------------------------------------------
 	/**
 	 * Getter:
 	 * <p>
@@ -212,7 +260,7 @@ public class Apartment extends Table {
 	 * @return address
 	 * */
 	public String getAddress() {
-		return address;
+		return address.get();
 	}
 
 	/**
@@ -222,7 +270,17 @@ public class Apartment extends Table {
 	 * @param address New Address
 	 * */
 	public void setAddress(String address) {
-		this.address = address;
+		this.address.set(address);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets address field property
+	 * @return address property
+	 * */
+	public SimpleStringProperty addressProperty() {
+		return address;
 	}
 
 	/**
@@ -232,7 +290,7 @@ public class Apartment extends Table {
 	 * @return city
 	 * */
 	public String getCity() {
-		return city;
+		return city.get();
 	}
 
 	/**
@@ -242,7 +300,17 @@ public class Apartment extends Table {
 	 * @param city New city
 	 * */
 	public void setCity(String city) {
-		this.city = city;
+		this.city.set(city);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets city field property
+	 * @return city property
+	 * */
+	public SimpleStringProperty cityProperty() {
+		return city;
 	}
 
 	/**
@@ -252,7 +320,7 @@ public class Apartment extends Table {
 	 * @return state
 	 * */
 	public String getState() {
-		return state;
+		return state.get();
 	}
 
 	/**
@@ -262,7 +330,17 @@ public class Apartment extends Table {
 	 * @param state New State
 	 * */
 	public void setState(String state) {
-		this.state = state;
+		this.state.set(state);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets state field property
+	 * @return state property
+	 * */
+	public SimpleStringProperty stateProperty() {
+		return state;
 	}
 
 	/**
@@ -272,7 +350,7 @@ public class Apartment extends Table {
 	 * @return zip-code
 	 * */
 	public String getZipCode() {
-		return zipCode;
+		return zipCode.get();
 	}
 
 	/**
@@ -282,87 +360,17 @@ public class Apartment extends Table {
 	 * @param zipCode New zipCode
 	 * */
 	public void setZipCode(String zipCode) {
-		this.zipCode = zipCode;
+		this.zipCode.set(zipCode);
 	}
 
 	/**
 	 * Getter:
 	 * <p>
-	 * Gives the capacity of the Apartment
-	 * @return capacity
+	 * Gets zip code field property
+	 * @return zip code property
 	 * */
-	public int getCapacity() {
-		return capacity;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets the capacity
-	 * @param capacity New capacity
-	 * */
-	public void setCapacity(int capacity) {
-		this.capacity = capacity;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gives the number of Tenants in the Apartment
-	 * @return # of Tenants
-	 * */
-	public int getNumTenants() {
-		return numTenants;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets the # of Tenants
-	 * @param numTenants New # of Tenants
-	 * */
-	public void setNumTenants(int numTenants) {
-		this.numTenants = numTenants;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gives the list of Insurances related to the Apartment
-	 * @return Insurance list
-	 * */
-	public List<Insurance> getInsurances() {
-		return insurances;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Insurance list
-	 * @param insurances New Insurance list
-	 * */
-	public void setInsurances(List<Insurance> insurances) {
-		this.insurances = insurances;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gives the list of Issues related to the Apartment
-	 * @return Issue list
-	 * */
-	public List<NoteLog> getIssues() {
-		return issues;
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Issue list
-	 * @param issues New Issue list
-	 * */
-	public void setIssues(List<NoteLog> issues) {
-		this.issues = issues;
+	public SimpleStringProperty zipCodeProperty() {
+		return zipCode;
 	}
 
 	/**
@@ -371,8 +379,8 @@ public class Apartment extends Table {
 	 * Gets the list of Bills
 	 * @return bill list
 	 * */
-	public List<Bill> getBills() {
-		return bills;
+	public ObservableList<Bill> getBills() {
+		return FXCollections.unmodifiableObservableList(bills);
 	}
 
 	/**
@@ -381,13 +389,47 @@ public class Apartment extends Table {
 	 * Sets the list of Bills
 	 * @param bills New Bill list
 	 * */
-	public void setBills(List<Bill> bills) {
+	public void setBills(ObservableList<Bill> bills) {
 		this.bills = bills;
 	}
 
-//	public List<Room> getRooms() { return rooms; }
-//
-//	public void setRooms(List<Room> rooms) { this.rooms = rooms; }
+	/**
+	 * Getter:
+	 * <p>
+	 * Gives the list of Issues related to the room of the Apartment
+	 * @return Issue list
+	 * */
+	public ObservableList<NoteLog> getIssues() {
+		return FXCollections.unmodifiableObservableList(issues);
+	}
 
-	// *************************************************************
+	/**
+	 * Setter:
+	 * <p>
+	 * Sets Issue list
+	 * @param issues New Issue list
+	 * */
+	public void setIssues(ObservableList<NoteLog> issues) {
+		this.issues = issues;
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets the list of Rooms
+	 * */
+	public ObservableList<Room> getRooms() {
+		return FXCollections.unmodifiableObservableList(rooms);
+	}
+
+	/**
+	 * Setter:
+	 * <p>
+	 * Sets the list of rooms
+	 * */
+	public void setRooms(ObservableList<Room> rooms) {
+		this.rooms = rooms;
+	}
+	//--------------------------------------------------------------------
+	//--------------------------------------------------------------------
 }

@@ -3,9 +3,10 @@ package com.graham.apartmate.database.tables.subTables;
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.main.Main;
 import com.graham.apartmate.database.tables.mainTables.Table;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
@@ -18,6 +19,9 @@ import java.util.Comparator;
  */
 public class Bill extends Table {
 
+    //-----------------------------------------------------------------
+    //Fields///////////////////////////////////////////////////////////
+    //-----------------------------------------------------------------
     /**
      * Serialization long
      * */
@@ -26,50 +30,53 @@ public class Bill extends Table {
     /**
      * Type of bill (Insurance, Water, Electric, Mortgage)
      * */
-    private String type;
+    private final SimpleStringProperty type;
 
     /**
      * Name of company holding the bill
      * */
-    private String companyName;
+    private final SimpleStringProperty companyName;
 
     /**
      * Company address (if any)
      * */
-    private String address;
+    private final SimpleStringProperty address;
 
     /**
      * Company phone number
      * */
-    private String phone;
+    private final SimpleStringProperty phone;
 
     /**
      * Monthly payment
      * */
-    private double bill;
+    private final SimpleDoubleProperty bill;
 
     /**
-     * Tells program to utilize the interest rate upon invoice calculation
+     * Bill account
      * */
-    private boolean mortgage;
+    private final Account account;
+    //-----------------------------------------------------------------
+    //-----------------------------------------------------------------
 
-
-
-    /**
-     * List of Invoices
-     * */
-    private ArrayList<Invoice> invoices;
-
+    //-----------------------------------------------------------------
+    //Order Constants//////////////////////////////////////////////////
+    //-----------------------------------------------------------------
     /**
      * Bill sorting constant
      * */
     public static final Comparator<Bill> BILL_BY_NAME = Comparator.comparing(Bill::getCompanyName);
+    //-----------------------------------------------------------------
+    //-----------------------------------------------------------------
 
+    //-----------------------------------------------------------------
+    //Constructors/////////////////////////////////////////////////////
+    //-----------------------------------------------------------------
     /**
      * Default constructor
      * */
     public Bill() {
-        this(0,0,"","","",0);
+        this(0,0,"","","","",0, new Account());
     }
 
     /**
@@ -85,28 +92,34 @@ public class Bill extends Table {
     /**
      * Full constructor
      * */
-    public Bill(int id, int fk, String companyName, String address, String phone, double bill) {
+    public Bill(int id, int fk, String type, String companyName, String address, String phone, double bill, Account account) {
         super(id, fk);
-        this.companyName = companyName;
-        this.address = address;
-        this.phone = phone;
-        this.bill = bill;
+        this.type = new SimpleStringProperty(type);
+        this.companyName = new SimpleStringProperty(companyName);
+        this.address = new SimpleStringProperty(address);
+        this.phone = new SimpleStringProperty(phone);
+        this.bill = new SimpleDoubleProperty(bill);
 
-        invoices = new ArrayList<>();
+        this.account = account;
     }
+    //-----------------------------------------------------------------
+    //-----------------------------------------------------------------
 
+    //-----------------------------------------------------------------
+    //Overrided & Utility Methods//////////////////////////////////////
+    //-----------------------------------------------------------------
     /**
      * Gives all identifying information for the Bill
      * @return id, company name, & address
      * */
     @Override
     public String toString() {
-        return String.format("Bill: %d; %s, %s", super.getId(), companyName, address);
+        return String.format("Bill: %d; %s, %s", super.getId(), getCompanyName(), getAddress());
     }
 
     @Override
     public String getGenericName() {
-        return companyName;
+        return getCompanyName();
     }
 
     /**
@@ -128,9 +141,43 @@ public class Bill extends Table {
     public Image getImage() {
         return new Image("");
     }
+    //-----------------------------------------------------------------
+    //-----------------------------------------------------------------
 
-    // *************************************************************
-    // General getters and setters
+    //-----------------------------------------------------------------
+    //General getters and setters//////////////////////////////////////
+    //-----------------------------------------------------------------
+
+    /**
+     * Getter:
+     * <p>
+     * Gets the type of the Bill
+     * @return Bill's type
+     * */
+    public String getType() {
+        return type.get();
+    }
+
+    /**
+     * Setter:
+     * <p>
+     * Sets type of the Bill
+     * @param type New name of the Bill
+     * */
+    public void setType(String type) {
+        this.type.set(type);
+    }
+
+    /**
+     * Getter:
+     * <p>
+     * Gets type field property
+     * @return type property
+     * */
+    public SimpleStringProperty typeProperty() {
+        return type;
+    }
+
     /**
      * Getter:
      * <p>
@@ -138,7 +185,7 @@ public class Bill extends Table {
      * @return Company's name
      * */
     public String getCompanyName() {
-        return companyName;
+        return companyName.get();
     }
 
     /**
@@ -148,7 +195,17 @@ public class Bill extends Table {
      * @param companyName New name of company holding the Bill
      * */
     public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+        this.companyName.set(companyName);
+    }
+
+    /**
+     * Getter:
+     * <p>
+     * Gets company name field property
+     * @return company name property
+     * */
+    public SimpleStringProperty companyNameProperty() {
+        return companyName;
     }
 
     /**
@@ -158,7 +215,7 @@ public class Bill extends Table {
      * @return Company's address
      * */
     public String getAddress() {
-        return address;
+        return address.get();
     }
 
     /**
@@ -168,7 +225,17 @@ public class Bill extends Table {
      * @param address New address of company
      * */
     public void setAddress(String address) {
-        this.address = address;
+        this.address.set(address);
+    }
+
+    /**
+     * Getter:
+     * <p>
+     * Gets address field property
+     * @return address property
+     * */
+    public SimpleStringProperty addressProperty() {
+        return address;
     }
 
     /**
@@ -178,7 +245,7 @@ public class Bill extends Table {
      * @return Company's phone #
      * */
     public String getPhone() {
-        return phone;
+        return phone.get();
     }
 
     /**
@@ -188,7 +255,17 @@ public class Bill extends Table {
      * @param phone New phone # of company
      * */
     public void setPhone(String phone) {
-        this.phone = phone;
+        this.phone.set(phone);
+    }
+
+    /**
+     * Getter:
+     * <p>
+     * Gets phone field property
+     * @return phone property
+     * */
+    public SimpleStringProperty phoneProperty() {
+        return phone;
     }
 
     /**
@@ -198,7 +275,7 @@ public class Bill extends Table {
      * @return monthly payment
      * */
     public double getBill() {
-        return bill;
+        return bill.get();
     }
 
     /**
@@ -208,7 +285,17 @@ public class Bill extends Table {
      * @param bill New monthly payment
      * */
     public void setBill(double bill) {
-        this.bill = bill;
+        this.bill.set(bill);
+    }
+
+    /**
+     * Getter:
+     * <p>
+     * Gets bill field property
+     * @return bill property
+     * */
+    public SimpleDoubleProperty billProperty() {
+        return bill;
     }
 
     /**
@@ -217,18 +304,9 @@ public class Bill extends Table {
      * Gets list of Bill's Invoices
      * @return Invoice list
      * */
-    public ArrayList<Invoice> getInvoices() {
-        return invoices;
+    public Account getAccount() {
+        return account;
     }
-
-    /**
-     * Setter:
-     * <p>
-     * Sets list of Bill's Invoices
-     * @param invoices New list of Invoices
-     * */
-    public void setInvoices(ArrayList<Invoice> invoices) {
-        this.invoices = invoices;
-    }
-    // *************************************************************
+    //-----------------------------------------------------------------
+    //-----------------------------------------------------------------
 }

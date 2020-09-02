@@ -1,0 +1,6 @@
+create lists for randomly picking names and update TestingData
+Remove current saving system
+Implement all Ledger methods to keep track of all Tables added, updated, or deleted
+Remove all instances of DUMMY tables (were basically glorified Null values)
+Rework saving system to take into account ledger and promote choice between auto-saving and manual saving when connected online
+

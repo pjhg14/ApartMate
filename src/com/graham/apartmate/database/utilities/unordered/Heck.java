@@ -16,7 +16,6 @@ import java.util.TimerTask;
 import com.graham.apartmate.database.dbMirror.Database;
 import com.graham.apartmate.main.Main;
 import com.graham.apartmate.database.tables.mainTables.Table;
-import com.graham.apartmate.database.tables.subTables.Invoice;
 
 
 /**
@@ -77,7 +76,7 @@ public class Heck {
 	 * Updates the date modified field of any Table class
 	 * */
 	public void upDateModified(Table table) {
-		table.getDateModified().setTime(System.currentTimeMillis());
+		table.setDateModified(LocalDateTime.now());
 	}
 	// --------------------------------------------------------
 	// --------------------------------------------------------
@@ -89,38 +88,8 @@ public class Heck {
 	 * Updates the totals for a list of invoices <p>
 	 * list must be initialized with one invoice
 	 * */
-	public void updateTotals(List<Invoice> invoices) {
-		if (invoices.size() > 0 ) {
-			double totalDue = 0, totalPaid = 0;
-			//Iterate through list
-			for (Invoice invoice : invoices) {
-				totalDue += invoice.getDues();
-				totalPaid += invoice.getPayment();
-			}
+	public void updateTotals() {
 
-			invoices.get(invoices.size() - 1).setTotalPaid(totalPaid);
-			invoices.get(invoices.size() - 1).setTotalDue(totalDue);
-			invoices.get(invoices.size() - 1).setBalance(totalDue - totalPaid);
-		}
-	}
-
-	/**
-	 * Updates the totals for a list of invoices up to a certain index of the list <p>
-	 * list must be initialized with one invoice
-	 * */
-	public void updateTotals(List<Invoice> invoices, int index) {
-		if (invoices.size() > 0) {
-			double totalDue = 0, totalPaid = 0;
-			//Iterate through list
-			for (int i = 0; i <= index; i++) {
-				totalDue += invoices.get(i).getDues();
-				totalPaid += invoices.get(i).getPayment();
-			}
-
-			invoices.get(index).setTotalPaid(totalPaid);
-			invoices.get(index).setTotalDue(totalDue);
-			invoices.get(index).setBalance(totalDue - totalPaid);
-		}
 	}
 	// --------------------------------------------------------
 	// --------------------------------------------------------
@@ -162,16 +131,8 @@ public class Heck {
 
 		/**
 		 * Checks if the last invoice of a list is overdue and adds a new invoice if so
-		 * @param invoices The list of invoices to check and potentially add to
 		 * */
-		public void autoAddInvoice(List<Invoice> invoices) {
-			Invoice last = invoices.get(invoices.size() - 1);
-			LocalDateTime tempTime = LocalDateTime.ofInstant(last.getDueDate().toInstant(), ZoneId.systemDefault());
-
-			if (tempTime.isBefore(LocalDateTime.now())) {
-				invoices.add(new Invoice(last.getId() + 1, last.getFk(), 0,last.getDues(),
-						null, Date.from(tempTime.plusMonths(1).toInstant(ZoneOffset.UTC))));
-			}
+		public void autoAddInvoice() {
 		}
 
 		/**
@@ -179,19 +140,6 @@ public class Heck {
 		 * */
 		@Override
 		public void run() {
-			Database.getInstance().getApartments().forEach(apt -> {
-				apt.getInsurances().forEach(ins -> {
-					//dunno if following is needed: sets dues field of invoice to the bill of insurance
-					//ins.getInvoices().get(ins.getInvoices().size() -1).setDues(ins.getBill());
-					autoAddInvoice(ins.getInvoices());
-				});
-
-				apt.getBills().forEach(bill -> autoAddInvoice(bill.getInvoices()));
-			});
-
-			Database.getInstance().getTenants().forEach(tnant -> autoAddInvoice(tnant.getInvoices()));
-
-			Database.getInstance().getContractors().forEach(cont -> autoAddInvoice(cont.getInvoices()));
 
 			permutations++;
 		}
