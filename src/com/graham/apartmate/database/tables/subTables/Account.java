@@ -79,59 +79,58 @@ public class Account extends Table {
      * Default constructor
      * */
     public Account() {
-        this(0,0,null);
+        this(0,0,0,0,null);
     }
 
     /**
      * Account constructor w/ only initial due
      * */
-    public Account(int id, int fk,TransactionLog initDue) {
-        super(id, fk);
-        payments = FXCollections.observableArrayList();
-        credits = FXCollections.observableArrayList();
-        statements = FXCollections.observableArrayList();
-        dues = FXCollections.observableArrayList();
-
-
-        dues.add(initDue);
-
-        statementDate = new SimpleObjectProperty<>();
-        balance = new SimpleDoubleProperty(-initDue.getAmount());
+    public Account(int id, int fk, int fk2, int fk3, TransactionLog initDue) {
+        this(id, fk, fk2, fk3,initDue,null, null);
     }
 
     /**
      * Account constructor w/ initial due and initial payment
      * */
-    public Account(int id, int fk,TransactionLog initDue, TransactionLog initPayment) {
-        super(id, fk);
-        payments = FXCollections.observableArrayList();
-        credits = FXCollections.observableArrayList();
-        statements = FXCollections.observableArrayList();
-        dues = FXCollections.observableArrayList();
-
-        dues.add(initDue);
-        payments.add(initPayment);
-
-        statementDate = new SimpleObjectProperty<>();
-        balance = new SimpleDoubleProperty(initPayment.getAmount() - initDue.getAmount());
+    public Account(int id, int fk, int fk2, int fk3, TransactionLog initDue, TransactionLog initPayment) {
+        this(id, fk, fk2, fk3, initDue, initPayment,null);
     }
 
     /**
      * Account constructor w/ initial due, initial payment and initial credit
+     * @param id id of this Account
+     * @param fk Tenant related to this Account
+     * @param fk2 Contractor related to this Account
+     * @param fk3 Bill related to this Account
+     * @param initPayment initial payment to this Account
+     * @param initDue initial dues from this Account
+     * @param initCredit initial credits to this Account
      * */
-    public Account(int id, int fk, TransactionLog initPayment, TransactionLog initDue, TransactionLog initCredit) {
-        super(id, fk);
+    public Account(int id, int fk, int fk2, int fk3, TransactionLog initPayment, TransactionLog initDue, TransactionLog initCredit) {
+        super(id, fk, fk2, fk3);
         payments = FXCollections.observableArrayList();
         credits = FXCollections.observableArrayList();
         statements = FXCollections.observableArrayList();
         dues = FXCollections.observableArrayList();
 
-        payments.add(initPayment);
-        credits.add(initCredit);
-        dues.add(initDue);
+        balance = new SimpleDoubleProperty(0);
+
+        if (initDue != null) {
+            dues.add(initDue);
+            balance.set(-initDue.getAmount());
+        }
+
+        if (initPayment != null) {
+            payments.add(initPayment);
+            balance.set(balance.get() + initPayment.getAmount());
+        }
+
+        if (initCredit != null) {
+            credits.add(initCredit);
+            balance.set(balance.get() + initCredit.getAmount());
+        }
 
         statementDate = new SimpleObjectProperty<>();
-        balance = new SimpleDoubleProperty(initPayment.getAmount() + initCredit.getAmount() - initDue.getAmount());
     }
 
     /**

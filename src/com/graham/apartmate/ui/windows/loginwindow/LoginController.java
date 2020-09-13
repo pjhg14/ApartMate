@@ -2,15 +2,15 @@ package com.graham.apartmate.ui.windows.loginwindow;
 
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import java.util.Optional;
 
 import com.graham.apartmate.database.dbMirror.Database;
+import com.graham.apartmate.database.utilities.unordered.TestingData;
 import com.graham.apartmate.main.Main;
 import com.graham.apartmate.ui.libraries.FXMLLocation;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
 
 //TODO: Javadoc's for every method
@@ -44,7 +44,22 @@ public class LoginController {
 				System.out.println("currently expected result (this should throw a popup later)");
 			}
 
-			Main.getLibrary().mainWindow(FXMLLocation.MAIN);
+			if (Main.DEBUG) {
+				Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+
+				confirmation.setContentText("Go to Debug menu?");
+
+				Optional<ButtonType> optional = confirmation.showAndWait();
+
+				if (optional.isPresent() && optional.get() == ButtonType.OK){
+					Main.getLibrary().mainWindow(FXMLLocation.DEBUG);
+				} else {
+					Main.getLibrary().mainWindow(FXMLLocation.MAIN);
+				}
+			} else {
+				Main.getLibrary().mainWindow(FXMLLocation.MAIN);
+			}
+
 		} catch (InvalidObjectException ioe) {
 			errorText.setText("Error Opening Database, this is not good at all");
 			if (!errorText.isVisible())

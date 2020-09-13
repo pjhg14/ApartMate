@@ -87,7 +87,7 @@ public class ContAddController {
 			newContractor.setName(nameTextField.getText());
 			newContractor.setPhone(phoneTextField.getText());
 			newContractor.setEmail(emailTextField.getText());
-			newContractor.setBill(Integer.parseInt(billTextField.getText()));
+			//newContractor.setBill(Integer.parseInt(billTextField.getText()));
 
 			Database.getInstance().add(newContractor);
 

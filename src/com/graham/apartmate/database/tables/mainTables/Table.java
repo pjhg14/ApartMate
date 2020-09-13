@@ -54,6 +54,20 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	private int fk2;
 
 	/**
+	 * Second foreign key of Table
+	 * <p>
+	 * Defaults to 0 to represent no foreign key
+	 * */
+	private int fk3;
+
+	/**
+	 * Second foreign key of Table
+	 * <p>
+	 * Defaults to 0 to represent no foreign key
+	 * */
+	private int fk4;
+
+	/**
 	 * Date Table was created
 	 * */
 	private final SimpleObjectProperty<LocalDateTime> dateCreated;
@@ -100,7 +114,7 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * @param id Primary Key of the Table
 	 * */
 	public Table(int id) {
-		this(id,0,0);
+		this(id,0,0,0,0);
 	}
 
 	/**
@@ -109,7 +123,7 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * @param fk Foreign Key of the Table
 	 * */
 	public Table(int id, int fk) {
-		this(id, fk,0);
+		this(id, fk,0,0,0);
 	}
 
 	/**
@@ -119,9 +133,34 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * @param fk2 Second foreign key of the Table
 	 * */
 	public Table(int id, int fk, int fk2) {
+		this(id, fk, fk2,0,0);
+	}
+
+	/**
+	 * Creates the baseline for a Table with three foreign keys
+	 * @param id Primary Key of the Table
+	 * @param fk First foreign key of the Table
+	 * @param fk2 Second foreign key of the Table
+	 * @param fk3 Third foreign key of the Table
+	 * */
+	public Table(int id, int fk, int fk2, int fk3) {
+		this(id, fk, fk2, fk3,0);
+	}
+
+	/**
+	 * Creates the baseline for a Table with four foreign keys
+	 * @param id Primary Key of the Table
+	 * @param fk First foreign key of the Table
+	 * @param fk2 Second foreign key of the Table
+	 * @param fk3 Third foreign key of the Table
+	 * @param fk4 Fourth foreign key of the Table
+	 * */
+	public Table(int id, int fk, int fk2, int fk3, int fk4) {
 		this.id = id;
 		this.fk = fk;
 		this.fk2 = fk2;
+		this.fk3 = fk3;
+		this.fk4 = fk4;
 
 		dateCreated = new SimpleObjectProperty<>(LocalDateTime.now());
 		dateModified = new SimpleObjectProperty<>(LocalDateTime.now());
@@ -131,6 +170,7 @@ public abstract class Table implements Serializable, Comparable<Table> {
 		if (Main.DEBUG)
 			debug();
 	}
+
 	//----------------------------------------------------------------
 
 	//----------------------------------------------------------------
@@ -318,6 +358,42 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * */
 	public void setFk2(int fk2) {
 		this.fk2 = fk2;
+	}
+
+	/**
+	 * Getter:
+	 * Gives the foreign key
+	 * @return fk
+	 * */
+	public int getFk3() {
+		return fk3;
+	}
+
+	/**
+	 * Setter:
+	 * Sets the foreign key
+	 * @param fk3 ...
+	 * */
+	public void setFk3(int fk3) {
+		this.fk3 = fk3;
+	}
+
+	/**
+	 * Getter:
+	 * Gives the foreign key
+	 * @return fk
+	 * */
+	public int getFk4() {
+		return fk4;
+	}
+
+	/**
+	 * Setter:
+	 * Sets the foreign key
+	 * @param fk4 ...
+	 * */
+	public void setFk4(int fk4) {
+		this.fk4 = fk4;
 	}
 
 	/**

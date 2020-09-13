@@ -13,9 +13,11 @@ import com.graham.apartmate.main.Main;
 public enum FXMLLocation {
 
 	LOGIN("/com/graham/apartmate/ui/windows/loginwindow/login.fxml"),
+	DEBUG("/com/graham/apartmate/ui/misc/dbgwindow.fxml"),
 	MAIN("/com/graham/apartmate/ui/windows/mainwindow/mainscene.fxml"),
 	LISTS("/com/graham/apartmate/ui/windows/mainwindow/subwindow/listcontrollers/contentboxes.fxml"),
 	OVERVIEW("/com/graham/apartmate/ui/windows/mainwindow/subwindow/overview/overview.fxml"),
+
 
 	APARTMENTS("/com/graham/apartmate/ui/fxml/mainScreen/apartment.fxml"),
 	TENANTS("/com/graham/apartmate/ui/fxml/mainScreen/tenant.fxml"),

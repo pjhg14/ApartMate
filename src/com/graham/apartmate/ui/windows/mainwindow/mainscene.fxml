@@ -90,18 +90,29 @@
             <tabs>
                 <Tab fx:id="overviewTab" closable="false" text="Overview">
                     <content>
-                  <AnchorPane prefHeight="405.0" prefWidth="690.0">
-                     <children>
-                        <Text layoutX="275.0" layoutY="208.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Insert OverView Here" />
-                     </children>
-                  </AnchorPane>
+                  <AnchorPane prefHeight="405.0" prefWidth="690.0" />
                     </content>
                 </Tab>
                 <Tab fx:id="aptTab" closable="false" text="Apartments">
                <content>
-                  <Pane fx:id="aptPane" prefHeight="405.0" prefWidth="690.0" />
+                  <Pane prefHeight="405.0" prefWidth="690.0" />
                </content>
                 </Tab>
+            <Tab fx:id="tnantTab" closable="false" text="Tenants">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+            <Tab fx:id="candTab" closable="false" text="Candidates">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+            <Tab fx:id="contTab" closable="false" text="Contractors">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
             </tabs>
         </TabPane>
     </center>

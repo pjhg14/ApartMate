@@ -1750,7 +1750,7 @@ public class SQLBridge {
 				bill.setCompanyName(rs.getString(COLUMN_BILL_NAME));
 				bill.setAddress(rs.getString(COLUMN_BILL_ADDRESS));
 				bill.setPhone(rs.getString(COLUMN_BILL_PHONE));
-				bill.setBill(rs.getDouble(COLUMN_BILL_BILL));
+				//bill.setBill(rs.getDouble(COLUMN_BILL_BILL));
 
 				queriedApartments.forEach(apt -> {
 					if (bill.getFk() == apt.getId()) {
@@ -1985,7 +1985,7 @@ public class SQLBridge {
 				contractor.setDateCreated(rs.getTimestamp(COLUMN_CONT_DATE_CREATED).toLocalDateTime());
 				contractor.setDateModified(rs.getTimestamp(COLUMN_CONT_DATE_MODIFIED).toLocalDateTime());
 				contractor.setName(rs.getString(COLUMN_CONT_NAME));
-				contractor.setBill(rs.getDouble(COLUMN_CONT_BILL));
+				//contractor.setBill(rs.getDouble(COLUMN_CONT_BILL));
 				contractor.setPhone(rs.getString(COLUMN_CONT_PHONE));
 				contractor.setEmail(rs.getString(COLUMN_CONT_EMAIL));
 
@@ -2180,7 +2180,7 @@ public class SQLBridge {
 			insertContractor.setTimestamp(3, Timestamp.valueOf(contractor.getDateCreated()));
 			insertContractor.setTimestamp(4, Timestamp.valueOf(contractor.getDateModified()));
 			insertContractor.setString(5, contractor.getName());
-			insertContractor.setDouble(6, contractor.getBill());
+			//insertContractor.setDouble(6, contractor.getBill());
 			insertContractor.setString(7, contractor.getPhone());
 			insertContractor.setString(8, contractor.getEmail());
 
@@ -2253,7 +2253,7 @@ public class SQLBridge {
 			insertBill.setString(5, bill.getCompanyName());
 			insertBill.setString(6, bill.getAddress());
 			insertBill.setString(7, bill.getPhone());
-			insertBill.setDouble(8, bill.getBill());
+			//insertBill.setDouble(8, bill.getBill());
 
 			insertBill.execute();
 			insertBill.clearParameters();

@@ -31,7 +31,7 @@ public class BillEditController {
     public void editBill() {
         currBill.setCompanyName(nameTextField.getText());
         currBill.setAddress(addressTextField.getText());
-        currBill.setBill(Double.parseDouble(billTextField.getText()));
+        //currBill.setBill(Double.parseDouble(billTextField.getText()));
         currBill.setPhone(phoneTextField.getText());
 
 
@@ -46,7 +46,7 @@ public class BillEditController {
     private void setText() {
         nameTextField.setText(currBill.getCompanyName());
         addressTextField.setText(currBill.getAddress());
-        billTextField.setText("" + currBill.getBill());
+        //billTextField.setText("" + currBill.getBill());
         phoneTextField.setText(currBill.getPhone());
 
     }

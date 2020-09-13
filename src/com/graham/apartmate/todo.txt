@@ -1,4 +1,7 @@
-create lists for randomly picking names and update TestingData
+Re-Design Info sub-screens
+Re-Implement Info sub-screens
+Implement quick view on mainScreen and hide progress bar
+Add CRUD Windows as dialog boxes
 Remove current saving system
 Implement all Ledger methods to keep track of all Tables added, updated, or deleted
 Remove all instances of DUMMY tables (were basically glorified Null values)

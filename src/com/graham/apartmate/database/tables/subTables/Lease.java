@@ -85,7 +85,7 @@ public class Lease extends Table {
      * @param security amount if Tenant's security deposit
      */
     public Lease(int fk, int term, double rent, double utilities, double security) {
-        this(0,fk,term,rent,utilities,security);
+        this(0, fk, term, rent, utilities, security);
         idSet = false;
     }
 

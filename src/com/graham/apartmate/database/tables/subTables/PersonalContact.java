@@ -43,7 +43,7 @@ public class PersonalContact extends Table {
      * Creates the baseline for a dummy Table
      */
     public PersonalContact() {
-        this(0,0,0,"","","","");
+        this(0,0,0,0,"","","","");
     }
 
     /**
@@ -64,9 +64,9 @@ public class PersonalContact extends Table {
      * @param fk  First foreign key of the Table
      * @param fk2 Second foreign key of the Table
      */
-    public PersonalContact(int id, int fk, int fk2, String firstName, String lastName, String phoneNumber,
+    public PersonalContact(int id, int fk, int fk2, int fk3, String firstName, String lastName, String phoneNumber,
                            String email) {
-        super(id, fk, fk2);
+        super(id, fk, fk2, fk3);
         this.firstName = new SimpleStringProperty(firstName);
         this.lastName = new SimpleStringProperty(lastName);
         this.phoneNumber = new SimpleStringProperty(phoneNumber);

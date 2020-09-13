@@ -2,9 +2,9 @@ package com.graham.apartmate.database.tables.mainTables;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.subTables.Account;
+import com.graham.apartmate.database.tables.subTables.Contract;
 import com.graham.apartmate.database.tables.subTables.PersonalContact;
 import com.graham.apartmate.main.Main;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
 
@@ -33,11 +33,6 @@ public class Contractor extends Table {
 	private final SimpleStringProperty name;
 
 	/**
-	 * Monthly payment
-	 * */
-	private final SimpleDoubleProperty bill;
-
-	/**
 	 * Contractor's phone number
 	 * */
 	private final SimpleStringProperty phone;
@@ -56,6 +51,8 @@ public class Contractor extends Table {
 	 * List of Contractor's Invoices
 	 * */
 	private final Account account;
+
+	private Contract contract;
 	//------------------------------------------------------------
 	//------------------------------------------------------------
 
@@ -66,29 +63,26 @@ public class Contractor extends Table {
 	 * Default constructor
 	 * */
 	public Contractor() {
-		this(0,0,"",0,"","");
-	}
-
-	/**
-	 * Dummy Contractor Constructor
-	 * */
-	public Contractor(String dummy) {
-		this();
-		if (dummy.equals(DUMMY_TABLE)) {
-			super.setDummy(true);
-		}
+		this(0,0,"","","", null);
 	}
 
 	/**
 	 * Full constructor
+	 *
+	 * @param id id of Contractor
+	 * @param fk Apartment Contractor is working on
+	 * @param name name of Contractor company
+	 * @param phone Contractor's phone number
+	 * @param email Contractor's email
+	 * @param contract Contract the Contractor is hired on and abides to
 	 * */
-	public Contractor(int id, int fk, String name, double bill, String phone, String email) {
+	public Contractor(int id, int fk, String name, String phone, String email, Contract contract) {
 		super(id, fk);
-		image = new Image("com/graham/apartmate/ui/res/Tenantimg_small.png");
+		image = new Image("com/graham/apartmate/ui/res/TenantImg_small.png");
 		this.name = new SimpleStringProperty(name);
-		this.bill = new SimpleDoubleProperty(bill);
 		this.phone = new SimpleStringProperty(phone);
 		this.email = new SimpleStringProperty(email);
+		this.contract = contract;
 
 		account = new Account();
 	}
@@ -157,34 +151,6 @@ public class Contractor extends Table {
 	 * */
 	public SimpleStringProperty nameProperty() {
 		return name;
-	}
-
-	/**
-	 * Getter:
-	 * Gets monthly bill for Contractor
-	 * @return bill
-	 * */
-	public double getBill() {
-		return bill.get();
-	}
-
-	/**
-	 * Setter:
-	 * Sets monthly bill for Contractor
-	 * @param bill New bill
-	 * */
-	public void setBill(double bill) {
-		this.bill.set(bill);
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets bill field property
-	 * @return bill property
-	 * */
-	public SimpleDoubleProperty billProperty() {
-		return bill;
 	}
 
 	/**
@@ -266,6 +232,16 @@ public class Contractor extends Table {
 	 * */
 	public void setContact(PersonalContact contact) {
 		this.contact = contact;
+	}
+
+	/***/
+	public Contract getContract() {
+		return contract;
+	}
+
+	/***/
+	public void setContract(Contract contract) {
+		this.contract = contract;
 	}
 	//------------------------------------------------------------
 	//------------------------------------------------------------

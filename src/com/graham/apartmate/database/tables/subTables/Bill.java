@@ -48,14 +48,12 @@ public class Bill extends Table {
     private final SimpleStringProperty phone;
 
     /**
-     * Monthly payment
-     * */
-    private final SimpleDoubleProperty bill;
-
-    /**
      * Bill account
      * */
     private final Account account;
+
+    /***/
+    private Contract contract;
     //-----------------------------------------------------------------
     //-----------------------------------------------------------------
 
@@ -76,31 +74,22 @@ public class Bill extends Table {
      * Default constructor
      * */
     public Bill() {
-        this(0,0,"","","","",0, new Account());
-    }
-
-    /**
-     * Dummy Bill Constructor
-     * */
-    public Bill(String dummy) {
-        this();
-        if (dummy.equals(DUMMY_TABLE)) {
-            super.setDummy(true);
-        }
+        this(0,0,"","","","", new Account(), null);
     }
 
     /**
      * Full constructor
      * */
-    public Bill(int id, int fk, String type, String companyName, String address, String phone, double bill, Account account) {
+    public Bill(int id, int fk, String type, String companyName, String address, String phone, Account account,
+                Contract contract) {
         super(id, fk);
         this.type = new SimpleStringProperty(type);
         this.companyName = new SimpleStringProperty(companyName);
         this.address = new SimpleStringProperty(address);
         this.phone = new SimpleStringProperty(phone);
-        this.bill = new SimpleDoubleProperty(bill);
 
         this.account = account;
+        this.contract = contract;
     }
     //-----------------------------------------------------------------
     //-----------------------------------------------------------------
@@ -271,41 +260,21 @@ public class Bill extends Table {
     /**
      * Getter:
      * <p>
-     * Gets monthly payment for the Bill
-     * @return monthly payment
-     * */
-    public double getBill() {
-        return bill.get();
-    }
-
-    /**
-     * Setter:
-     * <p>
-     * Sets monthly payment for the Bill
-     * @param bill New monthly payment
-     * */
-    public void setBill(double bill) {
-        this.bill.set(bill);
-    }
-
-    /**
-     * Getter:
-     * <p>
-     * Gets bill field property
-     * @return bill property
-     * */
-    public SimpleDoubleProperty billProperty() {
-        return bill;
-    }
-
-    /**
-     * Getter:
-     * <p>
      * Gets list of Bill's Invoices
      * @return Invoice list
      * */
     public Account getAccount() {
         return account;
+    }
+
+    /***/
+    public Contract getContract() {
+        return contract;
+    }
+
+    /***/
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
     //-----------------------------------------------------------------
     //-----------------------------------------------------------------

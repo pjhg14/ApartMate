@@ -39,7 +39,7 @@ public class BillAddController {
         //newBill.setFk(Database.getInstance().getCurrApt().getId());
         newBill.setCompanyName(nameTextField.getText());
         newBill.setAddress(addressTextField.getText());
-        newBill.setBill(Double.parseDouble(billTextField.getText()));
+        //newBill.setBill(Double.parseDouble(billTextField.getText()));
         newBill.setPhone(phoneTextField.getText());
 
 

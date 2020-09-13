@@ -101,7 +101,7 @@ public class RoomMate extends Table {
 	public RoomMate(int id, int fk, String firstName, String lastName, String phone, String email, String ssn,
 					int annualIncome, LocalDate dateOfBirth) {
 		super(id, fk);
-		image = new Image("com/graham/apartmate/ui/res/Tenantimg_small.png");
+		image = new Image("com/graham/apartmate/ui/res/TenantImg_small.png");
 		this.firstName = new SimpleStringProperty(firstName);
 		this.lastName = new SimpleStringProperty(lastName);
 		this.phone = new SimpleStringProperty(phone);
@@ -118,7 +118,7 @@ public class RoomMate extends Table {
 	public RoomMate(int id, int fk, int fk2, String firstName, String lastName, String phone, String email, String ssn,
 					int annualIncome, LocalDate dateOfBirth) {
 		super(id, 0, fk2);
-		image = new Image("com/graham/apartmate/ui/res/Tenantimg_small.png");
+		image = new Image("com/graham/apartmate/ui/res/TenantImg_small.png");
 		this.firstName = new SimpleStringProperty(firstName);
 		this.lastName = new SimpleStringProperty(lastName);
 		this.phone = new SimpleStringProperty(phone);
@@ -135,7 +135,7 @@ public class RoomMate extends Table {
 	public RoomMate(int id, int fk, String firstName, String lastName, String phone, String email, String ssn,
 					int annualIncome, LocalDate dateOfBirth, boolean isSpouse) {
 		super(id, fk);
-		image = new Image("com/graham/apartmate/ui/res/Tenantimg_small.png");
+		image = new Image("com/graham/apartmate/ui/res/TenantImg_small.png");
 		this.firstName = new SimpleStringProperty(firstName);
 		this.lastName = new SimpleStringProperty(lastName);
 		this.phone = new SimpleStringProperty(phone);
@@ -152,7 +152,7 @@ public class RoomMate extends Table {
 	public RoomMate(int id, int fk, int fk2, String firstName, String lastName, String phone, String email, String ssn,
 					int annualIncome, LocalDate dateOfBirth, boolean isSpouse) {
 		super(id, 0, fk2);
-		image = new Image("com/graham/apartmate/ui/res/Tenantimg_small.png");
+		image = new Image("com/graham/apartmate/ui/res/TenantImg_small.png");
 		this.firstName = new SimpleStringProperty(firstName);
 		this.lastName = new SimpleStringProperty(lastName);
 		this.phone = new SimpleStringProperty(phone);

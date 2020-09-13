@@ -5,12 +5,15 @@ import com.graham.apartmate.database.dbMirror.Database;
 import com.graham.apartmate.database.tables.mainTables.*;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class ContentBoxController {
@@ -75,10 +78,7 @@ public class ContentBoxController {
         icon.setImage(image);
         icon.setPreserveRatio(true);
         icon.setSmooth(true);
-        icon.setOnMouseClicked(event -> {
-            //Event Here
-            infoWindowSubmit.accept(content);
-        });
+        icon.setOnMouseClicked(event -> infoWindowSubmit.accept(content));
         container.getChildren().add(icon);
 
         Text name = new Text(content.getGenericName());
@@ -90,17 +90,28 @@ public class ContentBoxController {
 
         Button editButton = new Button();
         //Set up Button1 properties
-        editButton.setOnAction(event -> Database.getInstance().edit(content));
+        editButton.setOnAction(event -> {
+            //open edit window
+        });
         buttonbar.getChildren().add(editButton);
 
         Button deleteButton = new Button();
-        deleteButton.setOnAction(event -> Database.getInstance().remove(content));
+        deleteButton.setOnAction(event -> {
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+
+            confirmation.setContentText("Are you sure you want to delete " + content.getGenericName() + "?");
+
+            Optional<ButtonType> optional = confirmation.showAndWait();
+
+            if (optional.isPresent() && optional.get() == ButtonType.OK){
+                Database.getInstance().remove(content);
+            }
+        });
         //Set up Button2 properties
         buttonbar.getChildren().add(deleteButton);
 
         container.getChildren().add(buttonbar);
 
-        //mainPane.getChildren().add(container);
         return container;
     }
 
@@ -108,20 +119,25 @@ public class ContentBoxController {
     public void addTable () {
         switch (displayedTables) {
             case APARTMENTS:
+                System.out.println("This would've let you add an Apartment");
                 break;
             case TENANTS:
+                System.out.println("This would've let you add a Tenant");
                 break;
             case CANDIDATES:
+                System.out.println("This would've let you add a Candidate");
                 break;
             case CONTRACTORS:
+                System.out.println("This would've let you add a Contractor");
                 break;
             default:
                 break;
         }
+        System.out.println("Add Table Button does not work yet! sorry!");
     }
 
     public void setDisplayedTables(DBTables tableType) {
-        displayedTables = tableType;
+        this.displayedTables = tableType;
     }
 
     public void setInfoWindowSubmit(Consumer<Table> infoWindowSubmit) {

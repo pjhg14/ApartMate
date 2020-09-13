@@ -58,7 +58,8 @@ public class WindowLibrary {
 		try {
 			root = FXMLLoader.load(getClass().getResource(location.getLocation()));;
 
-			mainStage.setScene(new Scene(root, 1050, 550));
+			mainStage.setScene(new Scene(root));
+
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -66,47 +67,6 @@ public class WindowLibrary {
 		}
 
 		return null;
-	}
-
-	/***/
-	public void infoSubWindow(Tab source, Table content) {
-		try {
-			FXMLLocation location;
-
-			switch (content.getTableType()) {
-				case APARTMENTS:
-					location = FXMLLocation.APTINFO;
-					break;
-				case TENANTS:
-					location = FXMLLocation.TNANTINFO;
-					break;
-				case CANDIDATES:
-					location = FXMLLocation.CANDINFO;
-					break;
-				case CONTRACTORS:
-					location = FXMLLocation.CONTINFO;
-					break;
-				default:
-					if (Main.DEBUG)
-						System.out.println("Invalid Table type");
-					return;
-			}
-
-			root = FXMLLoader.load(getClass().getResource(location.getLocation()));
-
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(location.getLocation()));
-
-			FXMLController controller = loader.getController();
-			controller.setCurrentTable(content);
-
-			Pane loadedPane = loader.load();
-
-			source.setContent(loadedPane);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Ummm...");
-		}
 	}
 
 	/**

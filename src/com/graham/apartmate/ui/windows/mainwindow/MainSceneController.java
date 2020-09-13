@@ -1,20 +1,16 @@
 package com.graham.apartmate.ui.windows.mainwindow;
 
 
-import com.graham.apartmate.database.dbMirror.Database;
+import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.mainTables.Table;
-import com.graham.apartmate.main.Main;
 import com.graham.apartmate.ui.misc.FXMLController;
 import com.graham.apartmate.ui.windows.mainwindow.subwindow.listcontrollers.ContentBoxController;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
@@ -47,16 +43,13 @@ public class MainSceneController {
     private Tab aptTab;
 
     @FXML
-    private Pane aptPane;
+    private Tab tnantTab;
 
-//    @FXML
-//    private Tab tnantTab;
-//
-//    @FXML
-//    private Tab candTab;
-//
-//    @FXML
-//    private Tab contTab;
+    @FXML
+    private Tab candTab;
+
+    @FXML
+    private Tab contTab;
     //--------------------------------------------------------
 
     @FXML
@@ -102,38 +95,39 @@ public class MainSceneController {
             switch (table.getTableType()) {
                 case APARTMENTS:
                     loader = new FXMLLoader(getClass().getResource(APTINFO.getLocation()));
+                    aptTab.setContent(loader.load());
 
                     controller = loader.getController();
                     controller.setCurrentTable(table);;
 
                     controller.init();
-                    aptTab.setContent(loader.load());
                     break;
                 case TENANTS:
                     loader = new FXMLLoader(getClass().getResource(TNANTINFO.getLocation()));
+                    tnantTab.setContent(loader.load());
+
                     controller = loader.getController();
                     controller.setCurrentTable(table);
 
                     controller.init();
-                    //aptTab.setContent(loader.load());
                     break;
                 case CANDIDATES:
-                     loader = new FXMLLoader(getClass().getResource(CANDINFO.getLocation()));
+                    loader = new FXMLLoader(getClass().getResource(CANDINFO.getLocation()));
+                    candTab.setContent(loader.load());
 
                     controller = loader.getController();
                     controller.setCurrentTable(table);
 
                     controller.init();
-                    //aptTab.setContent(loader.load());
                     break;
                 case CONTRACTORS:
                     loader = new FXMLLoader(getClass().getResource(CONTINFO.getLocation()));
+                    contTab.setContent(loader.load());
 
                     controller = loader.getController();
                     controller.setCurrentTable(table);
 
                     controller.init();
-                    //aptTab.setContent(loader.load());
                     break;
                 default:
                     //Ummm...
@@ -196,14 +190,48 @@ public class MainSceneController {
 
             //set apartment tab
             loader = new FXMLLoader(getClass().getResource(LISTS.getLocation()));
-            ContentBoxController controller = loader.getController();
             aptTab.setContent(loader.load());
 
+            ContentBoxController controller = loader.getController();
+
+            controller.setDisplayedTables(DBTables.APARTMENTS);
+            controller.setInfoWindowSubmit(tableInfoSubmit);
+
+            controller.init();
+
             //set tenant tab
+            loader = new FXMLLoader(getClass().getResource(LISTS.getLocation()));
+            tnantTab.setContent(loader.load());
+
+            controller = loader.getController();
+
+            controller.setDisplayedTables(DBTables.TENANTS);
+            controller.setInfoWindowSubmit(tableInfoSubmit);
+
+            controller.init();
 
             //set candidate tab
+            loader = new FXMLLoader(getClass().getResource(LISTS.getLocation()));
+            candTab.setContent(loader.load());
+
+            controller = loader.getController();
+
+            controller.setDisplayedTables(DBTables.CANDIDATES);
+            controller.setInfoWindowSubmit(tableInfoSubmit);
+
+            controller.init();
 
             //set contractor tab
+            loader = new FXMLLoader(getClass().getResource(LISTS.getLocation()));
+            contTab.setContent(loader.load());
+
+            controller = loader.getController();
+
+            controller.setDisplayedTables(DBTables.CONTRACTORS);
+            controller.setInfoWindowSubmit(tableInfoSubmit);
+
+            controller.init();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -212,6 +240,4 @@ public class MainSceneController {
     private void setUpQuickView() {
 
     }
-
-
 }

@@ -149,7 +149,7 @@ public class Candidate extends Table {
 					 LocalDate dateOfBirth, int annualIncome, int numChildren, PersonalContact contact1,
 					 PersonalContact contact2) {
 		super(id, fk);
-		image = new Image("com/graham/apartmate/ui/res/Tenantimg_small.png");
+		image = new Image("com/graham/apartmate/ui/res/TenantImg_small.png");
 		this.firstName = new SimpleStringProperty(firstName);
 		this.lastName = new SimpleStringProperty(lastName);
 		this.phone = new SimpleStringProperty(phone);

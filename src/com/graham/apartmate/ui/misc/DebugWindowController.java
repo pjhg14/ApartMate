@@ -2,27 +2,38 @@ package com.graham.apartmate.ui.misc;
 
 
 import com.graham.apartmate.database.utilities.unordered.TestingData;
-import javafx.event.ActionEvent;
+import com.graham.apartmate.main.Main;
+import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.text.Text;
 
 import java.util.Optional;
 
 public class DebugWindowController {
 
     @FXML
-    public void loadSampleData(ActionEvent action) {
+    private Text exeText;
+
+    @FXML
+    public void loadSampleData() {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
 
-        confirmation.setContentText("Are you sure you want to load sample data?\n" +
-                "All currently held data will be lost!");
+        confirmation.setContentText("Are you sure you want to load sample data?");
 
         Optional<ButtonType> optional = confirmation.showAndWait();
 
         if (optional.isPresent() && optional.get() == ButtonType.OK){
             TestingData sampleData = new TestingData();
             sampleData.useTestingData();
+
+            exeText.setText("Sample Data Loaded");
         }
+    }
+
+    @FXML
+    public void done() {
+        Main.getLibrary().mainWindow(FXMLLocation.MAIN);
     }
 }

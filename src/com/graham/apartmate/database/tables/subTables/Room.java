@@ -1,16 +1,14 @@
 package com.graham.apartmate.database.tables.subTables;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
+import com.graham.apartmate.database.tables.mainTables.Candidate;
 import com.graham.apartmate.database.tables.mainTables.Table;
 import com.graham.apartmate.database.tables.mainTables.Tenant;
 import com.graham.apartmate.main.Main;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
-
-import java.util.List;
 
 /**
  * Room Object:
@@ -42,9 +40,14 @@ public class Room extends Table {
 	private Tenant occupant;
 
 	/**
+	 * List of expectant candidates for the room
+	 * */
+	private final ObservableList<Candidate> expectantCandidates;
+
+	/**
 	 * List of the Tenant's inspections
 	 * */
-	private ObservableList<NoteLog> inspections;
+	private final ObservableList<NoteLog> inspections;
 	//--------------------------------------------------------------------
 	//--------------------------------------------------------------------
 
@@ -56,16 +59,6 @@ public class Room extends Table {
 	 * */
 	public Room() {
 		this(0,0);
-	}
-
-	/**
-	 * Dummy Room Constructor
-	 * */
-	public Room(String dummy) {
-		this();
-		if (dummy.equals(DUMMY_TABLE)) {
-			super.setDummy(true);
-		}
 	}
 
 	/**
@@ -96,6 +89,7 @@ public class Room extends Table {
 		super(id, fk, fk2);
 		this.roomName = new SimpleStringProperty(roomName);
 
+		expectantCandidates = FXCollections.observableArrayList();
 		inspections = FXCollections.observableArrayList();
 	}
 	//--------------------------------------------------------------------
@@ -122,16 +116,6 @@ public class Room extends Table {
 	@Override
 	public DBTables getTableType() {
 		return DBTables.ROOM;
-	}
-
-	/**
-	 * Returns the image related to a particular instance of a Table
-	 *
-	 * @return Table image
-	 */
-	@Override
-	public Image getImage() {
-		return new Image("");
 	}
 
 	/**
@@ -163,6 +147,34 @@ public class Room extends Table {
 
 		occupant = null;
 		return true;
+	}
+
+	/**
+	 * Adds an expectant candidate to the Room
+	 * */
+	public boolean addCandidate(Candidate candidate) {
+		return expectantCandidates.add(candidate);
+	}
+
+	/**
+	 * Removes an expectant candidate from the Room
+	 * */
+	public boolean removeCandidate(Candidate candidate) {
+		return expectantCandidates.remove(candidate);
+	}
+
+	/**
+	 * Adds an inspection to the Room
+	 * */
+	public boolean addInspection(NoteLog noteLog) {
+		return inspections.add(noteLog);
+	}
+
+	/**
+	 * Removes the inspection from the Room
+	 * */
+	public boolean removeInspection(NoteLog noteLog) {
+		return inspections.remove(noteLog);
 	}
 	//--------------------------------------------------------------------
 	//--------------------------------------------------------------------
@@ -205,9 +217,20 @@ public class Room extends Table {
 	 * Getter:
 	 * <p>
 	 * Gets the Tenant occupying this Room
+	 * @return current occupant
 	 * */
 	public Tenant getOccupant() {
 		return occupant;
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets the list of expectant Candidates
+	 * @return expectant Candidate list
+	 * */
+	public ObservableList<Candidate> getExpectantCandidates() {
+		return expectantCandidates;
 	}
 
 	/**
@@ -218,16 +241,6 @@ public class Room extends Table {
 	 * */
 	public ObservableList<NoteLog> getInspections() {
 		return FXCollections.unmodifiableObservableList(inspections);
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Inspection list
-	 * @param inspections New Inspection list
-	 * */
-	public void setInspections(ObservableList<NoteLog> inspections) {
-		this.inspections = inspections;
 	}
 	//--------------------------------------------------------------------
 	//--------------------------------------------------------------------

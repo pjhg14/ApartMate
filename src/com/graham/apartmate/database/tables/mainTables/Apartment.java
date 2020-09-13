@@ -59,17 +59,17 @@ public class Apartment extends Table {
 	/**
 	 * List of Bills
 	 * */
-	private ObservableList<Bill> bills;
+	private final ObservableList<Bill> bills;
 
 	/**
 	 * List of issues
 	 * */
-	private ObservableList<NoteLog> issues;
+	private final ObservableList<NoteLog> issues;
 
 	/**
 	 * List of rooms
 	 * */
-	private ObservableList<Room> rooms;
+	private final ObservableList<Room> rooms;
 	//--------------------------------------------------------------------
 	//--------------------------------------------------------------------
 
@@ -130,16 +130,18 @@ public class Apartment extends Table {
 	 * */
 	public Apartment(int id, String address, String city, String state, String zipCode, int initialCapacity) {
 		super(id);
-		image = new Image("com/graham/apartmate/ui/res/Apartmentimg_small.png");
+		image = new Image("com/graham/apartmate/ui/res/ApartmentImg_small.png");
 		this.address = new SimpleStringProperty(address);
 		this.city = new SimpleStringProperty(city);
 		this.state = new SimpleStringProperty(state);
 		this.zipCode = new SimpleStringProperty(zipCode);
 
 		bills = FXCollections.observableArrayList();
+		issues = FXCollections.observableArrayList();
 		rooms = FXCollections.observableArrayList();
+
 		for (int i = 0; i < initialCapacity; i++) {
-			rooms.add(new Room());
+			rooms.add(new Room(0,getId(),i+1+""));
 		}
 	}
 	//--------------------------------------------------------------------
@@ -384,16 +386,6 @@ public class Apartment extends Table {
 	}
 
 	/**
-	 * Setter:
-	 * <p>
-	 * Sets the list of Bills
-	 * @param bills New Bill list
-	 * */
-	public void setBills(ObservableList<Bill> bills) {
-		this.bills = bills;
-	}
-
-	/**
 	 * Getter:
 	 * <p>
 	 * Gives the list of Issues related to the room of the Apartment
@@ -404,31 +396,12 @@ public class Apartment extends Table {
 	}
 
 	/**
-	 * Setter:
-	 * <p>
-	 * Sets Issue list
-	 * @param issues New Issue list
-	 * */
-	public void setIssues(ObservableList<NoteLog> issues) {
-		this.issues = issues;
-	}
-
-	/**
 	 * Getter:
 	 * <p>
 	 * Gets the list of Rooms
 	 * */
 	public ObservableList<Room> getRooms() {
 		return FXCollections.unmodifiableObservableList(rooms);
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets the list of rooms
-	 * */
-	public void setRooms(ObservableList<Room> rooms) {
-		this.rooms = rooms;
 	}
 	//--------------------------------------------------------------------
 	//--------------------------------------------------------------------
