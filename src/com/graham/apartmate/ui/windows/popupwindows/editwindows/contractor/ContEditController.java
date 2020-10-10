@@ -1,6 +1,6 @@
 package com.graham.apartmate.ui.windows.popupwindows.editwindows.contractor;
 
-import com.graham.apartmate.database.tables.mainTables.Apartment;
+import com.graham.apartmate.database.tables.mainTables.Building;
 import com.graham.apartmate.database.tables.subTables.RoomMate;
 
 import javafx.fxml.FXML;
@@ -17,7 +17,7 @@ public class ContEditController {
 	private CheckBox isUsingCurrApt;
 	
 	@FXML
-	private ListView<Apartment> apartmentChoice;
+	private ListView<Building> apartmentChoice;
 	
 	@FXML
 	private TextField nameTextField;

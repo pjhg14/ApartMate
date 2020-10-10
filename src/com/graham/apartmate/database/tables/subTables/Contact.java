@@ -2,36 +2,61 @@ package com.graham.apartmate.database.tables.subTables;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.mainTables.Table;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
 
+import java.time.LocalDate;
+
 /**
- * Contains the personal information of a Tenant, Candidate, or Contractor
+ * Contains the personal information of a Tenant, Candidate, or Contractor and/or their related acquaintances
  * */
-public class PersonalContact extends Table {
+public class Contact extends Table {
 
     //-------------------------------------------------------------
     //Fields///////////////////////////////////////////////////////
     //-------------------------------------------------------------
     /**
-     * The Contact's first name
+     * Persons's first name
      * */
     private final SimpleStringProperty firstName;
 
     /**
-     * The Contact's last name
+     * Persons's last name
      * */
     private final SimpleStringProperty lastName;
 
     /**
-     * The Contact's phone number
+     * Persons's phone number
      * */
     private final SimpleStringProperty phoneNumber;
 
     /**
-     * The Contact's email address
+     * Persons's email address
      * */
     private final SimpleStringProperty email;
+
+    /**
+     * Persons's ID number
+     * */
+    private final SimpleStringProperty ssn;
+
+    /**
+     * Persons's number of children
+     * */
+    private final SimpleIntegerProperty numChildren;
+
+    // Optional fields
+    /**
+     * Persons's date of birth
+     * */
+    private final SimpleObjectProperty<LocalDate> dateOfBirth;
+
+    /**
+     * Candidate's annual Income
+     * */
+    private final SimpleIntegerProperty annualIncome;
     //-------------------------------------------------------------
     //-------------------------------------------------------------
 
@@ -42,7 +67,7 @@ public class PersonalContact extends Table {
      * Default constructor
      * Creates the baseline for a dummy Table
      */
-    public PersonalContact() {
+    public Contact() {
         this(0,0,0,0,"","","","");
     }
 
@@ -50,7 +75,7 @@ public class PersonalContact extends Table {
      * Default constructor
      * Creates the baseline for a dummy Table
      */
-    public PersonalContact(String dummy) {
+    public Contact(String dummy) {
         this();
         if (dummy.equals(DUMMY_TABLE)) {
             super.setDummy(true);
@@ -64,14 +89,23 @@ public class PersonalContact extends Table {
      * @param fk  First foreign key of the Table
      * @param fk2 Second foreign key of the Table
      */
-    public PersonalContact(int id, int fk, int fk2, int fk3, String firstName, String lastName, String phoneNumber,
-                           String email) {
+    public Contact(int id, int fk, int fk2, int fk3, String firstName, String lastName, String phoneNumber,
+                   String email) {
+        this(id,fk,fk2,fk3,firstName,lastName,phoneNumber,email,"",0,LocalDate.MIN, 0);
+    }
+
+    public Contact(int id, int fk, int fk2, int fk3, String firstName, String lastName, String phoneNumber, String email, String ssn,
+                   int numChildren, LocalDate dateOfBirth, int annualIncome) {
         super(id, fk, fk2, fk3);
+        image = new Image("com/graham/apartmate/ui/res/TenantImg_small.png");
         this.firstName = new SimpleStringProperty(firstName);
         this.lastName = new SimpleStringProperty(lastName);
         this.phoneNumber = new SimpleStringProperty(phoneNumber);
-        this.email =  new SimpleStringProperty(email);
-
+        this.email = new SimpleStringProperty(email);
+        this.ssn = new SimpleStringProperty(ssn);
+        this.numChildren = new SimpleIntegerProperty(numChildren);
+        this.dateOfBirth = new SimpleObjectProperty<>(dateOfBirth);
+        this.annualIncome = new SimpleIntegerProperty(annualIncome);
     }
     //-------------------------------------------------------------
     //-------------------------------------------------------------
@@ -123,21 +157,11 @@ public class PersonalContact extends Table {
     }
 
     /**
-     * Returns the image related to a particular instance of a Table
-     *
-     * @return Table image
-     */
-    @Override
-    public Image getImage() {
-        return null;
-    }
-
-    /**
      * Gives the full name of the Contact
      * @return first name last name
      * */
     public String getFullName() {
-        return firstName + " " + lastName;
+        return getFirstName() + " " + getLastName();
     }
 
     /**
@@ -145,7 +169,7 @@ public class PersonalContact extends Table {
      * @return last name, first name
      * */
     public String getProperName() {
-        return lastName + ", " + firstName;
+        return getLastName() + ", " + getFirstName();
     }
     //-----------------------------------------------------------------
     //-----------------------------------------------------------------
@@ -271,6 +295,66 @@ public class PersonalContact extends Table {
      * */
     public void setEmail(String email) {
         this.email.set(email);
+    }
+
+    /***/
+    public String getSsn() {
+        return ssn.get();
+    }
+
+    /***/
+    public SimpleStringProperty ssnProperty() {
+        return ssn;
+    }
+
+    /***/
+    public void setSsn(String ssn) {
+        this.ssn.set(ssn);
+    }
+
+    /***/
+    public int getNumChildren() {
+        return numChildren.get();
+    }
+
+    /***/
+    public SimpleIntegerProperty numChildrenProperty() {
+        return numChildren;
+    }
+
+    /***/
+    public void setNumChildren(int numChildren) {
+        this.numChildren.set(numChildren);
+    }
+
+    /***/
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth.get();
+    }
+
+    /***/
+    public SimpleObjectProperty<LocalDate> dateOfBirthProperty() {
+        return dateOfBirth;
+    }
+
+    /***/
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth.set(dateOfBirth);
+    }
+
+    /***/
+    public int getAnnualIncome() {
+        return annualIncome.get();
+    }
+
+    /***/
+    public SimpleIntegerProperty annualIncomeProperty() {
+        return annualIncome;
+    }
+
+    /***/
+    public void setAnnualIncome(int annualIncome) {
+        this.annualIncome.set(annualIncome);
     }
     //-----------------------------------------------------------------
     //-----------------------------------------------------------------

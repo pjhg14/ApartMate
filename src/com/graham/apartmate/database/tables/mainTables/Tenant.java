@@ -105,8 +105,8 @@ public class Tenant extends Candidate {
 				candidate.getSsn(),
 				candidate.getNumChildren(),
 				movInDate,
-				candidate.getContact1(),
-				candidate.getContact2(),
+				candidate.getEContact1(),
+				candidate.getEContact2(),
 				initialAccount,
 				initialLease
 		);
@@ -129,7 +129,7 @@ public class Tenant extends Candidate {
 	 * */
 	public Tenant(int id, int fk, String firstName, String lastName, String phone, String email, LocalDate dateOfBirth,
 				  int annualIncome, String SSN, int numChildren, LocalDate movInDate,
-				  PersonalContact contact1, PersonalContact contact2, Account initialAccount, Lease initialLease) {
+				  Contact contact1, Contact contact2, Account initialAccount, Lease initialLease) {
 		super(id, fk, firstName,lastName,phone,email,SSN,dateOfBirth,annualIncome,numChildren, contact1,contact2);
 		super.setAccepted(true);
 

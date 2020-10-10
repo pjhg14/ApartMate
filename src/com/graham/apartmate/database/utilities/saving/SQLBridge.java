@@ -1714,14 +1714,14 @@ public class SQLBridge {
 	 * and Issues) from the server
 	 * @return Queried Apartment list
 	 * */
-	public List<Apartment> queryApartments() {
-		List<Apartment> queriedApartments = new ArrayList<>();
+	public List<Building> queryBuildings() {
+		List<Building> queriedBuildings = new ArrayList<>();
 
 		try {
 			rs = statement.executeQuery(QUERY_APARTMENTS);
 
 			while (rs.next()) {
-				Apartment app = new Apartment();
+				Building app = new Building();
 
 				// Set fields
 				app.setId(rs.getInt(COLUMN_APT_ID));
@@ -1733,7 +1733,7 @@ public class SQLBridge {
 				app.setZipCode(rs.getString(COLUMN_APT_ZIP));
 
 
-				queriedApartments.add(app);
+				queriedBuildings.add(app);
 			}
 
 			// Set foreign tables:
@@ -1752,7 +1752,7 @@ public class SQLBridge {
 				bill.setPhone(rs.getString(COLUMN_BILL_PHONE));
 				//bill.setBill(rs.getDouble(COLUMN_BILL_BILL));
 
-				queriedApartments.forEach(apt -> {
+				queriedBuildings.forEach(apt -> {
 					if (bill.getFk() == apt.getId()) {
 						apt.getBills().add(bill);
 					}
@@ -1774,7 +1774,7 @@ public class SQLBridge {
 				inspection.setLog(rs.getString(COLUMN_INSPECTION_DESCRIPTION));
 				inspection.setLogDate(rs.getDate(COLUMN_INSPECTION_DATE).toLocalDate());
 
-				queriedApartments.forEach(apt -> apt.getLivingSpaces().forEach(livingSpace -> {
+				queriedBuildings.forEach(apt -> apt.getLivingSpaces().forEach(livingSpace -> {
 					if (inspection.getFk() == livingSpace.getId()) {
 						livingSpace.getInspections().add(inspection);
 					}
@@ -1802,7 +1802,7 @@ public class SQLBridge {
 				issue.setLog(rs.getString(COLUMN_ISSUE_DESCRIPTION));
 				issue.setLogDate(rs.getDate(COLUMN_ISSUE_DATE).toLocalDate());
 
-				queriedApartments.forEach(apt -> {
+				queriedBuildings.forEach(apt -> {
 					if (issue.getFk() == apt.getId()) {
 						apt.getIssues().add(issue);
 					}
@@ -1817,7 +1817,7 @@ public class SQLBridge {
 			return null;
 		}
 
-		return queriedApartments;
+		return queriedBuildings;
 	}
 
 	/**
@@ -2012,8 +2012,8 @@ public class SQLBridge {
 	// Insert Methods
 	public void insert(Table table) {
 		switch (table.getTableType()){
-			case APARTMENTS:
-				insert((Apartment) table);
+			case BUILDINGS:
+				insert((Building) table);
 				break;
 			case TENANTS:
 				insert((Tenant) table);
@@ -2038,42 +2038,42 @@ public class SQLBridge {
 
 	/**
 	 * Inserts a new Apartment and related tables (Insurances, Bills, associated Invoices, and Issues) into the server
-	 * @param apartment Apartment to insert
+	 * @param building Apartment to insert
 	 * */
-	public void insert(Apartment apartment) {
+	public void insert(Building building) {
 		try {
 			// Save Apartment
 			if (Main.DEBUG)
 				System.out.println("Saving Apartment");
 			
-			insertApartment.setInt(1, apartment.getId());
-			insertApartment.setTimestamp(2, Timestamp.valueOf(apartment.getDateCreated()));
-			insertApartment.setTimestamp(3, Timestamp.valueOf(apartment.getDateModified()));
-			insertApartment.setString(4, apartment.getAddress());
-			insertApartment.setString(5, apartment.getCity());
-			insertApartment.setString(6, apartment.getState());
-			insertApartment.setString(7, apartment.getZipCode());
-			insertApartment.setInt(8, apartment.getCapacity());
-			insertApartment.setInt(9, apartment.getNumTenants());
+			insertApartment.setInt(1, building.getId());
+			insertApartment.setTimestamp(2, Timestamp.valueOf(building.getDateCreated()));
+			insertApartment.setTimestamp(3, Timestamp.valueOf(building.getDateModified()));
+			insertApartment.setString(4, building.getAddress());
+			insertApartment.setString(5, building.getCity());
+			insertApartment.setString(6, building.getState());
+			insertApartment.setString(7, building.getZipCode());
+			insertApartment.setInt(8, building.getCapacity());
+			insertApartment.setInt(9, building.getNumTenants());
 
 			insertApartment.execute();
 			insertApartment.clearParameters();
 
 			// Inspection
-			for (LivingSpace livingSpace : apartment.getLivingSpaces()) {
+			for (LivingSpace livingSpace : building.getLivingSpaces()) {
 				for (NoteLog inspection : livingSpace.getInspections()) {
-					insert(inspection, apartment.getTableType());
+					insert(inspection, building.getTableType());
 				}
 			}
 
 			// Save sub-tables
 			//Bill
-			for (Bill bill : apartment.getBills()) {
+			for (Bill bill : building.getBills()) {
 				insert(bill);
 			}
 
 			// Issue
-			for (NoteLog issue : apartment.getIssues()) {
+			for (NoteLog issue : building.getIssues()) {
 				insert(issue, DBTables.ISSUES);
 			}
 
@@ -2375,8 +2375,8 @@ public class SQLBridge {
 	// Update methods
 	public void update(Table table) {
 		switch (table.getTableType()){
-			case APARTMENTS:
-				update((Apartment) table);
+			case BUILDINGS:
+				update((Building) table);
 				break;
 			case TENANTS:
 				update((Tenant) table);
@@ -2401,16 +2401,16 @@ public class SQLBridge {
 
 	/**
 	 * Updates existing Apartment in the server
-	 * @param apartment Apartment to be updated
+	 * @param building Apartment to be updated
 	 * */
-	public void update(Apartment apartment) {
+	public void update(Building building) {
 		try {
 			if (Main.DEBUG)
 				System.out.println("Updating Apartment");
 			
 			connection.setAutoCommit(false);
-			delete(apartment);
-			insert(apartment);
+			delete(building);
+			insert(building);
 			connection.commit();
 			connection.setAutoCommit(true);
 		} catch (SQLException e) {
@@ -2568,8 +2568,8 @@ public class SQLBridge {
 	/***/
 	public void delete(Table table) {
 		switch (table.getTableType()) {
-			case APARTMENTS:
-				delete((Apartment) table);
+			case BUILDINGS:
+				delete((Building) table);
 				break;
 			case TENANTS:
 				delete((Tenant) table);
@@ -2600,14 +2600,14 @@ public class SQLBridge {
 
 	/**
 	 * Deletes Apartment in the server
-	 * @param apartment Apartment to be deleted
+	 * @param building Apartment to be deleted
 	 * */
-	public void delete(Apartment apartment) {
+	public void delete(Building building) {
 		try {
 			if (Main.DEBUG)
 				System.out.println("Deleting Apartment");
 			
-			deleteApartment.setInt(1, apartment.getId());
+			deleteApartment.setInt(1, building.getId());
 			deleteApartment.execute();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());

@@ -2,9 +2,9 @@ package com.graham.apartmate.database.dbMirror;
 
 public enum DBTables {
     /**
-     * Apartment Table pointer
+     * Building Table pointer
      * */
-    APARTMENTS,
+    BUILDINGS,
 
     /**
      * Tenant Table pointer

@@ -3,7 +3,7 @@ package com.graham.apartmate.database.tables.mainTables;
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.subTables.Account;
 import com.graham.apartmate.database.tables.subTables.Contract;
-import com.graham.apartmate.database.tables.subTables.PersonalContact;
+import com.graham.apartmate.database.tables.subTables.Contact;
 import com.graham.apartmate.main.Main;
 import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.beans.property.SimpleStringProperty;
@@ -46,7 +46,7 @@ public class Contractor extends Table {
 	/**
 	 * Personal contact information of contractor
 	 * */
-	private PersonalContact contact;
+	private Contact contact;
 
 	/**
 	 * List of Contractor's Invoices
@@ -241,7 +241,7 @@ public class Contractor extends Table {
 	 * Getter:
 	 * Gets the personal contact information of the contractor
 	 * */
-	public PersonalContact getContact() {
+	public Contact getContact() {
 		return contact;
 	}
 
@@ -249,7 +249,7 @@ public class Contractor extends Table {
 	 * Setter:
 	 * Sets the personal contact information of the contractor
 	 * */
-	public void setContact(PersonalContact contact) {
+	public void setContact(Contact contact) {
 		this.contact = contact;
 	}
 

@@ -28,9 +28,9 @@ public class ContentBoxController extends SubWindowController {
     
     private void display() {
         switch (currentTable.getTableType()) {
-            case APARTMENTS:
-                for (Apartment apartment : Database.getInstance().getApartments()) {
-                    mainPane.getChildren().add(contentBox(apartment));
+            case BUILDINGS:
+                for (Building building : Database.getInstance().getBuildings()) {
+                    mainPane.getChildren().add(contentBox(building));
                 }
                 break;
             case TENANTS:
@@ -114,7 +114,7 @@ public class ContentBoxController extends SubWindowController {
     @FXML
     public void addTable () {
         switch (currentTable.getTableType()) {
-            case APARTMENTS:
+            case BUILDINGS:
                 System.out.println("This would've let you add an Apartment");
                 break;
             case TENANTS:

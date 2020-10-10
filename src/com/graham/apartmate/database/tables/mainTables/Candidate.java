@@ -5,15 +5,12 @@ import java.time.LocalDate;
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.subTables.Account;
 import com.graham.apartmate.database.tables.subTables.Lease;
-import com.graham.apartmate.database.tables.subTables.PersonalContact;
+import com.graham.apartmate.database.tables.subTables.Contact;
 import com.graham.apartmate.database.tables.subTables.RoomMate;
 
 import com.graham.apartmate.main.Main;
 import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
@@ -40,46 +37,8 @@ public class Candidate extends Table {
 	private static final long serialVersionUID = 1L;
 
 	// Mandatory fields
-	/**
-	 * First name of Candidate
-	 * */
-	private final SimpleStringProperty firstName;
-
-	/**
-	 * Last name of Candidate
-	 * */
-	private final SimpleStringProperty lastName;
-
-	/**
-	 * Candidate's phone number
-	 * */
-	private final SimpleStringProperty phone;
-
-	/**
-	 * Candidate's email
-	 * */
-	private final SimpleStringProperty email;
-
-	/**
-	 * Candidate's ID number
-	 * */
-	private final SimpleStringProperty ssn;
-
-	/**
-	 * Candidates number of children
-	 * */
-	private final SimpleIntegerProperty numChildren;
-
-	// Optional fields
-	/**
-	 * Candidate's date of birth
-	 * */
-	private final SimpleObjectProperty<LocalDate> dateOfBirth;
-
-	/**
-	 * Candidate's annual Income
-	 * */
-	private final SimpleIntegerProperty annualIncome;
+	/***/
+	private Contact contactInfo;
 
 	/**
 	 * Whether the Candidate is accepted or not (used to convert a candidate to a tenant)
@@ -95,12 +54,12 @@ public class Candidate extends Table {
 	/**
 	 * Candidate's first contact
 	 * */
-	private PersonalContact contact1;
+	private Contact eContact1;
 
 	/**
 	 * Candidate's second contact
 	 * */
-	private PersonalContact contact2;
+	private Contact eContact2;
 	//------------------------------------------------------------
 	//------------------------------------------------------------
 
@@ -119,9 +78,9 @@ public class Candidate extends Table {
 	 * Mandatory field constructor w/o birth date, annual income, or # of children
 	 * */
 	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, String ssn,
-					 PersonalContact contact1, PersonalContact contact2) {
+					 Contact eContact1, Contact eContact2) {
 		this(id, fk, firstName, lastName, phone, email, ssn, LocalDate.MIN, 0,0,
-				contact1, contact2);
+				eContact1, eContact2);
 	}
 
 	/**
@@ -136,33 +95,26 @@ public class Candidate extends Table {
 	 * @param dateOfBirth Candidate's date of birth
 	 * @param annualIncome Candidate's Annual Income
 	 * @param numChildren Number of children Candidate has
-	 * @param contact1 Candidate's first emergency contact
-	 * @param contact2 Candidate's second emergency contact
+	 * @param eContact1 Candidate's first emergency contact
+	 * @param eContact2 Candidate's second emergency contact
 	 * */
 	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, String ssn,
-					 LocalDate dateOfBirth, int annualIncome, int numChildren, PersonalContact contact1,
-					 PersonalContact contact2) {
+					 LocalDate dateOfBirth, int annualIncome, int numChildren, Contact eContact1,
+					 Contact eContact2) {
 		super(id, fk);
-
 		image = new Image("com/graham/apartmate/ui/res/TenantImg_small.png");
-		this.firstName = new SimpleStringProperty(firstName);
-		this.lastName = new SimpleStringProperty(lastName);
-		this.phone = new SimpleStringProperty(phone);
-		this.email = new SimpleStringProperty(email);
-		this.dateOfBirth = new SimpleObjectProperty<>(dateOfBirth);
-		this.annualIncome = new SimpleIntegerProperty(annualIncome);
-		this.ssn = new SimpleStringProperty(ssn);
-		this.numChildren = new SimpleIntegerProperty(numChildren);
+		contactInfo = new Contact(0,0,0,0, firstName, lastName, phone, email, ssn, numChildren,
+				dateOfBirth, annualIncome);
 		accepted = new SimpleBooleanProperty(false);
 		this.roomMates = FXCollections.observableArrayList();
-		this.contact1 = contact1;
-		this.contact2 = contact2;
+		this.eContact1 = eContact1;
+		this.eContact2 = eContact2;
 	}
 	//------------------------------------------------------------
 	//------------------------------------------------------------
 
 	//------------------------------------------------------------
-	//Overrided & Utility Methods/////////////////////////////////
+	//Overrides///////////////////////////////////////////////////
 	//------------------------------------------------------------
 	/**
 	 * Overrided toString() method
@@ -209,13 +161,19 @@ public class Candidate extends Table {
 	public String getEditLocation() {
 		return FXMLLocation.CANDEDIT.getLocation();
 	}
+	//------------------------------------------------------------
+	//------------------------------------------------------------
+
+	//------------------------------------------------------------
+	//Utility Methods/////////////////////////////////
+	//------------------------------------------------------------
 
 	/**
 	 * Gives the full name of the Candidate
 	 * @return first name, last name
 	 * */
 	public String getFullName() {
-		return getFirstName() + " " + getLastName();
+		return contactInfo.getFullName();
 	}
 
 	/**
@@ -223,7 +181,7 @@ public class Candidate extends Table {
 	 * @return last name, first name
 	 * */
 	public String getProperName() {
-		return getLastName() + ", " + getFirstName();
+		return contactInfo.getProperName();
 	}
 
 	/**
@@ -281,7 +239,7 @@ public class Candidate extends Table {
 	 * @return first name
 	 * */
 	public String getFirstName() {
-		return firstName.get();
+		return contactInfo.getFirstName();
 	}
 
 	/**
@@ -291,18 +249,9 @@ public class Candidate extends Table {
 	 * @param firstName New first name
 	 * */
 	public void setFirstName(String firstName) {
-		this.firstName.set(firstName);
+		this.contactInfo.setFirstName(firstName);
 	}
 
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets first name field property
-	 * @return first name property
-	 * */
-	public SimpleStringProperty firstNameProperty() {
-		return firstName;
-	}
 
 	/**
 	 * Getter:
@@ -311,27 +260,7 @@ public class Candidate extends Table {
 	 * @return last name
 	 * */
 	public String getLastName() {
-		return lastName.get();
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets last name of Candidate
-	 * @param lastName New last name
-	 * */
-	public void setLastName(String lastName) {
-		this.lastName.set(lastName);
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets last name field property
-	 * @return last name property
-	 * */
-	public SimpleStringProperty lastNameProperty() {
-		return lastName;
+		return contactInfo.getLastName();
 	}
 
 	/**
@@ -341,27 +270,7 @@ public class Candidate extends Table {
 	 * @return phone #
 	 * */
 	public String getPhone() {
-		return phone.get();
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Candidate's phone number
-	 * @param phone New phone #
-	 * */
-	public void setPhone(String phone) {
-		this.phone.set(phone);
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets phone field property
-	 * @return phone property
-	 * */
-	public SimpleStringProperty phoneProperty() {
-		return phone;
+		return contactInfo.getPhoneNumber();
 	}
 
 	/**
@@ -371,147 +280,27 @@ public class Candidate extends Table {
 	 * @return email
 	 * */
 	public String getEmail() {
-		return email.get();
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Candidate's email
-	 * @param email New email
-	 * */
-	public void setEmail(String email) {
-		this.email.set(email);
+		return contactInfo.getEmail();
 	}
 
 	/**
 	 * Getter:
 	 * <p>
-	 * Gets email field property
-	 * @return email property
+	 * Gets the contact information of this table
+	 * @return contact information
 	 * */
-	public SimpleStringProperty emailProperty() {
-		return email;
+	public Contact getContactInfo() {
+		return contactInfo;
 	}
 
 	/**
-	 * Getter:
+	 * Setter
 	 * <p>
-	 * Gets Candidate's Id number
-	 * @return idn
+	 * Sets the contact information of this table
+	 * @param contactInfo new contact information
 	 * */
-	public String getSsn() {
-		return ssn.get();
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Candidate's idn
-	 * @param sSN New idn
-	 * */
-	public void setSsn(String sSN) {
-		ssn.set(sSN);
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets ssn field property
-	 * @return ssn property
-	 * */
-	public SimpleStringProperty ssnProperty() {
-		return ssn;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets Candidate's date of birth
-	 * @return date of birth
-	 * */
-	public LocalDate getDateOfBirth() {
-		return dateOfBirth.get();
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Candidate's date of birth
-	 * @param dateOfBirth New date of birth
-	 * */
-	public void setDateOfBirth(LocalDate dateOfBirth) {
-		this.dateOfBirth.set(dateOfBirth);
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets date of birth field property
-	 * @return date of birth property
-	 * */
-	public SimpleObjectProperty<LocalDate> dateOfBirthProperty() {
-		return dateOfBirth;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets Candidate's annual income
-	 * @return annual income
-	 * */
-	public int getAnnualIncome() {
-		return annualIncome.get();
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Candidate's annual income
-	 * @param annualIncome New annual income
-	 * */
-	public void setAnnualIncome(int annualIncome) {
-		this.annualIncome.set(annualIncome);
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets annual income field property
-	 * @return annual income property
-	 * */
-	public SimpleIntegerProperty annualIncomeProperty() {
-		return annualIncome;
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets number of Candidate's children
-	 * @return # of children
-	 * */
-	public int getNumChildren() {
-		return numChildren.get();
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets number of Candidate's children
-	 * @param numChildren New # of children
-	 * */
-	public void setNumChildren(int numChildren) {
-		this.numChildren.set(numChildren);
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets number of children field property
-	 * @return number of children property
-	 * */
-	public SimpleIntegerProperty numChildrenProperty() {
-		return numChildren;
+	public void setContactInfo(Contact contactInfo) {
+		this.contactInfo = contactInfo;
 	}
 
 	/**
@@ -570,8 +359,8 @@ public class Candidate extends Table {
 	 * <p>
 	 * Gets Candidate's first Emergency Contact
 	 * */
-	public PersonalContact getContact1() {
-		return contact1;
+	public Contact getEContact1() {
+		return eContact1;
 	}
 
 	/**
@@ -579,8 +368,8 @@ public class Candidate extends Table {
 	 * <p>
 	 * Sets Candidate's first Emergency Contact
 	 * */
-	public void setContact1(PersonalContact contact1) {
-		this.contact1 = contact1;
+	public void setEContact1(Contact eContact1) {
+		this.eContact1 = eContact1;
 	}
 
 	/**
@@ -588,8 +377,8 @@ public class Candidate extends Table {
 	 * <p>
 	 * Gets Candidate's second Emergency Contact
 	 * */
-	public PersonalContact getContact2() {
-		return contact2;
+	public Contact getEContact2() {
+		return eContact2;
 	}
 
 	/**
@@ -597,8 +386,8 @@ public class Candidate extends Table {
 	 * <p>
 	 * Sets Candidate's second Emergency Contact
 	 * */
-	public void setContact2(PersonalContact contact2) {
-		this.contact2 = contact2;
+	public void setEContact2(Contact eContact2) {
+		this.eContact2 = eContact2;
 	}
 	//------------------------------------------------------------
 	//------------------------------------------------------------

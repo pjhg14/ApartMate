@@ -2,7 +2,7 @@ package com.graham.apartmate.ui.windows.popupwindows.addwindows.contractor;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.dbMirror.Database;
-import com.graham.apartmate.database.tables.mainTables.Apartment;
+import com.graham.apartmate.database.tables.mainTables.Building;
 
 import com.graham.apartmate.database.tables.mainTables.Contractor;
 import com.graham.apartmate.main.Main;
@@ -23,7 +23,7 @@ public class ContAddController {
 	private CheckBox isUsingCurrApt;
 	
 	@FXML
-	private ListView<Apartment> apartmentChoice;
+	private ListView<Building> apartmentChoice;
 	
 	@FXML
 	private TextField nameTextField;
@@ -43,17 +43,17 @@ public class ContAddController {
 	@FXML
 	private Button addButton;
 
-	private Apartment relatedApartment;
+	private Building relatedBuilding;
 	
 	// ---------------------------------------------------------
 	// ---------------------------------------------------------
 
 	@FXML
 	public void initialize() {
-		relatedApartment =  new Apartment();
-		apartmentChoice.setItems(FXCollections.observableArrayList(Database.getInstance().getApartments()));
+		relatedBuilding =  new Building();
+		apartmentChoice.setItems(FXCollections.observableArrayList(Database.getInstance().getBuildings()));
 		apartmentChoice.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		apartmentChoice.getSelectionModel().select(relatedApartment);
+		apartmentChoice.getSelectionModel().select(relatedBuilding);
 	}
 	
 	@FXML
@@ -79,7 +79,7 @@ public class ContAddController {
 
 			newContractor.setId(id);
 			if(isUsingCurrApt.isSelected()) {
-				newContractor.setFk(relatedApartment.getId());
+				newContractor.setFk(relatedBuilding.getId());
 			}else {
 				newContractor.setFk(apartmentChoice.getSelectionModel().getSelectedItem().getId());
 			}

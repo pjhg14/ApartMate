@@ -1,8 +1,8 @@
-package com.graham.apartmate.ui.windows.mainwindow.subwindow.infocontrollers.apartment;
+package com.graham.apartmate.ui.windows.mainwindow.subwindow.infocontrollers.building;
 
 
 import com.graham.apartmate.database.dbMirror.Database;
-import com.graham.apartmate.database.tables.mainTables.Apartment;
+import com.graham.apartmate.database.tables.mainTables.Building;
 import com.graham.apartmate.database.tables.subTables.Bill;
 
 import com.graham.apartmate.database.tables.subTables.LivingSpace;
@@ -27,50 +27,59 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 
-public class AptInfoController extends SubWindowController {
+public class BldgInfoController extends SubWindowController {
 
 	//----------------------------------------------------------
 	//Fields
 	//----------------------------------------------------------
 
+	/***/
 	@FXML
 	private Text addressText;
 
+	/***/
 	@FXML
 	private Text addressDetails;
 
+	/***/
 	@FXML
 	private ImageView aptImage;
 
+	/***/
 	@FXML
 	private FlowPane livingSpaceList;
 
+	/***/
 	@FXML
 	private ListView<Bill> billListView;
 
+	/***/
 	@FXML
 	private ListView<NoteLog> issueListView;
 	//----------------------------------------------------------
 	//----------------------------------------------------------
 
-	private Apartment selectedApt;
+	/***/
+	private Building selectedBldg;
 
+	/***/
 	@Override
 	public void init() {
-		selectedApt = (Apartment) currentTable;
+		selectedBldg = (Building) currentTable;
 
-		addressText.setText(selectedApt.getAddress());
+		addressText.setText(selectedBldg.getAddress());
 		addressDetails.setText(
-				String.format("%s %s, %s", selectedApt.getCity(), selectedApt.getState(),selectedApt.getZipCode()));
+				String.format("%s %s, %s", selectedBldg.getCity(), selectedBldg.getState(), selectedBldg.getZipCode()));
 
-		aptImage.setImage(selectedApt.getImage());
+		aptImage.setImage(selectedBldg.getImage());
 
-		billListView.setItems(selectedApt.getBills());
-		issueListView.setItems(selectedApt.getIssues());
+		billListView.setItems(selectedBldg.getBills());
+		issueListView.setItems(selectedBldg.getIssues());
 
-		setFlowPaneItems(selectedApt.getLivingSpaces());
+		setFlowPaneItems(selectedBldg.getLivingSpaces());
 	}
 
+	/***/
 	@FXML
 	public void editImage() {
 		//Open file explorer so user can choose choose new image
@@ -95,16 +104,18 @@ public class AptInfoController extends SubWindowController {
 
 		File img = fileChooser.showOpenDialog(Main.getLibrary().getMainStage());
 
-		selectedApt.setImage(new Image(img.toURI().toString()));
+		selectedBldg.setImage(new Image(img.toURI().toString()));
 		aptImage.setImage(new Image(img.toURI().toString()));
 	}
 
+	/***/
 	public void setFlowPaneItems(ObservableList<LivingSpace> livingSpaces) {
 		for (LivingSpace livingSpace : livingSpaces) {
 			livingSpaceList.getChildren().add(livingSpaceBox(livingSpace));
 		}
 	}
 
+	/***/
 	private VBox livingSpaceBox(LivingSpace livingSpace) {
 		/*
 		* VBox construction:
@@ -139,7 +150,7 @@ public class AptInfoController extends SubWindowController {
 
 		Button tenantButton = new Button("Tenant");
 		tenantButton.setOnAction(
-				event -> subWindowSubmit.accept(livingSpace.getOccupant(), false));
+				event -> subWindowSubmit.accept(livingSpace.getTenant(), false));
 		occupantBar.getChildren().add(tenantButton);
 
 		Button candidatesButton = new Button("Candidates");
@@ -157,6 +168,7 @@ public class AptInfoController extends SubWindowController {
 		return container;
 	}
 
+	/***/
 	@FXML
 	public void toBillInfo(MouseEvent event) {
 		if (event.getButton().equals(MouseButton.PRIMARY)) {
@@ -167,6 +179,7 @@ public class AptInfoController extends SubWindowController {
 		}
 	}
 
+	/***/
 	@FXML
 	public void toIssueInfo(MouseEvent event) {
 		if (event.getButton().equals(MouseButton.PRIMARY)) {
@@ -177,34 +190,40 @@ public class AptInfoController extends SubWindowController {
 		}
 	}
 
+	/***/
 	@FXML
 	public void addBill() {
 		System.out.println("Finish Custom popup window");
 	}
 
+	/***/
 	@FXML
 	public void editBill() {
 		System.out.println("Finish Custom popup window");
 	}
 
+	/***/
 	@FXML
 	public void deleteBill() {
-		selectedApt.removeBill(billListView.getSelectionModel().getSelectedItem());
+		selectedBldg.removeBill(billListView.getSelectionModel().getSelectedItem());
 	}
 
+	/***/
 	@FXML
 	public void addIssue() {
 		System.out.println("Finish Custom popup window");
 	}
 
+	/***/
 	@FXML
 	public void editIssue() {
 		System.out.println("Finish Custom popup window");
 	}
 
+	/***/
 	@FXML
 	public void deleteIssue() {
-		selectedApt.removeIssue(issueListView.getSelectionModel().getSelectedItem());
+		selectedBldg.removeIssue(issueListView.getSelectionModel().getSelectedItem());
 	}
 
 }

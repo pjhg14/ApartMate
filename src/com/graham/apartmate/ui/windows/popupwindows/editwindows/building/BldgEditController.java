@@ -1,4 +1,4 @@
-package com.graham.apartmate.ui.windows.popupwindows.editwindows.apartment;
+package com.graham.apartmate.ui.windows.popupwindows.editwindows.building;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -11,7 +11,7 @@ import java.util.List;
 
 //TODO: Finish edit window (edit button does not work)
 // Javadoc's for every method
-public class AptEditController {
+public class BldgEditController {
 	@FXML
 	private TextField addressTextField;
 

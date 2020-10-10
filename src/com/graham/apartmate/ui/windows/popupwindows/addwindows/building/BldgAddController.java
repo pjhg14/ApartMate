@@ -1,11 +1,11 @@
-package com.graham.apartmate.ui.windows.popupwindows.addwindows.apartment;
+package com.graham.apartmate.ui.windows.popupwindows.addwindows.building;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.dbMirror.Database;
-import com.graham.apartmate.database.tables.mainTables.Apartment;
+import com.graham.apartmate.database.tables.mainTables.Building;
 import com.graham.apartmate.main.Main;
 
 import javafx.collections.FXCollections;
@@ -17,7 +17,7 @@ import javafx.scene.text.Text;
 
 //TODO: Javadoc's for every method
 // Fix Add window
-public class AptAddController {
+public class BldgAddController {
 
 	@FXML
 	private TextField addressTextField;
@@ -50,7 +50,7 @@ public class AptAddController {
 	public void addToApartments() {
 		int id;
 
-		int lastId = Database.getInstance().getLastID(DBTables.APARTMENTS);
+		int lastId = Database.getInstance().getLastID(DBTables.BUILDINGS);
 		if (lastId > 0) {
 			id = lastId	+ 1;
 		} else {
@@ -58,12 +58,12 @@ public class AptAddController {
 		}
 
 		try {
-			Apartment newApartment = new Apartment();
+			Building newBuilding = new Building();
 
 
-			newApartment.setId(id);
-			newApartment.setAddress(addressTextField.getText());
-			newApartment.setCity(cityTextField.getText());
+			newBuilding.setId(id);
+			newBuilding.setAddress(addressTextField.getText());
+			newBuilding.setCity(cityTextField.getText());
 
 			if (stateComboBox.getValue().equals("State") || stateComboBox.getValue().equals("")) {
 				throw new NumberFormatException("Invalid Value in State box");
@@ -71,12 +71,12 @@ public class AptAddController {
 
 			String shortState = stateComboBox.getValue()
 					.substring(stateComboBox.getValue().indexOf('-') + 1).trim();
-			newApartment.setState(shortState);
+			newBuilding.setState(shortState);
 
-			newApartment.setZipCode(zipTextField.getText());
+			newBuilding.setZipCode(zipTextField.getText());
 			//newApartment.setCapacity(Integer.parseInt(capacityTextField.getText()));
 
-			Database.getInstance().add(newApartment);
+			Database.getInstance().add(newBuilding);
 
 			Main.getLibrary().closePopup();
 		} catch (NumberFormatException e) {

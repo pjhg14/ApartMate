@@ -21,7 +21,7 @@ import javafx.collections.ObservableList;
  * to locally store and manipulate information
  * @author Paul Graham Jr (pjhg14@gmail.com)
  * @version {@value Main#VERSION}
- * @see Apartment
+ * @see Building
  * @see Tenant
  * @see Candidate
  * @see Contractor
@@ -84,9 +84,9 @@ public final class Database {
 
 	// Main tables
 	/**
-	 * List of all Apartments
+	 * List of all Buildings
 	 * */
-	private ObservableList<Apartment> apartments;
+	private ObservableList<Building> buildings;
 
 	/**
 	 * List of all Tenants
@@ -131,7 +131,7 @@ public final class Database {
 	 * No other instances should exist
 	 * */
 	private Database() {
-		apartments = FXCollections.observableArrayList();
+		buildings = FXCollections.observableArrayList();
 		tenants = FXCollections.observableArrayList();
 		candidates = FXCollections.observableArrayList();
 		contractors = FXCollections.observableArrayList();
@@ -162,7 +162,7 @@ public final class Database {
 	 * */
 	@Override
 	public String toString() {
-		return "Apartments: " + apartments
+		return "Buildings: " + buildings
 				+ "\nTenants: " + tenants
 				+ "\nCandidates: " + candidates
 				+ "\nContractors: " + contractors;
@@ -253,7 +253,7 @@ public final class Database {
 	 * */
 	public boolean forceLoad(boolean retry) {
 		//Clone current lists
-		ObservableList<Apartment> cloneA = FXCollections.observableArrayList(apartments);
+		ObservableList<Building> cloneA = FXCollections.observableArrayList(buildings);
 		ObservableList<Tenant> cloneT = FXCollections.observableArrayList(tenants);
 		ObservableList<Candidate> cloneCa = FXCollections.observableArrayList(candidates);
 		ObservableList<Contractor> cloneCo = FXCollections.observableArrayList(contractors);
@@ -265,9 +265,9 @@ public final class Database {
 			return true;
 		} else {
 			offlineLoad();
-			if (apartments.isEmpty() || tenants.isEmpty() || candidates.isEmpty() || contractors.isEmpty()) {
+			if (buildings.isEmpty() || tenants.isEmpty() || candidates.isEmpty() || contractors.isEmpty()) {
 				//If no data loaded, restore Lists
-				apartments = cloneA;
+				buildings = cloneA;
 				tenants = cloneT;
 				candidates = cloneCa;
 				contractors = cloneCo;
@@ -321,8 +321,8 @@ public final class Database {
 		int id = 0;
 		try {
 			switch (table) {
-				case APARTMENTS:
-					id = apartments.get(apartments.size() - 1).getId();
+				case BUILDINGS:
+					id = buildings.get(buildings.size() - 1).getId();
 					return id;
 				case TENANTS:
 					id = tenants.get(tenants.size() - 1).getId();
@@ -334,8 +334,8 @@ public final class Database {
 					id = contractors.get(contractors.size() - 1).getId();
 					return id;
 				case BILLS:
-					for (Apartment apartment : apartments) {
-						for (Bill bill : apartment.getBills()) {
+					for (Building building : buildings) {
+						for (Bill bill : building.getBills()) {
 							if (bill.getId() > id) {
 								id = bill.getId();
 							}
@@ -343,8 +343,8 @@ public final class Database {
 					}
 					return id;
 				case ISSUES:
-					for (Apartment apartment : apartments) {
-						for (NoteLog issue : apartment.getIssues()) {
+					for (Building building : buildings) {
+						for (NoteLog issue : building.getIssues()) {
 							if (issue.getId() > id) {
 								id = issue.getId();
 							}
@@ -352,8 +352,8 @@ public final class Database {
 					}
 					return id;
 				case INSPECTIONS:
-					for (Apartment apartment : apartments) {
-						for (LivingSpace livingSpace : apartment.getLivingSpaces()) {
+					for (Building building : buildings) {
+						for (LivingSpace livingSpace : building.getLivingSpaces()) {
 							for (NoteLog inspection : livingSpace.getInspections()) {
 								if (inspection.getId() > id) {
 									id = inspection.getId();
@@ -394,8 +394,8 @@ public final class Database {
 						}
 					}
 
-					for (Apartment apartment : apartments) {
-						for (Bill bill : apartment.getBills()) {
+					for (Building building : buildings) {
+						for (Bill bill : building.getBills()) {
 							if (bill.getAccount().getId() > id) {
 								id = bill.getAccount().getId();
 							}
@@ -404,22 +404,22 @@ public final class Database {
 					return id;
 				case PERSONALCONTACT:
 					for (Tenant tenant : tenants) {
-						if (tenant.getContact1().getId() > id) {
-							id = tenant.getContact1().getId();
+						if (tenant.getEContact1().getId() > id) {
+							id = tenant.getEContact1().getId();
 						}
 
-						if (tenant.getContact2().getId() > id) {
-							id = tenant.getContact2().getId();
+						if (tenant.getEContact2().getId() > id) {
+							id = tenant.getEContact2().getId();
 						}
 					}
 
 					for (Candidate candidate : candidates) {
-						if (candidate.getContact1().getId() > id) {
-							id = candidate.getContact1().getId();
+						if (candidate.getEContact1().getId() > id) {
+							id = candidate.getEContact1().getId();
 						}
 
-						if (candidate.getContact2().getId() > id) {
-							id = candidate.getContact2().getId();
+						if (candidate.getEContact2().getId() > id) {
+							id = candidate.getEContact2().getId();
 						}
 					}
 
@@ -446,72 +446,28 @@ public final class Database {
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
 	/***/
-	public Apartment find(Apartment target) {
-		for (Apartment apartment : apartments) {
-			if (apartment.equals(target)) {
-				return apartment;
+	public Building getRelatedBuilding(Table table) {
+		for (Building building : buildings) {
+			if (table.getFk() == building.getId()) {
+				return building;
 			}
 		}
 
 		return null;
 	}
 
-	/***/
-	public Tenant find(Tenant target) {
-		for (Tenant tenant : tenants) {
-			if (tenant.equals(target)) {
-				return tenant;
-			}
-		}
+	public String getResidency(Candidate candidate) {
+		Building relatedBuilding = getRelatedBuilding(candidate);
 
-		return null;
-	}
-
-	/***/
-	public Candidate find(Candidate target) {
-		for (Candidate candidate : candidates) {
-			if (candidate.equals(target)) {
-				return candidate;
-			}
-		}
-
-		return null;
-	}
-
-	/***/
-	public Contractor find(Contractor target) {
-		for (Contractor contractor : contractors) {
-			if (contractor.equals(target)) {
-				return contractor;
-			}
-		}
-
-		return null;
-	}
-
-	/***/
-	public Apartment getRelatedApartment(Table table) {
-		for (Apartment apartment : apartments) {
-			if (table.getFk() == apartment.getId()) {
-				return apartment;
-			}
-		}
-
-		return null;
-	}
-
-	public String getTenantResidency(Candidate candidate) {
-		Apartment relatedApartment = getRelatedApartment(candidate);
-
-		assert relatedApartment != null;
-		for (LivingSpace livingSpace : relatedApartment.getLivingSpaces()) {
-			if (livingSpace.getOccupant().equals(candidate)) {
-				return relatedApartment.getAddress() + ", " + livingSpace.getSectionName();
+		assert relatedBuilding != null;
+		for (LivingSpace livingSpace : relatedBuilding.getLivingSpaces()) {
+			if (livingSpace.getTenant().equals(candidate)) {
+				return relatedBuilding.getAddress() + ", " + livingSpace.getSectionName();
 			}
 
 			for (Candidate expectantCandidate : livingSpace.getExpectantCandidates()) {
 				if (expectantCandidate.equals(candidate)) {
-					return relatedApartment.getAddress() + ", " + livingSpace.getSectionName();
+					return relatedBuilding.getAddress() + ", " + livingSpace.getSectionName();
 				}
 			}
 		}
@@ -531,8 +487,8 @@ public final class Database {
 	 * */
 	public boolean add(Table instance) {
 		switch (instance.getTableType()) {
-			case APARTMENTS:
-				return add((Apartment) instance);
+			case BUILDINGS:
+				return add((Building) instance);
 			case TENANTS:
 				return add((Tenant) instance);
 			case CANDIDATES:
@@ -545,12 +501,12 @@ public final class Database {
 	}
 
 	/**
-	 * Adds an Apartment to the Database
-	 * @param apartment Apartment to be added
+	 * Adds a Building to the Database
+	 * @param building Building to be added
 	 * */
-	public boolean add(Apartment apartment) {
-		boolean added = apartments.add(apartment);
-		Collections.sort(apartments);
+	public boolean add(Building building) {
+		boolean added = buildings.add(building);
+		Collections.sort(buildings);
 
 		//Insert online method here
 
@@ -558,13 +514,13 @@ public final class Database {
 	}
 
 	/**
-	 * Adds a Tenant to the Database; fails if the Tenant has no related Apartment
+	 * Adds a Tenant to the Database; fails if the Tenant has no related Building
 	 * @param tenant Tenant to be added
 	 * @return <code>true</code> if Tenant was added, <code>false</code> otherwise
 	 * */
 	public boolean add(Tenant tenant) {
-		for (Apartment apartment : apartments) {
-			if (apartment.getId() == tenant.getFk()) {
+		for (Building building : buildings) {
+			if (building.getId() == tenant.getFk()) {
 				tenants.add(tenant);
 				Collections.sort(tenants);
 
@@ -572,7 +528,7 @@ public final class Database {
 
 				return true;
 			}
-			// Respective apartment not found; cycle
+			// Respective building not found; cycle
 		}
 		return false;
 
@@ -584,8 +540,8 @@ public final class Database {
 	 * @return <code>true</code> if Candidate was added, <code>false</code> otherwise
 	 * */
 	public boolean add(Candidate candidate) {
-		for (Apartment apartment : apartments) {
-			if (apartment.getId() == candidate.getFk()) {
+		for (Building building : buildings) {
+			if (building.getId() == candidate.getFk()) {
 				candidates.add(candidate);
 				Collections.sort(candidates);
 
@@ -593,7 +549,7 @@ public final class Database {
 
 				return true;
 			}
-			// Respective apartment not found; cycle
+			// Respective building not found; cycle
 		}
 		return false;
 	}
@@ -604,8 +560,8 @@ public final class Database {
 	 * @return <code>true</code> if Contractor was added, <code>false</code> otherwise
 	 * */
 	public boolean add(Contractor contractor) {
-		for (Apartment apartment : apartments) {
-			if (apartment.getId() == contractor.getFk()) {
+		for (Building building : buildings) {
+			if (building.getId() == contractor.getFk()) {
 				contractors.add(contractor);
 
 				Collections.sort(contractors);
@@ -614,7 +570,7 @@ public final class Database {
 
 				return true;
 			}
-			// Respective apartment not found; cycle
+			// Respective building not found; cycle
 		}
 		return false;
 
@@ -629,8 +585,8 @@ public final class Database {
 	public boolean add(NoteLog issInsp, DBTables table) {
 		switch (table) {
 			case INSPECTIONS:
-				for (Apartment apartment : apartments) {
-					for (LivingSpace livingSpace : apartment.getLivingSpaces()) {
+				for (Building building : buildings) {
+					for (LivingSpace livingSpace : building.getLivingSpaces()) {
 						if (livingSpace.getId() == issInsp.getFk()) {
 							livingSpace.getInspections().add(issInsp);
 							Collections.sort(livingSpace.getInspections());
@@ -643,16 +599,16 @@ public final class Database {
 				}
 				break;
 			case ISSUES:
-				for (Apartment apartment : apartments) {
-					if (apartment.getId() == issInsp.getFk()) { // Find respective apartment
-						apartment.getIssues().add(issInsp);
-						Collections.sort(apartment.getIssues());
+				for (Building building : buildings) {
+					if (building.getId() == issInsp.getFk()) { // Find respective building
+						building.getIssues().add(issInsp);
+						Collections.sort(building.getIssues());
 
 						//Insert online method here
 
 						return true;
 					}
-				// Respective apartment not found; cycle
+				// Respective building not found; cycle
 				}
 				break;
 			default:
@@ -668,17 +624,17 @@ public final class Database {
 	 * @return <code>true</code> if Bill was added, <code>false</code> otherwise
 	 * */
 	public boolean add(Bill bill) {
-		for (Apartment apartment : apartments) {
-			if (apartment.getId() == bill.getFk()) { // Find respective apartment
-				apartment.getBills().add(bill);
+		for (Building building : buildings) {
+			if (building.getId() == bill.getFk()) { // Find respective Building
+				building.getBills().add(bill);
 
-				Collections.sort(apartment.getBills());
+				Collections.sort(building.getBills());
 
 				//Insert online method here
 
 				return true;
 			}
-			// Respective apartment not found; cycle
+			// Respective Building not found; cycle
 		}
 		return false;
 	}
@@ -726,9 +682,9 @@ public final class Database {
 	}
 
 	public boolean add(LivingSpace livingSpace) {
-		for (Apartment apartment : apartments) {
-			if (apartment.getId() == livingSpace.getFk()) {
-				return apartment.addRoom(livingSpace);
+		for (Building building : buildings) {
+			if (building.getId() == livingSpace.getFk()) {
+				return building.addRoom(livingSpace);
 			}
 		}
 
@@ -772,8 +728,8 @@ public final class Database {
 				}
 				break;
 			case BILLS:
-				for (Apartment apartment : apartments) {
-					for (Bill bill : apartment.getBills()) {
+				for (Building building : buildings) {
+					for (Bill bill : building.getBills()) {
 						if (bill.getId() == log.getFk()) {
 							if (credit) {
 								return bill.getAccount().addCreditFine(log);
@@ -792,16 +748,16 @@ public final class Database {
 		return false;
 	}
 
-	public boolean add(PersonalContact contact, DBTables parent) {
+	public boolean add(Contact contact, DBTables parent) {
 		switch (parent) {
 			case TENANTS:
 				for (Tenant tenant : tenants) {
 					if (tenant.getId() == contact.getFk()) {
-						if (tenant.getContact1() == null) {
-							tenant.setContact1(contact);
+						if (tenant.getEContact1() == null) {
+							tenant.setEContact1(contact);
 							return true;
-						} else if (tenant.getContact2() == null) {
-							tenant.setContact2(contact);
+						} else if (tenant.getEContact2() == null) {
+							tenant.setEContact2(contact);
 							return true;
 						}
 					}
@@ -810,11 +766,11 @@ public final class Database {
 			case CANDIDATES:
 				for (Candidate candidate : candidates) {
 					if (candidate.getId() == contact.getFk()) {
-						if (candidate.getContact1() == null) {
-							candidate.setContact1(contact);
+						if (candidate.getEContact1() == null) {
+							candidate.setEContact1(contact);
 							return true;
-						} else if (candidate.getContact2() == null) {
-							candidate.setContact2(contact);
+						} else if (candidate.getEContact2() == null) {
+							candidate.setEContact2(contact);
 							return true;
 						}
 					}
@@ -848,8 +804,8 @@ public final class Database {
 	 * */
 	public boolean remove(Table instance) {
 		switch (instance.getTableType()) {
-			case APARTMENTS:
-				return remove((Apartment) instance);
+			case BUILDINGS:
+				return remove((Building) instance);
 			case TENANTS:
 				return remove((Tenant) instance);
 			case CANDIDATES:
@@ -862,17 +818,17 @@ public final class Database {
 	}
 
 	/**
-	 * Removes an Apartment from the Database
-	 * @param apartment Apartment to be removed
-	 * @return <code>true</code> if the Apartment was removed <code>false</code> otherwise
+	 * Removes a Building from the Database
+	 * @param building Building to be removed
+	 * @return <code>true</code> if the Building was removed <code>false</code> otherwise
 	 * */
-	public boolean remove(Apartment apartment) {
+	public boolean remove(Building building) {
 		try {
-			if (apartments.remove(apartment)) {
-				// Remove all main tables related to specific apartment
-				tenants.removeIf(t -> (t.getFk() == apartment.getId()));
-				candidates.removeIf(can -> (can.getFk() == apartment.getId()));
-				contractors.removeIf(cont -> (cont.getFk() == apartment.getId()));
+			if (buildings.remove(building)) {
+				// Remove all main tables related to specific building
+				tenants.removeIf(t -> (t.getFk() == building.getId()));
+				candidates.removeIf(can -> (can.getFk() == building.getId()));
+				contractors.removeIf(cont -> (cont.getFk() == building.getId()));
 
 				//Insert online method here
 
@@ -888,7 +844,7 @@ public final class Database {
 			return false;
 		} catch (UnsupportedOperationException uoe) {
 			if (Main.DEBUG)
-				System.out.println("Error removing Apartment");
+				System.out.println("Error removing Building");
 
 			uoe.printStackTrace();
 			return false;
@@ -903,12 +859,12 @@ public final class Database {
 	public boolean remove(Tenant tenant) {
 		try {
 			if (tenants.remove(tenant)) {
-				for (Apartment apartment : apartments) {
-					for (LivingSpace livingSpace : apartment.getLivingSpaces()) {
-						if (livingSpace.getOccupant().equals(tenant)) {
+				for (Building building : buildings) {
+					for (LivingSpace livingSpace : building.getLivingSpaces()) {
+						if (livingSpace.getTenant().equals(tenant)) {
 							//Insert online method here
 
-							return livingSpace.removeOccupant();
+							return livingSpace.removeTenant();
 						}
 					}
 				}
@@ -991,8 +947,8 @@ public final class Database {
 		try {
 			switch (table) {
 				case INSPECTIONS:
-					for (Apartment apartment : apartments) {
-						for (LivingSpace livingSpace : apartment.getLivingSpaces()) {
+					for (Building building : buildings) {
+						for (LivingSpace livingSpace : building.getLivingSpaces()) {
 							if (livingSpace.getInspections().remove(issInsp)) {
 								//Insert online method here
 
@@ -1003,8 +959,8 @@ public final class Database {
 					}
 					break;
 				case ISSUES:
-					for (Apartment apartment : apartments) {
-						if (apartment.getIssues().remove(issInsp)) {
+					for (Building building : buildings) {
+						if (building.getIssues().remove(issInsp)) {
 							//Insert online method here
 
 							return true;
@@ -1038,8 +994,8 @@ public final class Database {
 	 * */
 	public boolean remove(Bill bill){
 		try {
-			for (Apartment apartment : apartments) {
-				if (apartment.getBills().remove(bill)) {
+			for (Building building : buildings) {
+				if (building.getBills().remove(bill)) {
 					//Insert online method here
 
 					return true;
@@ -1113,8 +1069,8 @@ public final class Database {
 	 * */
 	public boolean edit(Table instance) {
 		switch (instance.getTableType()) {
-			case APARTMENTS:
-				return edit((Apartment) instance);
+			case BUILDINGS:
+				return edit((Building) instance);
 			case TENANTS:
 				return edit((Tenant) instance);
 			case CANDIDATES:
@@ -1127,18 +1083,18 @@ public final class Database {
 	}
 
 	/**
-	 * Edits an Apartment that already exists in the Database
-	 * @param apartment Apartment to edit
-	 * @return <code>true</code> if Apartment exists and changes are made, <code>false</code> if not
+	 * Edits a Building that already exists in the Database
+	 * @param building Building to edit
+	 * @return <code>true</code> if Building exists and changes are made, <code>false</code> if not
 	 * */
-	public boolean edit(Apartment apartment) {
-		int index = apartments.indexOf(apartment);
+	public boolean edit(Building building) {
+		int index = buildings.indexOf(building);
 
 		if (index > 0) {
-			apartment.setEdited(true);
-			apartments.set(index, apartment);
+			building.setEdited(true);
+			buildings.set(index, building);
 
-			events.upDateModified(apartment);
+			events.upDateModified(building);
 
 			//Insert online method here
 
@@ -1266,8 +1222,8 @@ public final class Database {
 	public boolean edit(NoteLog issInsp, DBTables table) {
 		switch (table) {
 			case INSPECTIONS:
-				for (Apartment apartment : apartments) {
-					for (LivingSpace livingSpace : apartment.getLivingSpaces()) {
+				for (Building building : buildings) {
+					for (LivingSpace livingSpace : building.getLivingSpaces()) {
 						int index = livingSpace.getInspections().indexOf(issInsp);
 
 						if (index > 0) {
@@ -1286,12 +1242,12 @@ public final class Database {
 				}
 				break;
 			case ISSUES:
-				for (Apartment apartment : apartments) {
-					int index = apartment.getIssues().indexOf(issInsp);
+				for (Building building : buildings) {
+					int index = building.getIssues().indexOf(issInsp);
 
 					if (index > 0) {
 						issInsp.setEdited(true);
-						apartment.getIssues().set(index,issInsp);
+						building.getIssues().set(index,issInsp);
 
 						events.upDateModified(issInsp);
 
@@ -1315,12 +1271,12 @@ public final class Database {
 	 * @return <code>true</code> if Bill exists and changes are made, <code>false</code> if not
 	 * */
 	public boolean edit(Bill bill) {
-		for (Apartment apartment : apartments) {
-			int index = apartment.getBills().indexOf(bill);
+		for (Building building : buildings) {
+			int index = building.getBills().indexOf(bill);
 
 			if (index > 0) {
 				bill.setEdited(true);
-				apartment.getBills().set(index, bill);
+				building.getBills().set(index, bill);
 
 				events.upDateModified(bill);
 
@@ -1402,7 +1358,7 @@ public final class Database {
 	 * Loads Database elements from server
 	 * */
 	private void onlineLoad() {
-		apartments = FXCollections.observableArrayList(sqlBridge.queryApartments());
+		buildings = FXCollections.observableArrayList(sqlBridge.queryBuildings());
 		tenants = FXCollections.observableArrayList(sqlBridge.queryTenants());
 		candidates = FXCollections.observableArrayList(sqlBridge.queryCandidates());
 		contractors = FXCollections.observableArrayList(sqlBridge.queryContractors());
@@ -1415,7 +1371,7 @@ public final class Database {
 	 * Loads Database elements from local files
 	 * */
 	private void offlineLoad() {
-		apartments = FXCollections.observableArrayList(localSave.loadApartments());
+		buildings = FXCollections.observableArrayList(localSave.loadBuildings());
 		tenants = FXCollections.observableArrayList(localSave.loadTenants());
 		candidates = FXCollections.observableArrayList(localSave.loadCandidates());
 		contractors = FXCollections.observableArrayList(localSave.loadContractors());
@@ -1429,10 +1385,10 @@ public final class Database {
 	 * Saves Database elements to the server
 	 * */
 	private void onlineSave() {
-		sqlBridge.queryApartments().forEach(oldApt -> apartments.forEach(newApt -> {
-			if (oldApt.equals(newApt)) {
-				newApt.setEdited(true);
-				sqlBridge.update(newApt);
+		sqlBridge.queryBuildings().forEach(olfBldg -> buildings.forEach(newBldg -> {
+			if (olfBldg.equals(newBldg)) {
+				newBldg.setEdited(true);
+				sqlBridge.update(newBldg);
 			}
 		}));
 
@@ -1457,7 +1413,7 @@ public final class Database {
 			}
 		}));
 
-		apartments.forEach(apt -> {
+		buildings.forEach(apt -> {
 			if (apt.isEdited()) {
 				sqlBridge.insert(apt);
 			}
@@ -1486,7 +1442,7 @@ public final class Database {
 	 * Saves Database elements to local files
 	 * */
 	private void offlineSave() {
-		localSave.saveApartments(apartments);
+		localSave.saveBuildings(buildings);
 		localSave.saveTenants(tenants);
 		localSave.saveCandidates(candidates);
 		localSave.saveContractors(contractors);
@@ -1496,30 +1452,30 @@ public final class Database {
 	 * Sorts all lists by ascending order
 	 * */
 	private void orderAscending() {
-		Collections.sort(apartments);
+		Collections.sort(buildings);
 		Collections.sort(tenants);
 		Collections.sort(candidates);
 		Collections.sort(contractors);
 
-		apartments.forEach(a -> Collections.sort(a.getLivingSpaces()));
+		buildings.forEach(a -> Collections.sort(a.getLivingSpaces()));
 
-		apartments.forEach(a -> Collections.sort(a.getIssues()));
+		buildings.forEach(a -> Collections.sort(a.getIssues()));
 
-		apartments.forEach(a -> a.getLivingSpaces().forEach(r -> Collections.sort(r.getInspections())));
+		buildings.forEach(a -> a.getLivingSpaces().forEach(r -> Collections.sort(r.getInspections())));
 	}
 
 	/**
 	 * Sorts all lists by descending order
 	 * */
 	private void orderDescending() {
-		apartments.sort(Collections.reverseOrder());
+		buildings.sort(Collections.reverseOrder());
 		tenants.sort(Collections.reverseOrder());
 		candidates.sort(Collections.reverseOrder());
 		contractors.sort(Collections.reverseOrder());
 
-		apartments.forEach(a -> a.getLivingSpaces().forEach(r -> r.getInspections().sort(Collections.reverseOrder())));
+		buildings.forEach(a -> a.getLivingSpaces().forEach(r -> r.getInspections().sort(Collections.reverseOrder())));
 
-		apartments.forEach(a -> a.getIssues().sort(Collections.reverseOrder()));
+		buildings.forEach(a -> a.getIssues().sort(Collections.reverseOrder()));
 	}
 
 	/**
@@ -1546,20 +1502,20 @@ public final class Database {
 	 * */
 	private void orderByName() {
 		// create comparators
-		Comparator<Apartment> appByName = Comparator.comparing(Apartment::getAddress);
+		Comparator<Building> appByName = Comparator.comparing(Building::getAddress);
 		Comparator<Tenant> tnantByName = Comparator.comparing(Tenant::getLastName);
 		Comparator<Candidate> candByName = Comparator.comparing(Candidate::getLastName);
 		Comparator<Contractor> contByName = Comparator.comparing(Contractor::getName);
 
 		switch (currentOrder[0]) {
 			case 0:
-				apartments.sort(appByName);
+				buildings.sort(appByName);
 				tenants.sort(tnantByName);
 				candidates.sort(candByName);
 				contractors.sort(contByName);
 				break;
 			case 1:
-				apartments.sort(Collections.reverseOrder(appByName));
+				buildings.sort(Collections.reverseOrder(appByName));
 				tenants.sort(Collections.reverseOrder(tnantByName));
 				candidates.sort(Collections.reverseOrder(candByName));
 				contractors.sort(Collections.reverseOrder(contByName));
@@ -1705,21 +1661,21 @@ public final class Database {
 	/**
 	 * Getter:
 	 * <p>
-	 * Gets a view of the Apartment list in the database
-	 * @return Apartment list
+	 * Gets a view of the Building list in the database
+	 * @return Building list
 	 * */
-	public ObservableList<Apartment> getApartments() {
-		return FXCollections.unmodifiableObservableList(apartments);
+	public ObservableList<Building> getBuildings() {
+		return FXCollections.unmodifiableObservableList(buildings);
 	}
 
 	/**
 	 * Setter:
 	 * <p>
-	 * Sets list of Apartments from an existing list
-	 * @param apartments new list of apartments
+	 * Sets list of Building from an existing list
+	 * @param buildings new list of Building
 	 * */
-	public void setApartments(ObservableList<Apartment> apartments) {
-		this.apartments = apartments;
+	public void setBuildings(ObservableList<Building> buildings) {
+		this.buildings = buildings;
 	}
 
 	/**

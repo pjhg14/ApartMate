@@ -90,8 +90,8 @@ public class WindowLibrary {
 			FXMLLocation location;
 
 			switch (toAdd.getTableType()) {
-				case APARTMENTS:
-					location = FXMLLocation.APTADD;
+				case BUILDINGS:
+					location = FXMLLocation.BLDGADD;
 					break;
 				case TENANTS:
 					location = FXMLLocation.TNANTADD;
@@ -139,8 +139,8 @@ public class WindowLibrary {
 			FXMLLocation location;
 
 			switch (toEdit.getTableType()) {
-				case APARTMENTS:
-					location = FXMLLocation.APTADD;
+				case BUILDINGS:
+					location = FXMLLocation.BLDGADD;
 					break;
 				case TENANTS:
 					location = FXMLLocation.TNANTADD;

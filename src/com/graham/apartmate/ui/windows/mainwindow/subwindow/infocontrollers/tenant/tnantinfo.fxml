@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -16,19 +17,9 @@
          <children>
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="15.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                <children>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;">
                      <children>
-                        <VBox layoutX="369.0" prefHeight="200.0" prefWidth="186.0" style="-fx-border-color: black;">
-                           <children>
-                              <ImageView fx:id="tnantImg" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-                              <Button mnemonicParsing="false" onAction="#editImage" prefWidth="190.0" text="Edit Image">
-                                 <font>
-                                    <Font size="11.0" />
-                                 </font>
-                              </Button>
-                           </children>
-                        </VBox>
-                        <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-border-color: black;">
+                        <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-border-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <Text fx:id="nameText" strokeType="OUTSIDE" strokeWidth="0.0" text="Name">
                                  <font>
@@ -49,6 +40,16 @@
                               </HBox>
                            </children>
                         </VBox>
+                        <VBox layoutX="355.0" layoutY="6.0" prefHeight="191.0" spacing="15.0" style="-fx-border-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <ImageView fx:id="tnantImg" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" style="-fx-border-color: black;" />
+                              <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#editImage" prefHeight="15.0" prefWidth="200.0" text="Edit Image">
+                                 <font>
+                                    <Font size="11.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </VBox>
                      </children>
                   </AnchorPane>
                   <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="540.0" style="-fx-border-color: black;">
@@ -57,7 +58,18 @@
                         <ListView prefHeight="200.0" prefWidth="200.0" />
                      </children>
                   </VBox>
-                  <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="529.0" style="-fx-border-color: black;" />
+                  <AnchorPane style="-fx-border-color: black;">
+                     <children>
+                        <Button layoutX="508.0" layoutY="5.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" text="Lease" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Button layoutX="405.0" layoutY="7.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" text="Account" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+                  <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="530.0" style="-fx-border-color: black;">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Occupants:" />
+                        <FlowPane prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;" />
+                     </children>
+                  </VBox>
                </children>
             </VBox>
          </children>

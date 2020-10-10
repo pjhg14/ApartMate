@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.dbMirror.Database;
-import com.graham.apartmate.database.tables.mainTables.Apartment;
+import com.graham.apartmate.database.tables.mainTables.Building;
 import com.graham.apartmate.database.tables.mainTables.Tenant;
 import com.graham.apartmate.main.Main;
 
@@ -28,7 +28,7 @@ public class TnantAddController {
 	private CheckBox isUsingCurrApt;
 	
 	@FXML
-	private ListView<Apartment> apartmentChoice;
+	private ListView<Building> apartmentChoice;
 	
 	@FXML
 	private TextField firstNameTextField;
@@ -72,7 +72,7 @@ public class TnantAddController {
 	@FXML
 	private Button addButton;
 
-	private Apartment relatedApartment;
+	private Building relatedBuilding;
 	
 	private Tenant newTennant;
 	
@@ -81,11 +81,11 @@ public class TnantAddController {
 
 	@FXML
 	public void initialize() {
-		relatedApartment = new Apartment();
+		relatedBuilding = new Building();
 		newTennant = new Tenant();
-		apartmentChoice.setItems(FXCollections.observableArrayList(Database.getInstance().getApartments()));
+		apartmentChoice.setItems(FXCollections.observableArrayList(Database.getInstance().getBuildings()));
 		apartmentChoice.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		apartmentChoice.getSelectionModel().select(relatedApartment);
+		apartmentChoice.getSelectionModel().select(relatedBuilding);
 	}
 	
 	@FXML
@@ -128,7 +128,7 @@ public class TnantAddController {
 
 			newTennant.setId(id);
 			if(isUsingCurrApt.isSelected()) {
-				newTennant.setFk(relatedApartment.getId());
+				newTennant.setFk(relatedBuilding.getId());
 			}else {
 				newTennant.setFk(apartmentChoice.getSelectionModel().getSelectedItem().getId());
 			}

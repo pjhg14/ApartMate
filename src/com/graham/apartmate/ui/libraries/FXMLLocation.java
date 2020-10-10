@@ -18,7 +18,7 @@ public enum FXMLLocation {
 	LISTS("/com/graham/apartmate/ui/windows/mainwindow/subwindow/listcontrollers/contentboxes.fxml"),
 	OVERVIEW("/com/graham/apartmate/ui/windows/mainwindow/subwindow/overview/overview.fxml"),
 
-	APTINFO("/com/graham/apartmate/ui/windows/mainwindow/subwindow/infocontrollers/apartment/aptinfo.fxml"),
+	BLDGINFO("/com/graham/apartmate/ui/windows/mainwindow/subwindow/infocontrollers/building/bldginfo.fxml"),
 	TNANTINFO("/com/graham/apartmate/ui/fxml/info/tnantinfo.fxml"),
 	CANDINFO("/com/graham/apartmate/ui/fxml/info/candinfo.fxml"),
 	CONTINFO("/com/graham/apartmate/ui/fxml/info/continfo.fxml"),
@@ -26,12 +26,12 @@ public enum FXMLLocation {
 	BILLINFO("/com/graham/apartmate/ui/windows/mainwindow/subwindow/infocontrollers/bill/billinfo.fxml"),
 	NOTEINFO("com/graham/apartmate/ui/windows/mainwindow/subwindow/infocontrollers/notelog/noteinfo.fxml"),
 
-	APTADD("/com/graham/apartmate/ui/windows/popupwindows/addwindows/apartment/aptadd.fxml"),
+	BLDGADD("/com/graham/apartmate/ui/windows/popupwindows/addwindows/building/bldgadd.fxml"),
 	TNANTADD("/com/graham/apartmate/ui/windows/popupwindows/addwindows/tenant/tnantadd.fxml"),
 	CANDADD("/com/graham/apartmate/ui/windows/popupwindows/addwindows/candidate/candadd.fxml"),
 	CONTADD("/com/graham/apartmate/ui/windows/popupwindows/addwindows/contractor/contadd.fxml"),
 
-	APTEDIT("/com/graham/apartmate/ui/windows/popupwindows/editwindows/apartment/aptedit.fxml"),
+	BLDGEDIT("/com/graham/apartmate/ui/windows/popupwindows/editwindows/building/bldgedit.fxml"),
 	TNANTEDIT("/com/graham/apartmate/ui/windows/popupwindows/editwindows/tenant/tnantedit.fxml"),
 	CANDEDIT("/com/graham/apartmate/ui/windows/popupwindows/editwindows/candidate/candedit.fxml"),
 	CONTEDIT("/com/graham/apartmate/ui/windows/popupwindows/editwindows/contractor/contedit.fxml"),

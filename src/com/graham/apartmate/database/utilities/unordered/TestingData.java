@@ -24,7 +24,7 @@ import javafx.collections.FXCollections;
 // Finalize bill samples
 public class TestingData {
 
-	private final List<Apartment> apartments;
+	private final List<Building> buildings;
 	private final List<Tenant> tenants;
 	private final List<Candidate> candidates;
 	private final List<Contractor> contractors;
@@ -34,7 +34,7 @@ public class TestingData {
 	 * */
 	public TestingData() {
 		// Initialize lists
-		apartments = new ArrayList<>();
+		buildings = new ArrayList<>();
 		tenants = new ArrayList<>();
 		candidates = new ArrayList<>();
 		contractors = new ArrayList<>();
@@ -49,7 +49,7 @@ public class TestingData {
 		List<String> address = getRandomAddress(usedAddresses);
 		assert address != null;
 
-		Apartment apartment = new Apartment(
+		Building building = new Building(
 				1,
 				address.get(0).trim(),
 				address.get(1).trim(),
@@ -67,7 +67,7 @@ public class TestingData {
 
 		Bill bill = new Bill(
 				1,
-				apartment.getId(),
+				building.getId(),
 				"Mortgage",
 				"Allen Bank",
 				listToString(Objects.requireNonNull(getRandomAddress(usedAddresses))),
@@ -92,10 +92,10 @@ public class TestingData {
 						getRandomDouble(1000,2000)
 				)
 		);
-		apartment.addBill(bill);
+		building.addBill(bill);
 		bill = new Bill(
 				2,
-				apartment.getId(),
+				building.getId(),
 				"Water Bill",
 				"Synchrony Water Company",
 				listToString(Objects.requireNonNull(getRandomAddress(usedAddresses))),
@@ -120,10 +120,10 @@ public class TestingData {
 						getRandomDouble(1000,2000)
 				)
 		);
-		apartment.addBill(bill);
+		building.addBill(bill);
 		bill = new Bill(
 				3,
-				apartment.getId(),
+				building.getId(),
 				"Electric Bill",
 				"Wall Electric",
 				listToString(Objects.requireNonNull(getRandomAddress(usedAddresses))),
@@ -148,10 +148,10 @@ public class TestingData {
 						getRandomDouble(1000,2000)
 				)
 		);
-		apartment.addBill(bill);
+		building.addBill(bill);
 		bill = new Bill(
 				4,
-				apartment.getId(),
+				building.getId(),
 				"Gas Bill",
 				"Genesis Gas Company",
 				listToString(Objects.requireNonNull(getRandomAddress(usedAddresses))),
@@ -176,9 +176,9 @@ public class TestingData {
 						getRandomDouble(1000,2000)
 				)
 		);
-		apartment.addBill(bill);
+		building.addBill(bill);
 
-		apartments.add(apartment);
+		buildings.add(building);
 		//----------------------------------------------------------------------------------------------------
 		//----------------------------------------------------------------------------------------------------
 
@@ -188,7 +188,7 @@ public class TestingData {
 		address = getRandomAddress(usedAddresses);
 		assert address != null;
 
-		apartment = new Apartment(
+		building = new Building(
 				2,
 				address.get(0).trim(),
 				address.get(1).trim(),
@@ -202,7 +202,7 @@ public class TestingData {
 		//----------------------------------------------------------------------------------------------------
 		bill = new Bill(
 				5,
-				apartment.getId(),
+				building.getId(),
 				"Water Bill",
 				"Montain Water Company",
 				listToString(Objects.requireNonNull(getRandomAddress(usedAddresses))),
@@ -227,10 +227,10 @@ public class TestingData {
 						getRandomDouble(1000,2000)
 				)
 		);
-		apartment.addBill(bill);
+		building.addBill(bill);
 		bill = new Bill(
 				6,
-				apartment.getId(),
+				building.getId(),
 				"Electric Bill",
 				"Notta Electric Company",
 				listToString(Objects.requireNonNull(getRandomAddress(usedAddresses))),
@@ -255,10 +255,10 @@ public class TestingData {
 						getRandomDouble(1000,2000)
 				)
 		);
-		apartment.addBill(bill);
+		building.addBill(bill);
 		bill = new Bill(
 				7,
-				apartment.getId(),
+				building.getId(),
 				"Gas Bill",
 				"Bilzard Gas Company",
 				listToString(Objects.requireNonNull(getRandomAddress(usedAddresses))),
@@ -283,8 +283,8 @@ public class TestingData {
 						getRandomDouble(1000,2000)
 				)
 		);
-		apartment.addBill(bill);
-		apartments.add(apartment);
+		building.addBill(bill);
+		buildings.add(building);
 
 		//----------------------------------------------------------------------------------------------------
 		//Apartment3
@@ -293,7 +293,7 @@ public class TestingData {
 		assert address != null;
 
 
-		apartment = new Apartment(
+		building = new Building(
 				3,
 				address.get(0).trim(),
 				address.get(1).trim(),
@@ -310,7 +310,7 @@ public class TestingData {
 		//----------------------------------------------------------------------------------------------------
 		bill = new Bill(
 				8,
-				apartment.getId(),
+				building.getId(),
 				"Mortgage",
 				"Pursuit National Bank",
 				listToString(Objects.requireNonNull(getRandomAddress(usedAddresses))),
@@ -335,10 +335,10 @@ public class TestingData {
 						getRandomDouble(1000,2000)
 				)
 		);
-		apartment.addBill(bill);
+		building.addBill(bill);
 		bill = new Bill(
 				9,
-				apartment.getId(),
+				building.getId(),
 				"Water Bill",
 				"Test Water Company",
 				listToString(Objects.requireNonNull(getRandomAddress(usedAddresses))),
@@ -363,10 +363,10 @@ public class TestingData {
 						getRandomDouble(1000,2000)
 				)
 		);
-		apartment.addBill(bill);
+		building.addBill(bill);
 		bill = new Bill(
 				10,
-				apartment.getId(),
+				building.getId(),
 				"Electric Bill",
 				"Running out of names Electric",
 				listToString(Objects.requireNonNull(getRandomAddress(usedAddresses))),
@@ -391,10 +391,10 @@ public class TestingData {
 						getRandomDouble(1000,2000)
 				)
 		);
-		apartment.addBill(bill);
+		building.addBill(bill);
 		bill = new Bill(
 				11,
-				apartment.getId(),
+				building.getId(),
 				"Gas Bill",
 				"I dunno Gas Company",
 				listToString(Objects.requireNonNull(getRandomAddress(usedAddresses))),
@@ -419,8 +419,8 @@ public class TestingData {
 						getRandomDouble(1000,2000)
 				)
 		);
-		apartment.addBill(bill);
-		apartments.add(apartment);
+		building.addBill(bill);
+		buildings.add(building);
 		//----------------------------------------------------------------------------------------------------
 		//----------------------------------------------------------------------------------------------------
 
@@ -436,7 +436,7 @@ public class TestingData {
 
 		Tenant tenant = new Tenant(
 				1,
-				apartments.get(0).getId(),
+				buildings.get(0).getId(),
 				first,
 				last,
 				getRandomPhone(),
@@ -446,7 +446,7 @@ public class TestingData {
 				getRandomSsn(),
 				getRandomInt(0,3),
 				getRandomDate(3),
-				new PersonalContact(
+				new Contact(
 						1,
 						1,
 						0,
@@ -456,7 +456,7 @@ public class TestingData {
 						getRandomPhone(),
 						getRandomEmail(getRandomFirstName(),getRandomLastName())
 				),
-				new PersonalContact(
+				new Contact(
 						2,
 						1,
 						0,
@@ -493,7 +493,7 @@ public class TestingData {
 		last = getRandomLastName();
 		tenant = new Tenant(
 				2,
-				apartments.get(0).getId(),
+				buildings.get(0).getId(),
 				first,
 				last,
 				getRandomPhone(),
@@ -503,7 +503,7 @@ public class TestingData {
 				getRandomSsn(),
 				getRandomInt(0,3),
 				getRandomDate(3),
-				new PersonalContact(
+				new Contact(
 						3,
 						2,
 						0,
@@ -513,7 +513,7 @@ public class TestingData {
 						getRandomPhone(),
 						getRandomEmail(getRandomFirstName(),getRandomLastName())
 				),
-				new PersonalContact(
+				new Contact(
 						4,
 						2,
 						0,
@@ -555,7 +555,7 @@ public class TestingData {
 		last = getRandomLastName();
 		tenant = new Tenant(
 				3,
-				apartments.get(0).getId(),
+				buildings.get(0).getId(),
 				first,
 				last,
 				getRandomPhone(),
@@ -565,7 +565,7 @@ public class TestingData {
 				getRandomSsn(),
 				getRandomInt(0,3),
 				getRandomDate(3),
-				new PersonalContact(
+				new Contact(
 						5,
 						3,
 						0,
@@ -575,7 +575,7 @@ public class TestingData {
 						getRandomPhone(),
 						getRandomEmail(getRandomFirstName(),getRandomLastName())
 				),
-				new PersonalContact(
+				new Contact(
 						6,
 						3,
 						0,
@@ -617,7 +617,7 @@ public class TestingData {
 		last = getRandomLastName();
 		tenant = new Tenant(
 				4,
-				apartments.get(0).getId(),
+				buildings.get(0).getId(),
 				first,
 				last,
 				getRandomPhone(),
@@ -627,7 +627,7 @@ public class TestingData {
 				getRandomSsn(),
 				getRandomInt(0,3),
 				getRandomDate(3),
-				new PersonalContact(
+				new Contact(
 						7,
 						4,
 						0,
@@ -637,7 +637,7 @@ public class TestingData {
 						getRandomPhone(),
 						getRandomEmail(getRandomFirstName(),getRandomLastName())
 				),
-				new PersonalContact(
+				new Contact(
 						8,
 						4,
 						0,
@@ -674,7 +674,7 @@ public class TestingData {
 		last = getRandomLastName();
 		tenant = new Tenant(
 				5,
-				apartments.get(0).getId(),
+				buildings.get(0).getId(),
 				first,
 				last,
 				getRandomPhone(),
@@ -684,7 +684,7 @@ public class TestingData {
 				getRandomSsn(),
 				getRandomInt(0,3),
 				getRandomDate(3),
-				new PersonalContact(
+				new Contact(
 						9,
 						5,
 						0,
@@ -694,7 +694,7 @@ public class TestingData {
 						getRandomPhone(),
 						getRandomEmail(getRandomFirstName(),getRandomLastName())
 				),
-				new PersonalContact(
+				new Contact(
 						10,
 						5,
 						0,
@@ -731,7 +731,7 @@ public class TestingData {
 		last = getRandomLastName();
 		tenant = new Tenant(
 				6,
-				apartments.get(0).getId(),
+				buildings.get(0).getId(),
 				first,
 				last,
 				getRandomPhone(),
@@ -741,7 +741,7 @@ public class TestingData {
 				getRandomSsn(),
 				getRandomInt(0,3),
 				getRandomDate(3),
-				new PersonalContact(
+				new Contact(
 						11,
 						6,
 						0,
@@ -751,7 +751,7 @@ public class TestingData {
 						getRandomPhone(),
 						getRandomEmail(getRandomFirstName(),getRandomLastName())
 				),
-				new PersonalContact(
+				new Contact(
 						12,
 						6,
 						0,
@@ -804,7 +804,7 @@ public class TestingData {
 				getRandomDate(1),
 				getRandomInt(11000,90000),
 				getRandomInt(0,3),
-				new PersonalContact(
+				new Contact(
 						13,
 						0,
 						1,
@@ -814,7 +814,7 @@ public class TestingData {
 						getRandomPhone(),
 						getRandomEmail(getRandomFirstName(),getRandomLastName())
 				),
-				new PersonalContact(
+				new Contact(
 						14,
 						0,
 						1,
@@ -840,7 +840,7 @@ public class TestingData {
 				getRandomDate(1),
 				getRandomInt(11000,90000),
 				getRandomInt(0,3),
-				new PersonalContact(
+				new Contact(
 						15,
 						0,
 						2,
@@ -850,7 +850,7 @@ public class TestingData {
 						getRandomPhone(),
 						getRandomEmail(getRandomFirstName(),getRandomLastName())
 				),
-				new PersonalContact(
+				new Contact(
 						16,
 						0,
 						2,
@@ -878,7 +878,7 @@ public class TestingData {
 				getRandomDate(1),
 				getRandomInt(11000,90000),
 				getRandomInt(0,3),
-				new PersonalContact(
+				new Contact(
 						17,
 						0,
 						3,
@@ -888,7 +888,7 @@ public class TestingData {
 						getRandomPhone(),
 						getRandomEmail(getRandomFirstName(),getRandomLastName())
 				),
-				new PersonalContact(
+				new Contact(
 						18,
 						0,
 						3,
@@ -1108,7 +1108,7 @@ public class TestingData {
 	 * Warning! Deletes all current data!
 	 * */
 	public void useTestingData() {
-		Database.getInstance().setApartments(FXCollections.observableArrayList(apartments));
+		Database.getInstance().setBuildings(FXCollections.observableArrayList(buildings));
 		Database.getInstance().setTenants(FXCollections.observableArrayList(tenants));
 		Database.getInstance().setCandidates(FXCollections.observableArrayList(candidates));
 		Database.getInstance().setContractors(FXCollections.observableArrayList(contractors));

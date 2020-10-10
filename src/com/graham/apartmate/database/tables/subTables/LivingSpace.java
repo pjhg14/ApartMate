@@ -5,7 +5,6 @@ import com.graham.apartmate.database.tables.mainTables.Candidate;
 import com.graham.apartmate.database.tables.mainTables.Table;
 import com.graham.apartmate.database.tables.mainTables.Tenant;
 import com.graham.apartmate.main.Main;
-import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,7 +13,7 @@ import javafx.scene.image.Image;
 /**
  * Living Space Object:
  * <p>
- * Records the information of a Living Space of an Apartment
+ * Records the information of a Living Space of a Building
  *
  * @since Capstone (0.8)
  * @version {@value Main#VERSION}
@@ -40,7 +39,7 @@ public class LivingSpace extends Table {
 	/**
 	 * Holds the occupying tenant, if any
 	 */
-	private Tenant occupant;
+	private Tenant tenant;
 
 	/**
 	 * List of expectant candidates for the room
@@ -95,7 +94,7 @@ public class LivingSpace extends Table {
 	 * */
 	public LivingSpace(int id, int fk, int fk2, String sectionName) {
 		super(id, fk, fk2);
-		image = new Image("com/graham/apartmate/ui/res/ApartmentImg_small.png");
+		image = new Image("com/graham/apartmate/ui/res/BuildingImg_small.png");
 		this.sectionName = new SimpleStringProperty(sectionName);
 
 		expectantCandidates = FXCollections.observableArrayList();
@@ -149,31 +148,31 @@ public class LivingSpace extends Table {
 	/**
 	 * Tells whether or not this room has an occupant
 	 * */
-	public boolean hasOccupant() {
-		return getFk2() != 0 || occupant != null;
+	public boolean hasTenant() {
+		return getFk2() != 0 || tenant != null;
 	}
 
 	/**
 	 * Adds an occupant to the Room
 	 * */
-	public boolean addOccupant(Tenant tenant) {
-		if (occupant != null) {
+	public boolean addTenant(Tenant tenant) {
+		if (this.tenant != null) {
 			return false;
 		}
 
-		occupant = tenant;
+		this.tenant = tenant;
 		return true;
 	}
 
 	/**
 	 * Removes the occupant from the Room
 	 * */
-	public boolean removeOccupant() {
-		if (occupant == null) {
+	public boolean removeTenant() {
+		if (tenant == null) {
 			return false;
 		}
 
-		occupant = null;
+		tenant = null;
 		return true;
 	}
 
@@ -255,8 +254,8 @@ public class LivingSpace extends Table {
 	 * Gets the Tenant occupying this Room
 	 * @return current occupant
 	 * */
-	public Tenant getOccupant() {
-		return occupant;
+	public Tenant getTenant() {
+		return tenant;
 	}
 
 	/**

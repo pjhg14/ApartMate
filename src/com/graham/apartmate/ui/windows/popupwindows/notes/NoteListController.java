@@ -3,13 +3,9 @@ package com.graham.apartmate.ui.windows.popupwindows.notes;
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.dbMirror.Database;
 
-import com.graham.apartmate.database.tables.mainTables.Apartment;
 import com.graham.apartmate.database.tables.mainTables.Table;
-import com.graham.apartmate.database.tables.mainTables.Tenant;
 import com.graham.apartmate.database.tables.subTables.NoteLog;
 import com.graham.apartmate.main.Main;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

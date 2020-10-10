@@ -229,7 +229,7 @@ public class MainSceneController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(OVERVIEW.getLocation()));
             overviewTab.setContent(loader.load());
 
-            createListWindow(aptTab, new Apartment());
+            createListWindow(aptTab, new Building());
 
             createListWindow(tnantTab, new Tenant());
 

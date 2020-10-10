@@ -26,7 +26,7 @@ import javafx.scene.image.Image;
  * @version {@value Main#VERSION}
  * @since Can we call this an alpha? (0.1)
  */
-public class Apartment extends Table {
+public class Building extends Table {
 
 	//--------------------------------------------------------------------
 	//Fields//////////////////////////////////////////////////////////////
@@ -82,22 +82,22 @@ public class Apartment extends Table {
 	/**
 	 * Sorts Apartment by address
 	 * */
-	public static final Comparator<Apartment> APT_BY_ADDRESS = Comparator.comparing(Apartment::getAddress);
+	public static final Comparator<Building> APT_BY_ADDRESS = Comparator.comparing(Building::getAddress);
 
 	/**
 	 * Sorts Apartment by city
 	 * */
-	public static final Comparator<Apartment> APT_BY_CITY = Comparator.comparing(Apartment::getCity);
+	public static final Comparator<Building> APT_BY_CITY = Comparator.comparing(Building::getCity);
 
 	/**
 	 * Sorts Apartment by state
 	 * */
-	public static final Comparator<Apartment> APT_BY_STATE = Comparator.comparing(Apartment::getState);
+	public static final Comparator<Building> APT_BY_STATE = Comparator.comparing(Building::getState);
 
 	/**
 	 * Sorts Apartment by capacity (number of rooms)
 	 * */
-	public static final Comparator<Apartment> APT_BY_CAPACITY = Comparator.comparing(Apartment::getCapacity);
+	public static final Comparator<Building> APT_BY_CAPACITY = Comparator.comparing(Building::getCapacity);
 	//--------------------------------------------------------------------
 	//--------------------------------------------------------------------
 
@@ -107,14 +107,14 @@ public class Apartment extends Table {
 	/**
 	 * Default constructor:
 	 * */
-	public Apartment() {
+	public Building() {
 		this(0,"","","","",0);
 	}
 
 	/**
 	 * Dummy Apartment Constructor
 	 * */
-	public Apartment(String dummy) {
+	public Building(String dummy) {
 		this();
 		if (dummy.equals(DUMMY_TABLE)) {
 			super.setDummy(true);
@@ -131,9 +131,9 @@ public class Apartment extends Table {
 	 * @param zipCode zip-code of the Apartment
 	 * @param initialCapacity Apartment's occupant capacity
 	 * */
-	public Apartment(int id, String address, String city, String state, String zipCode, int initialCapacity) {
+	public Building(int id, String address, String city, String state, String zipCode, int initialCapacity) {
 		super(id);
-		image = new Image("com/graham/apartmate/ui/res/ApartmentImg_small.png");
+		image = new Image("com/graham/apartmate/ui/res/BuildingImg_small.png");
 		this.address = new SimpleStringProperty(address);
 		this.city = new SimpleStringProperty(city);
 		this.state = new SimpleStringProperty(state);
@@ -178,25 +178,25 @@ public class Apartment extends Table {
 	 * */
 	@Override
 	public DBTables getTableType() {
-		return DBTables.APARTMENTS;
+		return DBTables.BUILDINGS;
 	}
 
 	/***/
 	@Override
 	public String getInfoLocation() {
-		return FXMLLocation.APTINFO.getLocation();
+		return FXMLLocation.BLDGINFO.getLocation();
 	}
 
 	/***/
 	@Override
 	public String getAddLocation() {
-		return FXMLLocation.APTADD.getLocation();
+		return FXMLLocation.BLDGADD.getLocation();
 	}
 
 	/***/
 	@Override
 	public String getEditLocation() {
-		return FXMLLocation.APTEDIT.getLocation();
+		return FXMLLocation.BLDGEDIT.getLocation();
 	}
 
 	/**
@@ -215,7 +215,7 @@ public class Apartment extends Table {
 		int numTenants = 0;
 
 		for (LivingSpace livingSpace : livingSpaces) {
-			if (livingSpace.hasOccupant()){
+			if (livingSpace.hasTenant()){
 				numTenants++;
 			}
 		}

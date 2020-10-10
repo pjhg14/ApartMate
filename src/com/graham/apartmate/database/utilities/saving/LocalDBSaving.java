@@ -52,13 +52,13 @@ public class LocalDBSaving {
 	// ---------------------------------------------------------------------------------
 	/**
 	 * Iterates through all passed Apartments in a list and saves them to apartments.dat
-	 * @param apartments List of Apartments to save
+	 * @param buildings List of Apartments to save
 	 * */
-	public void saveApartments(List<Apartment> apartments) {
+	public void saveBuildings(List<Building> buildings) {
 		try (ObjectOutputStream output = new ObjectOutputStream(
 				new BufferedOutputStream(new FileOutputStream("data/db/apartments.dat")))) {
-			for (Apartment apartment : apartments) {
-				output.writeObject(apartment);
+			for (Building building : buildings) {
+				output.writeObject(building);
 			}
 		} catch (IOException io) {
 			System.out.println("Exception occurred while saving Apartment list: " + io.getMessage());
@@ -122,20 +122,20 @@ public class LocalDBSaving {
 	 * Loads a list of Apartments from apartments.dat
 	 * @return List of loaded Apartments
 	 * */
-	public List<Apartment> loadApartments() {
+	public List<Building> loadBuildings() {
 		try (ObjectInputStream input = new ObjectInputStream(
 				new BufferedInputStream(new FileInputStream("data/db/apartments.dat")))) {
 			boolean endOfFile = false;
-			List<Apartment> temp = new ArrayList<>();
+			List<Building> temp = new ArrayList<>();
 
 			while (!endOfFile) {
 				try {
-					Apartment apartment = (Apartment) input.readObject();
+					Building building = (Building) input.readObject();
 
 					if (Main.DEBUG)
-						System.out.println("New Apartment loaded: " + apartment);
+						System.out.println("New Apartment loaded: " + building);
 
-					temp.add(apartment);
+					temp.add(building);
 				} catch (EOFException eof) {
 					endOfFile = true;
 				}

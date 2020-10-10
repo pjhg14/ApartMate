@@ -2,9 +2,11 @@ package com.graham.apartmate.ui.windows.mainwindow.subwindow.infocontrollers.ten
 
 import com.graham.apartmate.database.dbMirror.Database;
 import com.graham.apartmate.database.tables.mainTables.Tenant;
+import com.graham.apartmate.database.tables.subTables.TransactionLog;
 import com.graham.apartmate.main.Main;
 import com.graham.apartmate.ui.windows.utility.SubWindowController;
 import javafx.fxml.FXML;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
@@ -21,6 +23,9 @@ public class TnantInfoController extends SubWindowController {
     private Text nameText;
 
     @FXML
+    private Text emailText;
+
+    @FXML
     private Text residenceContext;
 
     @FXML
@@ -31,6 +36,11 @@ public class TnantInfoController extends SubWindowController {
 
     @FXML
     private ImageView tnantImg;
+
+    @FXML
+    private ListView<TransactionLog> paymentListView;
+
+
     //----------------------------------------------------------
     //----------------------------------------------------------
 
@@ -49,11 +59,13 @@ public class TnantInfoController extends SubWindowController {
         //Set text
         nameText.setText(selectedTnant.getFullName());
 
+        emailText.setText(selectedTnant.getEmail());
+
         if (selectedTnant.isEvicted()) {
             residenceContext.setVisible(false);
             residenceText.setText("Evicted");
         } else {
-            residenceText.setText(Database.getInstance().getTenantResidency(selectedTnant));
+            residenceText.setText(Database.getInstance().getResidency(selectedTnant));
         }
         balanceText.setText(selectedTnant.getBalance() + "");
 
@@ -90,6 +102,11 @@ public class TnantInfoController extends SubWindowController {
 
         selectedTnant.setImage(new Image(img.toURI().toString()));
         tnantImg.setImage(new Image(img.toURI().toString()));
+    }
+
+    @FXML
+    public void viewTenantContact() {
+        //Re-factor Tenant Contact information into Candidate class
     }
 
     @FXML
