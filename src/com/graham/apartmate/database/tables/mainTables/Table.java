@@ -2,6 +2,7 @@ package com.graham.apartmate.database.tables.mainTables;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.main.Main;
+import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
 
@@ -198,6 +199,15 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * @return table type
 	 * */
 	public abstract DBTables getTableType();
+
+	/***/
+	public abstract String getInfoLocation();
+
+	/***/
+	public abstract String getAddLocation();
+
+	/***/
+	public abstract String getEditLocation();
 	//----------------------------------------------------------------
 
 	//----------------------------------------------------------------

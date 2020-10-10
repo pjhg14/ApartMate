@@ -53,7 +53,7 @@ public enum DBTables {
     LEASE,
 
     /***/
-    ROOM,
+    LIVING_SPACE,
 
     /***/
     TRANSACTION,

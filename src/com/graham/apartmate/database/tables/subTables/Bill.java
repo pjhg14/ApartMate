@@ -3,6 +3,7 @@ package com.graham.apartmate.database.tables.subTables;
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.main.Main;
 import com.graham.apartmate.database.tables.mainTables.Table;
+import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
@@ -119,6 +120,24 @@ public class Bill extends Table {
     @Override
     public DBTables getTableType() {
         return DBTables.BILLS;
+    }
+
+    /***/
+    @Override
+    public String getInfoLocation() {
+        return FXMLLocation.BILLINFO.getLocation();
+    }
+
+    /***/
+    @Override
+    public String getAddLocation() {
+        return FXMLLocation.BILLADD.getLocation();
+    }
+
+    /***/
+    @Override
+    public String getEditLocation() {
+        return FXMLLocation.BILLEDIT.getLocation();
     }
 
     /**

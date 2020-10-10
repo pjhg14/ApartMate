@@ -2,6 +2,7 @@ package com.graham.apartmate.database.tables.subTables;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.mainTables.Table;
+import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
@@ -76,6 +77,25 @@ public class Contract extends Table {
     public DBTables getTableType() {
         return null;        //TODO
     }
+
+    /***/
+    @Override
+    public String getInfoLocation() {
+        return null;            //TODO: Contract info
+    }
+
+    /***/
+    @Override
+    public String getAddLocation() {
+        return null;
+    }
+
+    /***/
+    @Override
+    public String getEditLocation() {
+        return null;
+    }
+
     //-------------------------------------------------------------
     //-------------------------------------------------------------
 

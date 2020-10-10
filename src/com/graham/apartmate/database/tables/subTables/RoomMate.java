@@ -199,6 +199,24 @@ public class RoomMate extends Table {
 		return DBTables.ROOMMATE;
 	}
 
+	/***/
+	@Override
+	public String getInfoLocation() {
+		return null;
+	}
+
+	/***/
+	@Override
+	public String getAddLocation() {
+		return null;
+	}
+
+	/***/
+	@Override
+	public String getEditLocation() {
+		return null;
+	}
+
 	/**
 	 * Gives the full name of the Spouse
 	 * @return first name last name

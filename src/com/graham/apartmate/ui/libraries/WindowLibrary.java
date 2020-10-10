@@ -2,17 +2,13 @@ package com.graham.apartmate.ui.libraries;
 
 import java.io.IOException;
 
-import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.mainTables.Table;
 import com.graham.apartmate.main.Main;
-import com.graham.apartmate.ui.misc.FXMLController;
-import com.graham.apartmate.ui.windows.popupwindows.invoice.AccountController;
-import com.graham.apartmate.ui.windows.popupwindows.notes.NoteListController;
+import com.graham.apartmate.ui.windows.utility.SubWindowController;
+import com.graham.apartmate.ui.windows.mainwindow.MainSceneController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Tab;
-import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -27,9 +23,10 @@ import javafx.stage.Stage;
 public class WindowLibrary {
 
 	private Parent root;
-	private static Stage mainStage;
+	private Stage mainStage;
 	private Stage popupStage;
-	//private Stage popupStage2;
+
+	private MainSceneController mainSceneController;
 
 	/**
 	 * Creates and shows the login window
@@ -54,64 +51,33 @@ public class WindowLibrary {
 	 * and contractors) Uses enumerated types from the FXMLLoader class to specify
 	 * window
 	 */
-	public FXMLLoader mainWindow(FXMLLocation location) {
+	public void mainWindow(FXMLLocation location) {
 		try {
-			root = FXMLLoader.load(getClass().getResource(location.getLocation()));;
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(location.getLocation()));
+			root = loader.load();
+			//mainSceneController = loader.getController();
 
 			mainStage.setScene(new Scene(root));
-
-			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Invalid file name passed... or sumtin' else I dunno...");
 		}
-
-		return null;
 	}
 
-	/**
-	 * Create additional window to create and add a new Table Object based on table type
-	 * Uses enumerated types from the
-	 * FXMLLocation class to specify specific location
-	 */
-	public void additionWindow(DBTables tableType) {
+	public void debugWindow(FXMLLocation location) {
 		try {
-			FXMLLocation location;
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(location.getLocation()));
+			root = loader.load();
 
-			switch (tableType) {
-				case APARTMENTS:
-					location = FXMLLocation.APTADD;
-					break;
-				case TENANTS:
-					location = FXMLLocation.TNANTADD;
-					break;
-				case CANDIDATES:
-					location = FXMLLocation.CANDADD;
-					break;
-				case CONTRACTORS:
-					location = FXMLLocation.CONTADD;
-					break;
-				case BILLS:
-					location = FXMLLocation.BILLADD;
-					break;
-				default:
-					if (Main.DEBUG)
-						System.out.println("Invalid Table type");
-					return;
-			}
-
-			root = FXMLLoader.load(getClass().getResource(location.getLocation()));
-
-			popupStage = new Stage();
-			popupStage.setTitle("Add");
-			popupStage.setScene(new Scene(root));
-			popupStage.setResizable(false);
-			popupStage.initModality(Modality.APPLICATION_MODAL);
-			popupStage.showAndWait();
+			mainStage.setScene(new Scene(root));
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("Addition whoops...");
+			System.out.println("Invalid file name passed... or sumtin' else I dunno...");
 		}
+	}
+
+	public void popupWindow() {
+		//Learn how Dialogs work
 	}
 
 	/**
@@ -148,7 +114,7 @@ public class WindowLibrary {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(location.getLocation()));
 			root = loader.load();
 
-			FXMLController controller = loader.getController();
+			SubWindowController controller = loader.getController();
 			controller.setCurrentTable(toAdd);
 
 			popupStage = new Stage();
@@ -197,7 +163,7 @@ public class WindowLibrary {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(location.getLocation()));
 			root = loader.load();
 
-			FXMLController controller = loader.getController();
+			SubWindowController controller = loader.getController();
 			controller.setCurrentTable(toEdit);
 
 			popupStage = new Stage();
@@ -211,52 +177,13 @@ public class WindowLibrary {
 		}
 	}
 
-	/**
-	 * Creates a popup window managing a list of invoices from a specific table instance
-	 * */
-	public void invoiceWindow(Table content, FXMLLocation location) {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(location.getLocation()));
-			root = loader.load();
 
-			popupStage = new Stage();
-
-			popupStage.setTitle("Info");
-			popupStage.setScene(new Scene(root));
-			popupStage.initModality(Modality.APPLICATION_MODAL);
-
-			AccountController controller = loader.getController();
-			controller.setCurrTable(content);
-
-			popupStage.showAndWait();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Whoops x2");
-		}
+	public Stage getMainStage() {
+		return mainStage;
 	}
 
-	/**
-	 * Creates a popup window managing a list of Issues/Inspections from a specific table instance
-	 * */
-	public void noteLogWindow(Table content, FXMLLocation location) {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(location.getLocation()));
-			root = loader.load();
-
-			popupStage = new Stage();
-
-			popupStage.setTitle("Info");
-			popupStage.setScene(new Scene(root));
-			popupStage.initModality(Modality.APPLICATION_MODAL);
-
-			NoteListController controller = loader.getController();
-			controller.setCurrTable(content);
-
-			popupStage.showAndWait();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Whoops x2");
-		}
+	public MainSceneController getMainScene() {
+		return mainSceneController;
 	}
 
 	public void close() {

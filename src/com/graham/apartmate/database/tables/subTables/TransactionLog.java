@@ -134,6 +134,24 @@ public class TransactionLog extends Table {
         return DBTables.INVALID;
     }
 
+    /***/
+    @Override
+    public String getInfoLocation() {
+        return null;
+    }
+
+    /***/
+    @Override
+    public String getAddLocation() {
+        return null;
+    }
+
+    /***/
+    @Override
+    public String getEditLocation() {
+        return null;
+    }
+
     /**
      * Returns the image related to a particular Transaction be it a Venmo receipt, a photograph of physical money, or
      * a photo of a check

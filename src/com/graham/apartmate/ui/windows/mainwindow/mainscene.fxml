@@ -61,8 +61,8 @@
                 </MenuBar>
                 <ToolBar>
                     <items>
-                        <Button fx:id="backButton" mnemonicParsing="false" text="Back" />
-                        <Button fx:id="nextButton" mnemonicParsing="false" text="Foward" />
+                        <Button fx:id="backButton" mnemonicParsing="false" onAction="#back" text="Back" />
+                        <Button fx:id="nextButton" mnemonicParsing="false" onAction="#forward" text="Foward" />
                     </items>
                 </ToolBar>
             </children>

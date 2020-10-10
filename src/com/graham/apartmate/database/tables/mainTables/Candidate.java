@@ -9,6 +9,7 @@ import com.graham.apartmate.database.tables.subTables.PersonalContact;
 import com.graham.apartmate.database.tables.subTables.RoomMate;
 
 import com.graham.apartmate.main.Main;
+import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -115,17 +116,7 @@ public class Candidate extends Table {
 	}
 
 	/**
-	 * Dummy Candidate Constructor
-	 * */
-	public Candidate(String dummy) {
-		this();
-		if (dummy.equals(DUMMY_TABLE)) {
-			super.setDummy(true);
-		}
-	}
-
-	/**
-	 * Mandatory field constructor w/o spouse
+	 * Mandatory field constructor w/o birth date, annual income, or # of children
 	 * */
 	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, String ssn,
 					 PersonalContact contact1, PersonalContact contact2) {
@@ -134,21 +125,25 @@ public class Candidate extends Table {
 	}
 
 	/**
-	 * ... constructor
-	 * */
-	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, LocalDate dateOfBirth,
-					 int annualIncome, String ssn, int numChildren, PersonalContact contact1, PersonalContact contact2) {
-		this(id, fk, firstName, lastName, phone, email, ssn, dateOfBirth ,annualIncome, numChildren,
-				contact1, contact2);
-	}
-
-	/**
 	 * Full constructor
+	 * @param id Candidate's id
+	 * @param fk Id of Living Space Candidate applies for
+	 * @param firstName Candidate's first name
+	 * @param lastName Candidate's last name
+	 * @param phone Candidate's phone number
+	 * @param email Candidate's email address
+	 * @param ssn Candidate's ssn
+	 * @param dateOfBirth Candidate's date of birth
+	 * @param annualIncome Candidate's Annual Income
+	 * @param numChildren Number of children Candidate has
+	 * @param contact1 Candidate's first emergency contact
+	 * @param contact2 Candidate's second emergency contact
 	 * */
 	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, String ssn,
 					 LocalDate dateOfBirth, int annualIncome, int numChildren, PersonalContact contact1,
 					 PersonalContact contact2) {
 		super(id, fk);
+
 		image = new Image("com/graham/apartmate/ui/res/TenantImg_small.png");
 		this.firstName = new SimpleStringProperty(firstName);
 		this.lastName = new SimpleStringProperty(lastName);
@@ -197,6 +192,24 @@ public class Candidate extends Table {
 		return DBTables.CANDIDATES;
 	}
 
+	/***/
+	@Override
+	public String getInfoLocation() {
+		return FXMLLocation.CANDINFO.getLocation();
+	}
+
+	/***/
+	@Override
+	public String getAddLocation() {
+		return FXMLLocation.CANDADD.getLocation();
+	}
+
+	/***/
+	@Override
+	public String getEditLocation() {
+		return FXMLLocation.CANDEDIT.getLocation();
+	}
+
 	/**
 	 * Gives the full name of the Candidate
 	 * @return first name, last name
@@ -225,8 +238,8 @@ public class Candidate extends Table {
 	 * Accepts the Candidate and converts it to a Tenant
 	 * @return New Tenant from current Candidate
 	 * */
-	public Tenant accept(Account account, Lease lease, LocalDate movInDate) {
-		return new Tenant(this, movInDate, account, lease);
+	public Tenant accept(int aptId,Account account, Lease lease, LocalDate movInDate) {
+		return new Tenant(this, aptId, movInDate, account, lease);
 	}
 
 	/**

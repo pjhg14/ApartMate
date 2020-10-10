@@ -353,8 +353,8 @@ public final class Database {
 					return id;
 				case INSPECTIONS:
 					for (Apartment apartment : apartments) {
-						for (Room room : apartment.getRooms()) {
-							for (NoteLog inspection : room.getInspections()) {
+						for (LivingSpace livingSpace : apartment.getLivingSpaces()) {
+							for (NoteLog inspection : livingSpace.getInspections()) {
 								if (inspection.getId() > id) {
 									id = inspection.getId();
 								}
@@ -499,6 +499,25 @@ public final class Database {
 
 		return null;
 	}
+
+	public String getTenantResidency(Candidate candidate) {
+		Apartment relatedApartment = getRelatedApartment(candidate);
+
+		assert relatedApartment != null;
+		for (LivingSpace livingSpace : relatedApartment.getLivingSpaces()) {
+			if (livingSpace.getOccupant().equals(candidate)) {
+				return relatedApartment.getAddress() + ", " + livingSpace.getSectionName();
+			}
+
+			for (Candidate expectantCandidate : livingSpace.getExpectantCandidates()) {
+				if (expectantCandidate.equals(candidate)) {
+					return relatedApartment.getAddress() + ", " + livingSpace.getSectionName();
+				}
+			}
+		}
+
+		return null;
+	}
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
 
@@ -611,10 +630,10 @@ public final class Database {
 		switch (table) {
 			case INSPECTIONS:
 				for (Apartment apartment : apartments) {
-					for (Room room : apartment.getRooms()) {
-						if (room.getId() == issInsp.getFk()) {
-							room.getInspections().add(issInsp);
-							Collections.sort(room.getInspections());
+					for (LivingSpace livingSpace : apartment.getLivingSpaces()) {
+						if (livingSpace.getId() == issInsp.getFk()) {
+							livingSpace.getInspections().add(issInsp);
+							Collections.sort(livingSpace.getInspections());
 
 							//Insert online method here
 
@@ -706,10 +725,10 @@ public final class Database {
 		return false;
 	}
 
-	public boolean add(Room room) {
+	public boolean add(LivingSpace livingSpace) {
 		for (Apartment apartment : apartments) {
-			if (apartment.getId() == room.getFk()) {
-				return apartment.addRoom(room);
+			if (apartment.getId() == livingSpace.getFk()) {
+				return apartment.addRoom(livingSpace);
 			}
 		}
 
@@ -885,11 +904,11 @@ public final class Database {
 		try {
 			if (tenants.remove(tenant)) {
 				for (Apartment apartment : apartments) {
-					for (Room room : apartment.getRooms()) {
-						if (room.getOccupant().equals(tenant)) {
+					for (LivingSpace livingSpace : apartment.getLivingSpaces()) {
+						if (livingSpace.getOccupant().equals(tenant)) {
 							//Insert online method here
 
-							return room.removeOccupant();
+							return livingSpace.removeOccupant();
 						}
 					}
 				}
@@ -973,8 +992,8 @@ public final class Database {
 			switch (table) {
 				case INSPECTIONS:
 					for (Apartment apartment : apartments) {
-						for (Room room : apartment.getRooms()) {
-							if (room.getInspections().remove(issInsp)) {
+						for (LivingSpace livingSpace : apartment.getLivingSpaces()) {
+							if (livingSpace.getInspections().remove(issInsp)) {
 								//Insert online method here
 
 								return true;
@@ -1248,12 +1267,12 @@ public final class Database {
 		switch (table) {
 			case INSPECTIONS:
 				for (Apartment apartment : apartments) {
-					for (Room room : apartment.getRooms()) {
-						int index = room.getInspections().indexOf(issInsp);
+					for (LivingSpace livingSpace : apartment.getLivingSpaces()) {
+						int index = livingSpace.getInspections().indexOf(issInsp);
 
 						if (index > 0) {
 							issInsp.setEdited(true);
-							room.getInspections().set(index,issInsp);
+							livingSpace.getInspections().set(index,issInsp);
 
 							events.upDateModified(issInsp);
 
@@ -1482,11 +1501,11 @@ public final class Database {
 		Collections.sort(candidates);
 		Collections.sort(contractors);
 
-		apartments.forEach(a -> Collections.sort(a.getRooms()));
+		apartments.forEach(a -> Collections.sort(a.getLivingSpaces()));
 
 		apartments.forEach(a -> Collections.sort(a.getIssues()));
 
-		apartments.forEach(a -> a.getRooms().forEach(r -> Collections.sort(r.getInspections())));
+		apartments.forEach(a -> a.getLivingSpaces().forEach(r -> Collections.sort(r.getInspections())));
 	}
 
 	/**
@@ -1498,7 +1517,7 @@ public final class Database {
 		candidates.sort(Collections.reverseOrder());
 		contractors.sort(Collections.reverseOrder());
 
-		apartments.forEach(a -> a.getRooms().forEach(r -> r.getInspections().sort(Collections.reverseOrder())));
+		apartments.forEach(a -> a.getLivingSpaces().forEach(r -> r.getInspections().sort(Collections.reverseOrder())));
 
 		apartments.forEach(a -> a.getIssues().sort(Collections.reverseOrder()));
 	}

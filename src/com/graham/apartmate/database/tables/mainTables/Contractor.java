@@ -5,6 +5,7 @@ import com.graham.apartmate.database.tables.subTables.Account;
 import com.graham.apartmate.database.tables.subTables.Contract;
 import com.graham.apartmate.database.tables.subTables.PersonalContact;
 import com.graham.apartmate.main.Main;
+import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
 
@@ -118,6 +119,24 @@ public class Contractor extends Table {
 	@Override
 	public DBTables getTableType() {
 		return DBTables.CONTRACTORS;
+	}
+
+	/***/
+	@Override
+	public String getInfoLocation() {
+		return FXMLLocation.CONTINFO.getLocation();
+	}
+
+	/***/
+	@Override
+	public String getAddLocation() {
+		return FXMLLocation.CONTADD.getLocation();
+	}
+
+	/***/
+	@Override
+	public String getEditLocation() {
+		return FXMLLocation.CONTEDIT.getLocation();
 	}
 	//------------------------------------------------------------
 	//------------------------------------------------------------

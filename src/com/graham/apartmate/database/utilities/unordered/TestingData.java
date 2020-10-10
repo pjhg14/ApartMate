@@ -1017,7 +1017,7 @@ public class TestingData {
 			Random random = new Random();
 			String output = addressList.get(random.nextInt(addressList.size() - 1));
 
-			boolean usedBefore = true;
+			boolean usedBefore = !used.isEmpty();
 
 			while (usedBefore) {
 				for (String s : used) {
@@ -1028,10 +1028,6 @@ public class TestingData {
 					} else {
 						usedBefore = false;
 					}
-				}
-
-				if (used.size() == 0) {
-					break;
 				}
 			}
 

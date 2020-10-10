@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.subTables.*;
 import com.graham.apartmate.main.Main;
+import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -56,7 +57,9 @@ public class Tenant extends Candidate {
 	 * */
 	private final SimpleObjectProperty<LocalDate> movOutDate;
 
-	/***/
+	/**
+	 * Address Tenant has moved to
+	 * */
 	private final SimpleStringProperty addressMoved;
 	//------------------------------------------------------------
 	//------------------------------------------------------------
@@ -88,21 +91,11 @@ public class Tenant extends Candidate {
 	}
 
 	/**
-	 * Dummy Tenant Constructor
-	 * */
-	public Tenant(String dummy) {
-		this();
-		if (dummy.equals(DUMMY_TABLE)) {
-			super.setDummy(true);
-		}
-	}
-
-	/**
 	 * Candidate conversion constructor
 	 * */
-	public Tenant(Candidate candidate, LocalDate movInDate, Account initialAccount, Lease initialLease) {
+	public Tenant(Candidate candidate, int aptId, LocalDate movInDate, Account initialAccount, Lease initialLease) {
 		this(candidate.getId(),
-				candidate.getFk(),
+				aptId,
 				candidate.getFirstName(),
 				candidate.getLastName(),
 				candidate.getPhone(),
@@ -123,7 +116,7 @@ public class Tenant extends Candidate {
 	/**
 	 * Creates a Tenant object
 	 * @param id Primary Key of Tenant
-	 * @param fk Foreign Key to Apartment
+	 * @param fk Foreign Key to Apartment (0 if moved out)
 	 * @param firstName Tenant's first name
 	 * @param lastName Tenant's last name
 	 * @param phone Tenant's phone #
@@ -138,8 +131,9 @@ public class Tenant extends Candidate {
 				  int annualIncome, String SSN, int numChildren, LocalDate movInDate,
 				  PersonalContact contact1, PersonalContact contact2, Account initialAccount, Lease initialLease) {
 		super(id, fk, firstName,lastName,phone,email,SSN,dateOfBirth,annualIncome,numChildren, contact1,contact2);
-		this.movInDate = new SimpleObjectProperty<>(movInDate);
 		super.setAccepted(true);
+
+		this.movInDate = new SimpleObjectProperty<>(movInDate);
 		movOutDate = new SimpleObjectProperty<>(LocalDate.MIN);
 		slatedForEviction = new SimpleBooleanProperty(false);
 		evictReason = new SimpleStringProperty();
@@ -148,7 +142,6 @@ public class Tenant extends Candidate {
 
 		this.lease = initialLease;
 		this.account = initialAccount;
-
 	}
 	//------------------------------------------------------------
 	//------------------------------------------------------------
@@ -169,19 +162,36 @@ public class Tenant extends Candidate {
 
 	/***/
 	@Override
-	public String getGenericName() {
-		return getFullName();
-	}
-
-	/***/
-	@Override
 	public DBTables getTableType() {
 		return DBTables.TENANTS;
 	}
 
 	/***/
+	@Override
+	public String getInfoLocation() {
+		return FXMLLocation.TNANTINFO.getLocation();
+	}
+
+	/***/
+	@Override
+	public String getAddLocation() {
+		return FXMLLocation.TNANTADD.getLocation();
+	}
+
+	/***/
+	@Override
+	public String getEditLocation() {
+		return FXMLLocation.TNANTEDIT.getLocation();
+	}
+
+	/***/
 	public double getMonthlyRent() {
 		return lease.getRent();
+	}
+
+	/***/
+	public double getBalance() {
+		return account.getBalance();
 	}
 	//------------------------------------------------------------
 	//------------------------------------------------------------

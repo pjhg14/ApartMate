@@ -1,8 +1,9 @@
 package com.graham.apartmate.ui.windows.mainwindow.subwindow.listcontrollers;
 
-import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.dbMirror.Database;
 import com.graham.apartmate.database.tables.mainTables.*;
+import com.graham.apartmate.database.tables.subTables.LivingSpace;
+import com.graham.apartmate.ui.windows.utility.SubWindowController;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -14,16 +15,11 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
-public class ContentBoxController {
+public class ContentBoxController extends SubWindowController {
 
     @FXML
     private FlowPane mainPane;
-
-    private DBTables displayedTables;
-
-    private Consumer<Table> infoWindowSubmit;
 
     public void init() {
         //Do stuff
@@ -31,7 +27,7 @@ public class ContentBoxController {
     }
     
     private void display() {
-        switch (displayedTables) {
+        switch (currentTable.getTableType()) {
             case APARTMENTS:
                 for (Apartment apartment : Database.getInstance().getApartments()) {
                     mainPane.getChildren().add(contentBox(apartment));
@@ -52,21 +48,17 @@ public class ContentBoxController {
                     mainPane.getChildren().add(contentBox(contractor));
                 }
                 break;
+            case LIVING_SPACE:
+                for (Candidate candidate : ((LivingSpace) currentTable).getExpectantCandidates()) {
+                    mainPane.getChildren().add(contentBox(candidate));
+                }
+                break;
             default:
                 break;
         }
     }
 
     private VBox contentBox(Table content) {
-        /*
-         * VBox construction:
-         *   ImageView
-         *   Generic Name Text
-         *
-         *   HBox:
-         *       Edit Button
-         *       Delete Button
-         * */
 
         VBox container = new VBox();
         //Set up VBox properties
@@ -78,24 +70,29 @@ public class ContentBoxController {
         icon.setImage(image);
         icon.setPreserveRatio(true);
         icon.setSmooth(true);
-        icon.setOnMouseClicked(event -> infoWindowSubmit.accept(content));
+        icon.setOnMouseClicked(event -> subWindowSubmit.accept(content, false));
         container.getChildren().add(icon);
 
         Text name = new Text(content.getGenericName());
         container.getChildren().add(name);
 
         HBox buttonbar = new HBox();
+
         //Set up HBox properties
         buttonbar.setSpacing(5);
+        buttonbar.setAlignment(Pos.CENTER);
 
-        Button editButton = new Button();
+        Button editButton = new Button("Edit");
+
         //Set up Button1 properties
         editButton.setOnAction(event -> {
-            //open edit window
+            System.out.println("Enter edit window here");
         });
         buttonbar.getChildren().add(editButton);
 
-        Button deleteButton = new Button();
+        Button deleteButton = new Button("Delete");
+
+        //Set up Button2 properties
         deleteButton.setOnAction(event -> {
             Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
 
@@ -107,7 +104,6 @@ public class ContentBoxController {
                 Database.getInstance().remove(content);
             }
         });
-        //Set up Button2 properties
         buttonbar.getChildren().add(deleteButton);
 
         container.getChildren().add(buttonbar);
@@ -117,7 +113,7 @@ public class ContentBoxController {
 
     @FXML
     public void addTable () {
-        switch (displayedTables) {
+        switch (currentTable.getTableType()) {
             case APARTMENTS:
                 System.out.println("This would've let you add an Apartment");
                 break;
@@ -125,6 +121,7 @@ public class ContentBoxController {
                 System.out.println("This would've let you add a Tenant");
                 break;
             case CANDIDATES:
+            case LIVING_SPACE:
                 System.out.println("This would've let you add a Candidate");
                 break;
             case CONTRACTORS:
@@ -133,14 +130,7 @@ public class ContentBoxController {
             default:
                 break;
         }
+
         System.out.println("Add Table Button does not work yet! sorry!");
-    }
-
-    public void setDisplayedTables(DBTables tableType) {
-        this.displayedTables = tableType;
-    }
-
-    public void setInfoWindowSubmit(Consumer<Table> infoWindowSubmit) {
-        this.infoWindowSubmit = infoWindowSubmit;
     }
 }

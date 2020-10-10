@@ -5,7 +5,6 @@ import java.io.InvalidObjectException;
 import java.util.Optional;
 
 import com.graham.apartmate.database.dbMirror.Database;
-import com.graham.apartmate.database.utilities.unordered.TestingData;
 import com.graham.apartmate.main.Main;
 import com.graham.apartmate.ui.libraries.FXMLLocation;
 
@@ -29,7 +28,7 @@ public class LoginController {
 	private PasswordField passwordField;
 
 	@FXML
-	public void submitCredentials() throws IOException {
+	public void submitCredentials() {
 		try {
 			//check usernameField and passwordField for text
 			if (validateFields())
@@ -48,11 +47,12 @@ public class LoginController {
 				Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
 
 				confirmation.setContentText("Go to Debug menu?");
+				confirmation.setHeaderText("");
 
 				Optional<ButtonType> optional = confirmation.showAndWait();
 
 				if (optional.isPresent() && optional.get() == ButtonType.OK){
-					Main.getLibrary().mainWindow(FXMLLocation.DEBUG);
+					Main.getLibrary().debugWindow(FXMLLocation.DEBUG);
 				} else {
 					Main.getLibrary().mainWindow(FXMLLocation.MAIN);
 				}

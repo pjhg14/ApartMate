@@ -3,6 +3,7 @@ package com.graham.apartmate.database.tables.subTables;
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.mainTables.Table;
 import com.graham.apartmate.main.Main;
+import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -120,6 +121,24 @@ public class NoteLog extends Table {
     @Override
     public DBTables getTableType() {
         return tableType;
+    }
+
+    /***/
+    @Override
+    public String getInfoLocation() {
+        return FXMLLocation.NOTEINFO.getLocation();
+    }
+
+    /***/
+    @Override
+    public String getAddLocation() {
+        return FXMLLocation.NOTEADD.getLocation();
+    }
+
+    /***/
+    @Override
+    public String getEditLocation() {
+        return FXMLLocation.NOTEEDIT.getLocation();
     }
 
     /**

@@ -1774,13 +1774,11 @@ public class SQLBridge {
 				inspection.setLog(rs.getString(COLUMN_INSPECTION_DESCRIPTION));
 				inspection.setLogDate(rs.getDate(COLUMN_INSPECTION_DATE).toLocalDate());
 
-				queriedApartments.forEach(apt -> {
-					apt.getRooms().forEach(room -> {
-						if (inspection.getFk() == room.getId()) {
-							room.getInspections().add(inspection);
-						}
-					});
-				});
+				queriedApartments.forEach(apt -> apt.getLivingSpaces().forEach(livingSpace -> {
+					if (inspection.getFk() == livingSpace.getId()) {
+						livingSpace.getInspections().add(inspection);
+					}
+				}));
 			}
 
 			// Bill Invoices
@@ -2062,8 +2060,8 @@ public class SQLBridge {
 			insertApartment.clearParameters();
 
 			// Inspection
-			for (Room room : apartment.getRooms()) {
-				for (NoteLog inspection : room.getInspections()) {
+			for (LivingSpace livingSpace : apartment.getLivingSpaces()) {
+				for (NoteLog inspection : livingSpace.getInspections()) {
 					insert(inspection, apartment.getTableType());
 				}
 			}

@@ -5,8 +5,9 @@ import java.util.Comparator;
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.subTables.Bill;
 import com.graham.apartmate.database.tables.subTables.NoteLog;
-import com.graham.apartmate.database.tables.subTables.Room;
+import com.graham.apartmate.database.tables.subTables.LivingSpace;
 import com.graham.apartmate.main.Main;
+import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -69,7 +70,9 @@ public class Apartment extends Table {
 	/**
 	 * List of rooms
 	 * */
-	private final ObservableList<Room> rooms;
+	private final ObservableList<LivingSpace> livingSpaces;
+
+	private boolean livingSpacesInitialized;
 	//--------------------------------------------------------------------
 	//--------------------------------------------------------------------
 
@@ -138,11 +141,12 @@ public class Apartment extends Table {
 
 		bills = FXCollections.observableArrayList();
 		issues = FXCollections.observableArrayList();
-		rooms = FXCollections.observableArrayList();
+		livingSpaces = FXCollections.observableArrayList();
 
 		for (int i = 0; i < initialCapacity; i++) {
-			rooms.add(new Room(0,getId(),i+1+""));
+			livingSpaces.add(new LivingSpace(0,getId(),i+1+""));
 		}
+		livingSpacesInitialized = false;
 	}
 	//--------------------------------------------------------------------
 	//--------------------------------------------------------------------
@@ -177,6 +181,24 @@ public class Apartment extends Table {
 		return DBTables.APARTMENTS;
 	}
 
+	/***/
+	@Override
+	public String getInfoLocation() {
+		return FXMLLocation.APTINFO.getLocation();
+	}
+
+	/***/
+	@Override
+	public String getAddLocation() {
+		return FXMLLocation.APTADD.getLocation();
+	}
+
+	/***/
+	@Override
+	public String getEditLocation() {
+		return FXMLLocation.APTEDIT.getLocation();
+	}
+
 	/**
 	 * Gives location data of the Apartment
 	 * @return address, city, state, & zipcode
@@ -192,8 +214,8 @@ public class Apartment extends Table {
 	public int getNumTenants() {
 		int numTenants = 0;
 
-		for (Room room : rooms) {
-			if (room.hasOccupant()){
+		for (LivingSpace livingSpace : livingSpaces) {
+			if (livingSpace.hasOccupant()){
 				numTenants++;
 			}
 		}
@@ -205,17 +227,17 @@ public class Apartment extends Table {
 	 * Gets the capacity (number of rooms) in an Apartment
 	 * */
 	public int getCapacity() {
-		return rooms.size();
+		return livingSpaces.size();
 	}
 
 	/***/
-	public boolean addRoom(Room room) {
-		return rooms.add(room);
+	public boolean addRoom(LivingSpace livingSpace) {
+		return livingSpaces.add(livingSpace);
 	}
 
 	/***/
-	public boolean removeRoom(Room room) {
-		return rooms.remove(room);
+	public boolean removeRoom(LivingSpace livingSpace) {
+		return livingSpaces.remove(livingSpace);
 	}
 
 	/**
@@ -400,8 +422,16 @@ public class Apartment extends Table {
 	 * <p>
 	 * Gets the list of Rooms
 	 * */
-	public ObservableList<Room> getRooms() {
-		return FXCollections.unmodifiableObservableList(rooms);
+	public ObservableList<LivingSpace> getLivingSpaces() {
+		return FXCollections.unmodifiableObservableList(livingSpaces);
+	}
+
+	public boolean isLivingSpacesInitialized() {
+		return livingSpacesInitialized;
+	}
+
+	public void setLivingSpacesInitialized(boolean livingSpacesInitialized) {
+		this.livingSpacesInitialized = livingSpacesInitialized;
 	}
 	//--------------------------------------------------------------------
 	//--------------------------------------------------------------------

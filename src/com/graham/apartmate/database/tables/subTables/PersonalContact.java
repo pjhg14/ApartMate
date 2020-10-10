@@ -104,6 +104,24 @@ public class PersonalContact extends Table {
         return DBTables.INVALID;
     }
 
+    /***/
+    @Override
+    public String getInfoLocation() {
+        return null;
+    }
+
+    /***/
+    @Override
+    public String getAddLocation() {
+        return null;
+    }
+
+    /***/
+    @Override
+    public String getEditLocation() {
+        return null;
+    }
+
     /**
      * Returns the image related to a particular instance of a Table
      *

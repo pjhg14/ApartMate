@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="417.0"
+      prefWidth="402.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.graham.apartmate.ui.windows.popupwindows.addwindows.apartment.AptAddController">
+    <children>
+        <HBox prefHeight="356.0" prefWidth="402.0">
+            <children>
+                <VBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                      prefHeight="356.0" prefWidth="363.0" spacing="20.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <HBox>
+                            <children>
+                                <VBox>
+                                    <children>
+                                        <TextField fx:id="addressTextField" prefHeight="31.0" prefWidth="188.0"
+                                                   promptText="Address"/>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <children>
+                                <TextField fx:id="cityTextField" promptText="City"/>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <children>
+                                <ComboBox fx:id="stateComboBox" prefHeight="31.0" prefWidth="188.0" promptText="State"/>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <children>
+                                <TextField fx:id="zipTextField" promptText="Zip Code"/>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <children>
+                                <TextField fx:id="capacityTextField" promptText="Capacity"/>
+                            </children>
+                        </HBox>
+                    </children>
+                    <padding>
+                        <Insets left="20.0" top="20.0"/>
+                    </padding>
+                </VBox>
+                <VBox prefHeight="369.0" prefWidth="345.0"/>
+            </children>
+        </HBox>
+        <HBox alignment="BOTTOM_RIGHT" prefHeight="50.0" prefWidth="402.0" spacing="10.0" VBox.vgrow="ALWAYS">
+            <children>
+                <Text fx:id="errorText" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false"/>
+                <Button fx:id="addButton" mnemonicParsing="false" onAction="#addToApartments" text="Add"/>
+            </children>
+            <padding>
+                <Insets bottom="20.0" right="20.0"/>
+            </padding>
+        </HBox>
+    </children>
+</VBox>

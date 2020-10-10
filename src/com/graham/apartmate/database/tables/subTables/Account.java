@@ -4,6 +4,7 @@ import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.mainTables.Table;
 import com.graham.apartmate.main.Main;
 
+import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -39,8 +40,6 @@ import java.time.LocalDate;
  * @version {@value Main#VERSION}
  * @since Back Atcha' (0.8.5.1)
  * */
-//TODO: Finish javadocs
-// implement method of fixing TransactionLog ID from respective Account classes
 public class Account extends Table {
 
     /**
@@ -165,7 +164,25 @@ public class Account extends Table {
      */
     @Override
     public DBTables getTableType() {
-        return DBTables.INVALID;
+        return DBTables.ACCOUNT;
+    }
+
+    /***/
+    @Override
+    public String getInfoLocation() {
+        return FXMLLocation.ACTINFO.getLocation();
+    }
+
+    /***/
+    @Override
+    public String getAddLocation() {
+        return null;
+    }
+
+    /***/
+    @Override
+    public String getEditLocation() {
+        return null;
     }
 
     /**
