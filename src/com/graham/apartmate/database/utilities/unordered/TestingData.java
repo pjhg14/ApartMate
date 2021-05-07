@@ -2,6 +2,8 @@ package com.graham.apartmate.database.utilities.unordered;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -20,8 +22,6 @@ import javafx.collections.FXCollections;
  * @version {@value Main#VERSION}
  * @since Milestone 3 (0.3)
  */
-//TODO: Refactor to reflect recent changes
-// Finalize bill samples
 public class TestingData {
 
 	private final List<Building> buildings;
@@ -33,6 +33,9 @@ public class TestingData {
 	 * Initializes sample data for debug use
 	 * */
 	public TestingData() {
+		//to-do section
+		//TODO: build occupants for each tenant/candidate
+
 		// Initialize lists
 		buildings = new ArrayList<>();
 		tenants = new ArrayList<>();
@@ -43,8 +46,8 @@ public class TestingData {
 		List<String> usedAddresses = new ArrayList<>();
 
 		//----------------------------------------------------------------------------------------------------
-		//Apartment1
-		//Apartment(int id, String address, String city, String state, String zipCode, int initialCapacity)
+		//Building 1
+		//Building(int id, String address, String city, String state, String zipCode, int initialCapacity)
 		//----------------------------------------------------------------------------------------------------
 		List<String> address = getRandomAddress(usedAddresses);
 		assert address != null;
@@ -55,10 +58,248 @@ public class TestingData {
 				address.get(1).trim(),
 				address.get(2).trim(),
 				address.get(3).trim(),
-				3
+				FXCollections.observableArrayList(
+						new Apartment(1,1,0,"One"),
+						new Apartment(2,1,0,"Two"),
+						new Apartment(3,1,0,"Three")
+				)
 		);
 		//----------------------------------------------------------------------------------------------------
 		//----------------------------------------------------------------------------------------------------
+		//Candidates:
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+		String first = getRandomFirstName();
+		String last = getRandomLastName();
+
+		Candidate candidate = new Candidate(
+				1,
+				building.getApartments().get(1).getId(),
+				first,
+				last,
+				getRandomPhone(),
+				getRandomEmail(first, last),
+				getRandomSsn(),
+				getRandomDate(1),
+				getRandomInt(11000,90000),
+				getRandomInt(0,3),
+				null,
+				new Contact(
+						13,
+						0,
+						1,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Contact(
+						14,
+						0,
+						1,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				)
+		);
+
+		building.getApartments().get(1).addCandidate(candidate);
+		candidates.add(candidate);
+		//-----------------------------------------------------------------
+		first = getRandomFirstName();
+		last = getRandomLastName();
+		candidate = new Candidate(
+				2,
+				building.getApartments().get(1).getId(),
+				first,
+				last,
+				getRandomPhone(),
+				getRandomEmail(first, last),
+				getRandomSsn(),
+				getRandomDate(1),
+				getRandomInt(11000,90000),
+				getRandomInt(0,3),
+				null,
+				new Contact(
+						15,
+						0,
+						2,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Contact(
+						16,
+						0,
+						2,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				)
+		);
+
+		building.getApartments().get(1).addCandidate(candidate);
+		candidates.add(candidate);
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+		//Tenants:
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+		first = getRandomFirstName();
+		last = getRandomLastName();
+
+		Tenant tenant = new Tenant(
+				1,
+				building.getApartments().get(0).getId(),
+				first,
+				last,
+				getRandomPhone(),
+				getRandomEmail(first, last),
+				getRandomDate(1),
+				getRandomInt(11000,90000),
+				getRandomSsn(),
+				getRandomInt(0,3),
+				getRandomDate(3),
+				new Contact(
+						1,
+						1,
+						0,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Contact(
+						2,
+						1,
+						0,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Account(
+						12,
+						1,
+						0,
+						0,
+						new TransactionLog(
+								12,
+								12,
+								getRandomDouble(0,2000),
+								LocalDate.now()
+						)
+				),
+				new Lease(
+						1,
+						1,
+						getRandomInt(4,12),
+						getRandomDouble(1000, 2000),
+						0,
+						getRandomDouble(500, 1000)
+				)
+		);
+
+		building.getApartments().get(0).addTenant(tenant);
+		tenants.add(tenant);
+		//--------------------------------------------------------------
+		first = getRandomFirstName();
+		last = getRandomLastName();
+		tenant = new Tenant(
+				2,
+				building.getApartments().get(2).getId(),
+				first,
+				last,
+				getRandomPhone(),
+				getRandomEmail(first, last),
+				getRandomDate(1),
+				getRandomInt(11000,90000),
+				getRandomSsn(),
+				getRandomInt(0,3),
+				getRandomDate(3),
+				new Contact(
+						3,
+						2,
+						0,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Contact(
+						4,
+						2,
+						0,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Account(
+						13,
+						2,
+						0,
+						0,
+						new TransactionLog(
+								13,
+								13,
+								getRandomDouble(0,2000),
+								LocalDate.now()
+						)
+				),
+				new Lease(
+						2,
+						2,
+						getRandomInt(4,12),
+						getRandomDouble(1000, 2000),
+						0,
+						getRandomDouble(500, 1000)
+				)
+		);
+
+		building.getApartments().get(2).addTenant(tenant);
+		tenants.add(tenant);
+
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+		//Contractors:
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+		Contractor contractor = new Contractor(
+				1,
+				building.getApartments().get(1).getId(),
+				"Russet Contracting",
+				getRandomPhone(),
+				getRandomEmail("russet","Contracting"),
+				new Contract(
+						12,
+						1,
+						0,
+						getRandomInt(3,12),
+						getRandomDouble(1000,2000)
+				)
+		);
+		contractors.add(contractor);
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+
 
 		//----------------------------------------------------------------------------------------------------
 		//Bills:
@@ -194,8 +435,77 @@ public class TestingData {
 				address.get(1).trim(),
 				address.get(2).trim(),
 				address.get(3).trim(),
-				1
+				FXCollections.observableArrayList(new Apartment(4,2,0,"One"))
 		);
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+		//Tenants:
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+		first = getRandomFirstName();
+		last = getRandomLastName();
+		tenant = new Tenant(
+				3,
+				building.getApartments().get(0).getId(),
+				first,
+				last,
+				getRandomPhone(),
+				getRandomEmail(first, last),
+				getRandomDate(1),
+				getRandomInt(11000,90000),
+				getRandomSsn(),
+				getRandomInt(0,3),
+				getRandomDate(3),
+				new Contact(
+						5,
+						3,
+						0,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Contact(
+						6,
+						3,
+						0,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Account(
+						14,
+						3,
+						0,
+						0,
+						new TransactionLog(
+								14,
+								14,
+								getRandomDouble(0,2000),
+								LocalDate.now()
+						)
+				),
+				new Lease(
+						3,
+						3,
+						getRandomInt(4,12),
+						getRandomDouble(1000, 2000),
+						0,
+						getRandomDouble(500, 1000)
+				)
+		);
+
+		building.getApartments().get(0).addTenant(tenant);
+		tenants.add(tenant);
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+
 		//----------------------------------------------------------------------------------------------------
 		//Bills:
 		//Bill(int id, int fk, String type, String companyName, String address, String phone, double bill, Account account)
@@ -299,8 +609,265 @@ public class TestingData {
 				address.get(1).trim(),
 				address.get(2).trim(),
 				address.get(3).trim(),
-				5
+				FXCollections.observableArrayList(
+						new Apartment(5,3,0,"One"),
+						new Apartment(6,3,0,"Two"),
+						new Apartment(7,3,0,"Three"),
+						new Apartment(8,3,0,"Four"),
+						new Apartment(9,3,0,"Five")
+				)
 		);
+
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+		//Candidates:
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+		first = getRandomFirstName();
+		last = getRandomLastName();
+		candidate = new Candidate(
+				3,
+				building.getApartments().get(3).getId(),
+				first,
+				last,
+				getRandomPhone(),
+				getRandomEmail(first, last),
+				getRandomSsn(),
+				getRandomDate(1),
+				getRandomInt(11000,90000),
+				getRandomInt(0,3),
+				null,
+				new Contact(
+						17,
+						0,
+						3,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Contact(
+						18,
+						0,
+						3,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				)
+		);
+
+		building.getApartments().get(3).addCandidate(candidate);
+		candidates.add(candidate);
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+		//Tenants:
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+		first = getRandomFirstName();
+		last = getRandomLastName();
+		tenant = new Tenant(
+				4,
+				building.getApartments().get(0).getId(),
+				first,
+				last,
+				getRandomPhone(),
+				getRandomEmail(first, last),
+				getRandomDate(1),
+				getRandomInt(11000,90000),
+				getRandomSsn(),
+				getRandomInt(0,3),
+				getRandomDate(3),
+				new Contact(
+						7,
+						4,
+						0,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Contact(
+						8,
+						4,
+						0,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Account(
+						15,
+						4,
+						0,
+						0,
+						new TransactionLog(
+								15,
+								15,
+								getRandomDouble(0,2000),
+								LocalDate.now()
+						)
+				),
+				new Lease(
+						4,
+						4,
+						getRandomInt(4,12),
+						getRandomDouble(1000, 2000),
+						0,
+						getRandomDouble(500, 1000)
+				)
+		);
+
+		building.getApartments().get(0).addTenant(tenant);
+		tenants.add(tenant);
+		//------------------------------------------------------------------------
+		first = getRandomFirstName();
+		last = getRandomLastName();
+		tenant = new Tenant(
+				5,
+				building.getApartments().get(1).getId(),
+				first,
+				last,
+				getRandomPhone(),
+				getRandomEmail(first, last),
+				getRandomDate(1),
+				getRandomInt(11000,90000),
+				getRandomSsn(),
+				getRandomInt(0,3),
+				getRandomDate(3),
+				new Contact(
+						9,
+						5,
+						0,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Contact(
+						10,
+						5,
+						0,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Account(
+						16,
+						5,
+						0,
+						0,
+						new TransactionLog(
+								16,
+								16,
+								getRandomDouble(0,2000),
+								LocalDate.now()
+						)
+				),
+				new Lease(
+						5,
+						5,
+						getRandomInt(4,12),
+						getRandomDouble(1000, 2000),
+						0,
+						getRandomDouble(500, 1000)
+				)
+		);
+
+		building.getApartments().get(1).addTenant(tenant);
+		tenants.add(tenant);
+		//------------------------------------------------------------------------
+		first = getRandomFirstName();
+		last = getRandomLastName();
+		tenant = new Tenant(
+				6,
+				building.getApartments().get(2).getId(),
+				first,
+				last,
+				getRandomPhone(),
+				getRandomEmail(first, last),
+				getRandomDate(1),
+				getRandomInt(11000,90000),
+				getRandomSsn(),
+				getRandomInt(0,3),
+				getRandomDate(3),
+				new Contact(
+						11,
+						6,
+						0,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Contact(
+						12,
+						6,
+						0,
+						0,
+						getRandomFirstName(),
+						getRandomLastName(),
+						getRandomPhone(),
+						getRandomEmail(getRandomFirstName(),getRandomLastName())
+				),
+				new Account(
+						17,
+						17,
+						0,
+						0,
+						new TransactionLog(
+								17,
+								17,
+								getRandomDouble(0,2000),
+								LocalDate.now()
+						)
+				),
+				new Lease(
+						6,
+						6,
+						12,
+						getRandomDouble(1000, 2000),
+						0,
+						getRandomDouble(500, 1000)
+				)
+		);
+
+		building.getApartments().get(2).addTenant(tenant);
+		tenants.add(tenant);
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+		//Contractors:
+		//----------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------
+		contractor = new Contractor(
+				2,
+				building.getApartments().get(2).getId(),
+				"Cesar Plumbing",
+				getRandomPhone(),
+				getRandomEmail("cesar","Plumbing"),
+				new Contract(
+						13,
+						2,
+						0,
+						getRandomInt(3,12),
+						getRandomDouble(1000,2000)
+				)
+		);
+		contractors.add(contractor);
 		//----------------------------------------------------------------------------------------------------
 		//----------------------------------------------------------------------------------------------------
 
@@ -423,524 +990,6 @@ public class TestingData {
 		buildings.add(building);
 		//----------------------------------------------------------------------------------------------------
 		//----------------------------------------------------------------------------------------------------
-
-		//----------------------------------------------------------------------------------------------------
-		//Add Tenants and related Tables
-		//Apartment1 Tenants
-		//Tenant(int id, int fk, String firstName, String lastName, String phone, String email, LocalDate dateOfBirth,
-		//				  int annualIncome, String SSN, int numChildren, LocalDate movInDate,
-		//				  PersonalContact contact1, PersonalContact contact2, Account initialAccount, Lease initialLease)
-		//----------------------------------------------------------------------------------------------------
-		String first = getRandomFirstName();
-		String last = getRandomLastName();
-
-		Tenant tenant = new Tenant(
-				1,
-				buildings.get(0).getId(),
-				first,
-				last,
-				getRandomPhone(),
-				getRandomEmail(first, last),
-				getRandomDate(1),		//Create date generator
-				getRandomInt(11000,90000),
-				getRandomSsn(),
-				getRandomInt(0,3),
-				getRandomDate(3),
-				new Contact(
-						1,
-						1,
-						0,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Contact(
-						2,
-						1,
-						0,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Account(
-						12,
-						1,
-						0,
-						0,
-						new TransactionLog(
-								12,
-								12,
-								getRandomDouble(0,2000),
-								LocalDate.now()
-						)
-				),
-				new Lease(
-						1,
-						1,
-						getRandomInt(4,12),
-						getRandomDouble(1000, 2000),
-						0,
-						getRandomDouble(500, 1000)
-				)
-		);
-		tenants.add(tenant);
-
-		first = getRandomFirstName();
-		last = getRandomLastName();
-		tenant = new Tenant(
-				2,
-				buildings.get(0).getId(),
-				first,
-				last,
-				getRandomPhone(),
-				getRandomEmail(first, last),
-				getRandomDate(1),
-				getRandomInt(11000,90000),
-				getRandomSsn(),
-				getRandomInt(0,3),
-				getRandomDate(3),
-				new Contact(
-						3,
-						2,
-						0,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Contact(
-						4,
-						2,
-						0,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Account(
-						13,
-						2,
-						0,
-						0,
-						new TransactionLog(
-								13,
-								13,
-								getRandomDouble(0,2000),
-								LocalDate.now()
-						)
-				),
-				new Lease(
-						2,
-						2,
-						getRandomInt(4,12),
-						getRandomDouble(1000, 2000),
-						0,
-						getRandomDouble(500, 1000)
-				)
-		);
-		tenants.add(tenant);
-		//----------------------------------------------------------------------------------------------------
-		//----------------------------------------------------------------------------------------------------
-
-		//----------------------------------------------------------------------------------------------------
-		//Apartment2 Tenants
-		//----------------------------------------------------------------------------------------------------
-		first = getRandomFirstName();
-		last = getRandomLastName();
-		tenant = new Tenant(
-				3,
-				buildings.get(0).getId(),
-				first,
-				last,
-				getRandomPhone(),
-				getRandomEmail(first, last),
-				getRandomDate(1),
-				getRandomInt(11000,90000),
-				getRandomSsn(),
-				getRandomInt(0,3),
-				getRandomDate(3),
-				new Contact(
-						5,
-						3,
-						0,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Contact(
-						6,
-						3,
-						0,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Account(
-						14,
-						3,
-						0,
-						0,
-						new TransactionLog(
-								14,
-								14,
-								getRandomDouble(0,2000),
-								LocalDate.now()
-						)
-				),
-				new Lease(
-						3,
-						3,
-						getRandomInt(4,12),
-						getRandomDouble(1000, 2000),
-						0,
-						getRandomDouble(500, 1000)
-				)
-		);
-		tenants.add(tenant);
-		//----------------------------------------------------------------------------------------------------
-		//----------------------------------------------------------------------------------------------------
-
-		//----------------------------------------------------------------------------------------------------
-		//Apartment3 Tenants
-		//----------------------------------------------------------------------------------------------------
-		first = getRandomFirstName();
-		last = getRandomLastName();
-		tenant = new Tenant(
-				4,
-				buildings.get(0).getId(),
-				first,
-				last,
-				getRandomPhone(),
-				getRandomEmail(first, last),
-				getRandomDate(1),
-				getRandomInt(11000,90000),
-				getRandomSsn(),
-				getRandomInt(0,3),
-				getRandomDate(3),
-				new Contact(
-						7,
-						4,
-						0,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Contact(
-						8,
-						4,
-						0,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Account(
-						15,
-						4,
-						0,
-						0,
-						new TransactionLog(
-								15,
-								15,
-								getRandomDouble(0,2000),
-								LocalDate.now()
-						)
-				),
-				new Lease(
-						4,
-						4,
-						getRandomInt(4,12),
-						getRandomDouble(1000, 2000),
-						0,
-						getRandomDouble(500, 1000)
-				)
-		);
-		tenants.add(tenant);
-
-		first = getRandomFirstName();
-		last = getRandomLastName();
-		tenant = new Tenant(
-				5,
-				buildings.get(0).getId(),
-				first,
-				last,
-				getRandomPhone(),
-				getRandomEmail(first, last),
-				getRandomDate(1),
-				getRandomInt(11000,90000),
-				getRandomSsn(),
-				getRandomInt(0,3),
-				getRandomDate(3),
-				new Contact(
-						9,
-						5,
-						0,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Contact(
-						10,
-						5,
-						0,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Account(
-						16,
-						5,
-						0,
-						0,
-						new TransactionLog(
-								16,
-								16,
-								getRandomDouble(0,2000),
-								LocalDate.now()
-						)
-				),
-				new Lease(
-						5,
-						5,
-						getRandomInt(4,12),
-						getRandomDouble(1000, 2000),
-						0,
-						getRandomDouble(500, 1000)
-				)
-		);
-		tenants.add(tenant);
-
-		first = getRandomFirstName();
-		last = getRandomLastName();
-		tenant = new Tenant(
-				6,
-				buildings.get(0).getId(),
-				first,
-				last,
-				getRandomPhone(),
-				getRandomEmail(first, last),
-				getRandomDate(1),
-				getRandomInt(11000,90000),
-				getRandomSsn(),
-				getRandomInt(0,3),
-				getRandomDate(3),
-				new Contact(
-						11,
-						6,
-						0,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Contact(
-						12,
-						6,
-						0,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Account(
-						17,
-						17,
-						0,
-						0,
-						new TransactionLog(
-								17,
-								17,
-								getRandomDouble(0,2000),
-								LocalDate.now()
-						)
-				),
-				new Lease(
-						6,
-						6,
-						12,
-						getRandomDouble(1000, 2000),
-						0,
-						getRandomDouble(500, 1000)
-				)
-		);
-		tenants.add(tenant);
-		//----------------------------------------------------------------------------------------------------
-		//----------------------------------------------------------------------------------------------------
-
-		//----------------------------------------------------------------------------------------------------
-		//Add Candidates and related Tables
-		//Apartment1
-		//----------------------------------------------------------------------------------------------------
-		first = getRandomFirstName();
-		last = getRandomLastName();
-
-		Candidate candidate = new Candidate(
-				1,
-				1,
-				first,
-				last,
-				getRandomPhone(),
-				getRandomEmail(first, last),
-				getRandomSsn(),
-				getRandomDate(1),
-				getRandomInt(11000,90000),
-				getRandomInt(0,3),
-				new Contact(
-						13,
-						0,
-						1,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Contact(
-						14,
-						0,
-						1,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				)
-		);
-		candidates.add(candidate);
-
-		first = getRandomFirstName();
-		last = getRandomLastName();
-		candidate = new Candidate(
-				2,
-				1,
-				first,
-				last,
-				getRandomPhone(),
-				getRandomEmail(first, last),
-				getRandomSsn(),
-				getRandomDate(1),
-				getRandomInt(11000,90000),
-				getRandomInt(0,3),
-				new Contact(
-						15,
-						0,
-						2,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Contact(
-						16,
-						0,
-						2,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				)
-		);
-		candidates.add(candidate);
-
-
-		//Apartment3
-		first = getRandomFirstName();
-		last = getRandomLastName();
-		candidate = new Candidate(
-				3,
-				3,
-				first,
-				last,
-				getRandomPhone(),
-				getRandomEmail(first, last),
-				getRandomSsn(),
-				getRandomDate(1),
-				getRandomInt(11000,90000),
-				getRandomInt(0,3),
-				new Contact(
-						17,
-						0,
-						3,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				),
-				new Contact(
-						18,
-						0,
-						3,
-						0,
-						getRandomFirstName(),
-						getRandomLastName(),
-						getRandomPhone(),
-						getRandomEmail(getRandomFirstName(),getRandomLastName())
-				)
-		);
-		candidates.add(candidate);
-		//----------------------------------------------------------------------------------------------------
-		//----------------------------------------------------------------------------------------------------
-
-		//----------------------------------------------------------------------------------------------------
-		//Add Contractors and related Tables
-		//Apartment1
-		//----------------------------------------------------------------------------------------------------
-		Contractor contractor = new Contractor(
-				1,
-				1,
-				"Russet Contracting",
-				getRandomPhone(),
-				getRandomEmail("russet","Contracting"),
-				new Contract(
-						12,
-						1,
-						0,
-						getRandomInt(3,12),
-						getRandomDouble(1000,2000)
-				)
-		);
-		contractors.add(contractor);
-
-		//Apartment3
-		contractor = new Contractor(
-				2,
-				3,
-				"Cesar Plumbing",
-				getRandomPhone(),
-				getRandomEmail("cesar","Plumbing"),
-				new Contract(
-						13,
-						2,
-						0,
-						getRandomInt(3,12),
-						getRandomDouble(1000,2000)
-				)
-		);
-		contractors.add(contractor);
-		//----------------------------------------------------------------------------------------------------
-		//----------------------------------------------------------------------------------------------------
 	}
 
 	private String getRandomFirstName() {
@@ -997,7 +1046,7 @@ public class TestingData {
 
 	private String getRandomEmail(String firstName, String lastName) {
 		System.out.println(firstName);
-		return firstName.charAt(1) + lastName + "@mail.com";
+		return firstName.toLowerCase().charAt(0) + lastName + "@mail.com";
 	}
 
 	private List<String> getRandomAddress(List<String> used) {
@@ -1099,7 +1148,9 @@ public class TestingData {
 	private double getRandomDouble(int min, int max) {
 		Random random = new Random();
 
-		return (random.nextDouble() * ((max - min) + 1) + min);
+		return BigDecimal.valueOf((random.nextDouble() * ((max - min) + 1) + min))
+				.setScale(2, RoundingMode.HALF_UP)
+				.doubleValue();
 	}
 
 	/**

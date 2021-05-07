@@ -131,7 +131,7 @@ public class TransactionLog extends Table {
      */
     @Override
     public DBTables getTableType() {
-        return DBTables.INVALID;
+        return DBTables.TRANSACTION;
     }
 
     /***/

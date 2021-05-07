@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import com.graham.apartmate.database.dbMirror.Database;
 import com.graham.apartmate.main.Main;
-import com.graham.apartmate.ui.libraries.FXMLLocation;
+import com.graham.apartmate.ui.res.classes.FXMLLocation;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;

@@ -5,15 +5,17 @@ import com.graham.apartmate.database.dbMirror.Database;
 import com.graham.apartmate.database.tables.mainTables.Building;
 import com.graham.apartmate.database.tables.subTables.Bill;
 
-import com.graham.apartmate.database.tables.subTables.LivingSpace;
+import com.graham.apartmate.database.tables.subTables.Apartment;
 import com.graham.apartmate.database.tables.subTables.NoteLog;
 import com.graham.apartmate.main.Main;
 import com.graham.apartmate.ui.windows.utility.SubWindowController;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -30,7 +32,7 @@ import java.io.File;
 public class BldgInfoController extends SubWindowController {
 
 	//----------------------------------------------------------
-	//Fields
+	//FXML Fields
 	//----------------------------------------------------------
 
 	/***/
@@ -43,7 +45,7 @@ public class BldgInfoController extends SubWindowController {
 
 	/***/
 	@FXML
-	private ImageView aptImage;
+	private ImageView bldgImage;
 
 	/***/
 	@FXML
@@ -59,26 +61,78 @@ public class BldgInfoController extends SubWindowController {
 	//----------------------------------------------------------
 	//----------------------------------------------------------
 
+	//----------------------------------------------------------
+	//Other Fields
+	//----------------------------------------------------------
 	/***/
 	private Building selectedBldg;
+	//----------------------------------------------------------
+	//----------------------------------------------------------
 
+	//----------------------------------------------------------
+	//Initialize
+	//----------------------------------------------------------
 	/***/
 	@Override
 	public void init() {
 		selectedBldg = (Building) currentTable;
 
+		for (Apartment apartment : selectedBldg.getApartments()) {
+			System.out.println("Apartment: " + apartment.getId() +
+					apartment.hasTenant() +
+					apartment.getExpectantCandidates().isEmpty());
+		}
+
 		addressText.setText(selectedBldg.getAddress());
 		addressDetails.setText(
 				String.format("%s %s, %s", selectedBldg.getCity(), selectedBldg.getState(), selectedBldg.getZipCode()));
 
-		aptImage.setImage(selectedBldg.getImage());
+		bldgImage.setImage(selectedBldg.getImage());
+
+		billListView.setCellFactory(callBack -> new ListCell<Bill>(){
+
+			@Override
+			protected void updateItem(Bill item, boolean empty) {
+				super.updateItem(item, empty);
+
+				if (item == null || empty) {
+					setText(null);
+					setGraphic(null);
+				} else {
+					//TODO: Revise list views to show:
+					// bill_type: Held by bill_name, balance balance_amount
+					setText(item.getCompanyName() + " $" + item.getAccount().getBalance());
+				}
+			}
+		});
+
+		issueListView.setCellFactory(callBack -> new ListCell<NoteLog>(){
+
+			@Override
+			protected void updateItem(NoteLog item, boolean empty) {
+				super.updateItem(item, empty);
+
+				if (item == null || empty) {
+					setText(null);
+					setGraphic(null);
+				} else {
+					setText("");
+				}
+			}
+		});
+
 
 		billListView.setItems(selectedBldg.getBills());
 		issueListView.setItems(selectedBldg.getIssues());
 
-		setFlowPaneItems(selectedBldg.getLivingSpaces());
+		setFlowPaneItems(selectedBldg.getApartments());
 	}
+	//----------------------------------------------------------
+	//----------------------------------------------------------
 
+	//----------------------------------------------------------
+	//FXML Methods
+	//----------------------------------------------------------
 	/***/
 	@FXML
 	public void editImage() {
@@ -105,67 +159,7 @@ public class BldgInfoController extends SubWindowController {
 		File img = fileChooser.showOpenDialog(Main.getLibrary().getMainStage());
 
 		selectedBldg.setImage(new Image(img.toURI().toString()));
-		aptImage.setImage(new Image(img.toURI().toString()));
-	}
-
-	/***/
-	public void setFlowPaneItems(ObservableList<LivingSpace> livingSpaces) {
-		for (LivingSpace livingSpace : livingSpaces) {
-			livingSpaceList.getChildren().add(livingSpaceBox(livingSpace));
-		}
-	}
-
-	/***/
-	private VBox livingSpaceBox(LivingSpace livingSpace) {
-		/*
-		* VBox construction:
-		* 	ImageView
-		* 	livingSpace Name Text
-		*
-		* 	Inner VBox:
-		* 		HBox:
-		* 			Tenant Button
-		* 			Candidates Button
-		* 		Delete Button
-		* */
-
-		VBox container = new VBox();
-		container.setAlignment(Pos.CENTER);
-
-		ImageView icon = new ImageView();
-		//IV properties
-		icon.setImage(livingSpace.getImage());
-		icon.setPreserveRatio(true);
-		icon.setSmooth(true);
-		icon.setOnMouseClicked(
-				event -> Main.getLibrary().getMainScene().createInfoWindow(livingSpace));
-		container.getChildren().add(icon);
-
-		//Name Text
-		container.getChildren().add(new Text(livingSpace.getSectionName()));
-
-		HBox occupantBar = new HBox();
-		occupantBar.setSpacing(5);
-		occupantBar.setAlignment(Pos.CENTER);
-
-		Button tenantButton = new Button("Tenant");
-		tenantButton.setOnAction(
-				event -> subWindowSubmit.accept(livingSpace.getTenant(), false));
-		occupantBar.getChildren().add(tenantButton);
-
-		Button candidatesButton = new Button("Candidates");
-		candidatesButton.setOnAction(
-				event -> subWindowSubmit.accept(livingSpace, true));
-		occupantBar.getChildren().add(candidatesButton);
-
-		container.getChildren().add(occupantBar);
-
-		Button deleteButton = new Button("Delete");
-		deleteButton.setOnAction(event -> Database.getInstance().remove(livingSpace));
-
-		container.getChildren().add(deleteButton);
-
-		return container;
+		bldgImage.setImage(new Image(img.toURI().toString()));
 	}
 
 	/***/
@@ -225,5 +219,82 @@ public class BldgInfoController extends SubWindowController {
 	public void deleteIssue() {
 		selectedBldg.removeIssue(issueListView.getSelectionModel().getSelectedItem());
 	}
+	//----------------------------------------------------------
+	//----------------------------------------------------------
 
+	//----------------------------------------------------------
+	//Other Methods
+	//----------------------------------------------------------
+	/***/
+	public void setFlowPaneItems(ObservableList<Apartment> apartments) {
+		for (Apartment apartment : apartments) {
+			livingSpaceList.getChildren().add(contentBox(apartment));
+		}
+	}
+
+	/***/
+	private VBox contentBox(Apartment apartment) {
+		/*
+		* VBox construction:
+		* 	ImageView
+		* 	livingSpace Name Text
+		*
+		* 	Inner VBox:
+		* 		HBox:
+		* 			Tenant Button
+		* 			Candidates Button
+		* 		Delete Button
+		* */
+
+		VBox container = new VBox();
+		container.setAlignment(Pos.CENTER);
+		container.setPrefWidth(170);
+		container.setPrefHeight(175);
+		container.setPadding(new Insets(5,5,5,5));
+
+		ImageView icon = new ImageView(apartment.getImage());
+		//IV properties
+		icon.setPreserveRatio(true);
+		icon.setSmooth(true);
+		icon.setOnMouseClicked(
+				event -> subWindowSubmit.accept(apartment, false));
+		container.getChildren().add(icon);
+
+		//Name Text
+		container.getChildren().add(new Text(apartment.getSectionName()));
+
+		HBox occupantBar = new HBox(5);
+		occupantBar.setAlignment(Pos.CENTER);
+
+		Button tenantButton = new Button("Tenant");
+
+		tenantButton.setStyle("-fx-font-size:13");
+		tenantButton.setPrefWidth(71);
+		tenantButton.setDisable(!apartment.hasTenant());
+		tenantButton.setOnAction(
+				event -> subWindowSubmit.accept(apartment.getTenant(), false));
+		occupantBar.getChildren().add(tenantButton);
+
+		Button candidatesButton = new Button("Candidates");
+
+		candidatesButton.setStyle("-fx-font-size:13");
+		candidatesButton.setPrefWidth(82);
+		candidatesButton.setDisable(apartment.getExpectantCandidates().isEmpty());
+		candidatesButton.setOnAction(
+				event -> subWindowSubmit.accept(apartment, true));
+		occupantBar.getChildren().add(candidatesButton);
+
+		container.getChildren().add(occupantBar);
+
+		Button deleteButton = new Button("Delete");
+
+		deleteButton.setStyle("-fx-font-size:13");
+		deleteButton.setOnAction(event -> Database.getInstance().remove(apartment));
+
+		container.getChildren().add(deleteButton);
+
+		return container;
+	}
+	//----------------------------------------------------------
+	//----------------------------------------------------------
 }

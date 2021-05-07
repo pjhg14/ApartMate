@@ -127,17 +127,17 @@ public class CandAddController {
 			}else {
 				newCandidate.setFk(apartmentChoice.getSelectionModel().getSelectedItem().getId());
 			}
-			newCandidate.setFirstName(firstNameTextField.getText());
-			newCandidate.setLastName(lastNameTextField.getText());
-			newCandidate.setPhone(phoneTextField.getText());
-			newCandidate.setEmail(emailTextField.getText());
-			newCandidate.setSsn(SSNTextField.getText());
-			newCandidate.setNumChildren(Integer.parseInt(numChildrenTextField.getText()));
+//			newCandidate.setFirstName(firstNameTextField.getText());
+//			newCandidate.setLastName(lastNameTextField.getText());
+//			newCandidate.setPhone(phoneTextField.getText());
+//			newCandidate.setEmail(emailTextField.getText());
+//			newCandidate.setSsn(SSNTextField.getText());
+//			newCandidate.setNumChildren(Integer.parseInt(numChildrenTextField.getText()));
 
 			date = dateOfBirthDatePicker.getValue();
 			//newCandidate.setDateOfBirth(Date.from(Instant.from(date.atStartOfDay(ZoneId.systemDefault()))));
 
-			newCandidate.setAnnualIncome(Integer.parseInt(annualIncomeTextField.getText()));
+//			newCandidate.setAnnualIncome(Integer.parseInt(annualIncomeTextField.getText()));
 
 			Database.getInstance().add(newCandidate);
 

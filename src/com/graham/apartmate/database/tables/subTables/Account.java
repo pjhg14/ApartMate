@@ -4,16 +4,15 @@ import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.mainTables.Table;
 import com.graham.apartmate.main.Main;
 
-import com.graham.apartmate.ui.libraries.FXMLLocation;
+import com.graham.apartmate.ui.res.classes.FXMLLocation;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import javafx.scene.image.Image;
-
 import java.time.LocalDate;
+import java.util.Comparator;
 
 /**
  * Account object:
@@ -50,17 +49,17 @@ public class Account extends Table {
     /**
      * List of payments made
      * */
-    private ObservableList<TransactionLog> payments;
+    private final ObservableList<TransactionLog> payments;
 
     /**
-     * List of sues owed
+     * List of dues owed
      * */
-    private ObservableList<TransactionLog> dues;
+    private final ObservableList<TransactionLog> dues;
 
     /**
      * List of credits/fines earned/penalized (positive amount/negative amount)
      * */
-    private ObservableList<TransactionLog> credits;
+    private final ObservableList<TransactionLog> credits;
 
     /**
      * Date statement was invoiced
@@ -79,6 +78,10 @@ public class Account extends Table {
      * */
     public Account() {
         this(0,0,0,0,null);
+    }
+
+    public Account(TransactionLog initDue) {
+        this(0,0,0,0, initDue);
     }
 
     /**
@@ -101,11 +104,11 @@ public class Account extends Table {
      * @param fk Tenant related to this Account
      * @param fk2 Contractor related to this Account
      * @param fk3 Bill related to this Account
-     * @param initPayment initial payment to this Account
      * @param initDue initial dues from this Account
+     * @param initPayment initial payment to this Account
      * @param initCredit initial credits to this Account
      * */
-    public Account(int id, int fk, int fk2, int fk3, TransactionLog initPayment, TransactionLog initDue, TransactionLog initCredit) {
+    public Account(int id, int fk, int fk2, int fk3, TransactionLog initDue, TransactionLog initPayment, TransactionLog initCredit) {
         super(id, fk, fk2, fk3);
         payments = FXCollections.observableArrayList();
         credits = FXCollections.observableArrayList();
@@ -159,8 +162,7 @@ public class Account extends Table {
     /**
      * Gets the type of Table in question
      * <p>
-     * <i>Unused for this Table</i>
-     * @return type:INVALID
+     * @return type:ACCOUNT
      */
     @Override
     public DBTables getTableType() {
@@ -201,6 +203,7 @@ public class Account extends Table {
             return true;
         }
 
+        //Adding a transaction of 0 is redundant
         return false;
     }
 
@@ -227,6 +230,7 @@ public class Account extends Table {
             return true;
         }
 
+        //There should be no transactions of 0
         return false;
     }
 
@@ -237,17 +241,27 @@ public class Account extends Table {
             return true;
         }
 
-        //Removing a transaction of 0 is redundant
+        //There should be no transactions of 0
         return false;
     }
 
     /**
+     * */
+    public ObservableList<TransactionLog> getTransactions() {
+        //What's wrong here?
+        //noinspection unchecked
+        return FXCollections.concat(payments, dues, credits)
+                .sorted(Comparator.comparing(TransactionLog::getTransactionDate));
+    }
+
+    /**
      * Default Statement creation method:
+     * <p>
+     *     invoices Account into statement list and then clears account for next month
+     * </p>
      * Assumes no initial payment made
      * */
     public void createStatement(int newId) {
-        //Once Date has been changed to LocalDate; check if a month has passed since Date Created
-
         int oldId = getId();
         int oldFk = getFk();
 
@@ -263,12 +277,17 @@ public class Account extends Table {
         } else if (getBalance() < 0) {
             dues.add(new TransactionLog(oldFk, getBalance(), LocalDate.now(), "Balance Rollover"));
         }
+
+        //Set balance according to existing transactions
         calculateBalance();
     }
 
     /**
-     * Statement creation method:
-     * Creates Statement w/ initial payment
+     * Default Statement creation method:
+     * <p>
+     *     invoices Account into statement list and then clears account for next month
+     * </p>
+     * Statement creation w/ initial payment
      * */
     public void createStatement(int newId, TransactionLog initialPayment) {
         //Once Date has been changed to LocalDate; check if a month has passed since Date Created
@@ -288,6 +307,8 @@ public class Account extends Table {
         } else if (getBalance() < 0) {
             dues.add(new TransactionLog(oldFk, getBalance(), LocalDate.now(), "Balance Rollover"));
         }
+
+        //Set balance according to existing transactions
         calculateBalance();
     }
 
@@ -335,33 +356,21 @@ public class Account extends Table {
      * @return total payments
      * */
     private double getTotalPayments() {
-        double total = 0;
-        for (TransactionLog payment : payments) {
-            total += payment.getAmount();
-        }
-        return total;
+        return payments.stream().mapToDouble(TransactionLog::getAmount).sum();
     }
 
     /**
      * Gets the total amount of credits/fines
      * */
     private double getTotalCredits() {
-        double total = 0;
-        for (TransactionLog credit : credits) {
-            total += credit.getAmount();
-        }
-        return total;
+        return credits.stream().mapToDouble(TransactionLog::getAmount).sum();
     }
 
     /**
      * Gets the total amount of dues owed
      * */
     private double getTotalDues() {
-        double total = 0;
-        for (TransactionLog due : dues) {
-            total += due.getAmount();
-        }
-        return total;
+        return dues.stream().mapToDouble(TransactionLog::getAmount).sum();
     }
     //------------------------------------------------------------
     // General getters and setters////////////////////////////////
@@ -392,14 +401,14 @@ public class Account extends Table {
         return FXCollections.unmodifiableObservableList(payments);
     }
 
-    /**
-     * Setter:
-     * Sets the list of payments
-     * @param payments payment list
-     * */
-    public void setPayments(ObservableList<TransactionLog> payments) {
-        this.payments = payments;
-    }
+//    /**
+//     * Setter:
+//     * Sets the list of payments
+//     * @param payments payment list
+//     * */
+//    public void setPayments(ObservableList<TransactionLog> payments) {
+//        this.payments = payments;
+//    }
 
     /**
      * Getter:
@@ -410,31 +419,32 @@ public class Account extends Table {
         return FXCollections.unmodifiableObservableList(dues);
     }
 
-    /**
-     * Setter:
-     * Sets the list of dues
-     * @param dues due list
-     * */
-    public void setDues(ObservableList<TransactionLog> dues) {
-        this.dues = dues;
-    }
+//    /**
+//     * Setter:
+//     * Sets the list of dues
+//     * @param dues due list
+//     * */
+//    public void setDues(ObservableList<TransactionLog> dues) {
+//        this.dues = dues;
+//    }
 
     /**
      * Getter:
      * Gets the list of credits
-     * @return unmodifiable credit/fine list*/
+     * @return unmodifiable credit/fine list
+     * */
     public ObservableList<TransactionLog> getCredits() {
         return FXCollections.unmodifiableObservableList(credits);
     }
 
-    /**
-     * Setter:
-     * Sets the list of credits/fines
-     * @param credits credit/fine list
-     * */
-    public void setCredits(ObservableList<TransactionLog> credits) {
-        this.credits = credits;
-    }
+//    /**
+//     * Setter:
+//     * Sets the list of credits/fines
+//     * @param credits credit/fine list
+//     * */
+//    public void setCredits(ObservableList<TransactionLog> credits) {
+//        this.credits = credits;
+//    }
 
     /**
      * Getter:
@@ -472,14 +482,14 @@ public class Account extends Table {
         return FXCollections.unmodifiableObservableList(statements);
     }
 
-    /**
-     * Setter:
-     * Sets the list of invoiced statements
-     * @param statements statement list
-     * */
-    public void setStatements(ObservableList<Account> statements) {
-        this.statements = statements;
-    }
+//    /**
+//     * Setter:
+//     * Sets the list of invoiced statements
+//     * @param statements statement list
+//     * */
+//    public void setStatements(ObservableList<Account> statements) {
+//        this.statements = statements;
+//    }
     //------------------------------------------------------------
     //------------------------------------------------------------
 }

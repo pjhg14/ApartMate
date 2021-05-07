@@ -3,8 +3,7 @@ package com.graham.apartmate.database.tables.subTables;
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.main.Main;
 import com.graham.apartmate.database.tables.mainTables.Table;
-import com.graham.apartmate.ui.libraries.FXMLLocation;
-import javafx.beans.property.SimpleDoubleProperty;
+import com.graham.apartmate.ui.res.classes.FXMLLocation;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
 

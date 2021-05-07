@@ -19,7 +19,7 @@ import javafx.scene.image.Image;
  * @version {@value Main#VERSION}
  * @author Paul Graham Jr
  */
-public class LivingSpace extends Table {
+public class Apartment extends Table {
 	//--------------------------------------------------------------------
 	//Fields//////////////////////////////////////////////////////////////
 	//--------------------------------------------------------------------
@@ -59,42 +59,42 @@ public class LivingSpace extends Table {
 	/**
 	 * Default Constructor
 	 * */
-	public LivingSpace() {
+	public Apartment() {
 		this(0,0,0,"");
 	}
 
 	/**
-	 * Constructor w/o room name nor initial occupant
+	 * Constructor w/o room name nor initial Tenant
 	 * */
-	public LivingSpace(int id, int fk) {
+	public Apartment(int id, int fk) {
 		this(id, fk, 0, "");
 	}
 
 	/**
 	 * Constructor w/o room name
 	 * */
-	public LivingSpace(int id, int fk, int fk2) {
+	public Apartment(int id, int fk, int fk2) {
 		this(id, fk, fk2,"");
 	}
 
 	/**
-	 * Constructor w/o initial occupant (no fk2)
+	 * Constructor w/o initial Tenant (no fk2)
 	 * */
-	public LivingSpace(int id, int fk, String sectionName) {
+	public Apartment(int id, int fk, String sectionName) {
 		this(id, fk,0, sectionName);
 	}
 
 	/**
 	 * Full Constructor
 	 *
-	 * @param id id of Living Space
-	 * @param fk Id of Apartment the Living Space is a part of
-	 * @param fk2 Id of Tenant residing (0 for no Tenant)
+	 * @param id id of Apartment
+	 * @param fk Id of Building this Apartment is a part of
+	 * @param fk2 Id of residing Tenant  (0 for no Tenant)
 	 * @param sectionName name of Living Space
 	 * */
-	public LivingSpace(int id, int fk, int fk2, String sectionName) {
+	public Apartment(int id, int fk, int fk2, String sectionName) {
 		super(id, fk, fk2);
-		image = new Image("com/graham/apartmate/ui/res/BuildingImg_small.png");
+		image = new Image("com/graham/apartmate/ui/res/img/BuildingImg_small.png");
 		this.sectionName = new SimpleStringProperty(sectionName);
 
 		expectantCandidates = FXCollections.observableArrayList();
@@ -146,26 +146,28 @@ public class LivingSpace extends Table {
 	}
 
 	/**
-	 * Tells whether or not this room has an occupant
+	 * Tells whether or not this room has a Tenant
 	 * */
 	public boolean hasTenant() {
 		return getFk2() != 0 || tenant != null;
 	}
 
 	/**
-	 * Adds an occupant to the Room
+	 * Adds a Tenant to the Room
 	 * */
 	public boolean addTenant(Tenant tenant) {
 		if (this.tenant != null) {
 			return false;
 		}
 
+		tenant.setFk(getId());
 		this.tenant = tenant;
+		setFk2(tenant.getId());
 		return true;
 	}
 
 	/**
-	 * Removes the occupant from the Room
+	 * Removes the Tenant from the Room
 	 * */
 	public boolean removeTenant() {
 		if (tenant == null) {
@@ -173,6 +175,7 @@ public class LivingSpace extends Table {
 		}
 
 		tenant = null;
+		setFk2(0);
 		return true;
 	}
 
@@ -180,6 +183,8 @@ public class LivingSpace extends Table {
 	 * Adds an expectant candidate to the Room
 	 * */
 	public boolean addCandidate(Candidate candidate) {
+		candidate.setFk(getId());
+
 		return expectantCandidates.add(candidate);
 	}
 

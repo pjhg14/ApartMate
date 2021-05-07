@@ -133,13 +133,13 @@ public class TnantAddController {
 				newTennant.setFk(apartmentChoice.getSelectionModel().getSelectedItem().getId());
 			}
 
-			newTennant.setFirstName(firstNameTextField.getText());
-			newTennant.setLastName(lastNameTextField.getText());
-			newTennant.setPhone(phoneTextField.getText());
-			newTennant.setEmail(emailTextField.getText());
-			newTennant.setSsn(SSNTextField.getText());
-			//newTennant.setRent(Double.parseDouble(rentTextField.getText()));
-			newTennant.setNumChildren(Integer.parseInt(numChildrenTextField.getText()));
+//			newTennant.setFirstName(firstNameTextField.getText());
+//			newTennant.setLastName(lastNameTextField.getText());
+//			newTennant.setPhone(phoneTextField.getText());
+//			newTennant.setEmail(emailTextField.getText());
+//			newTennant.setSsn(SSNTextField.getText());
+//			newTennant.setRent(Double.parseDouble(rentTextField.getText()));
+//			newTennant.setNumChildren(Integer.parseInt(numChildrenTextField.getText()));
 
 			date = movInDatePicker.getValue();
 			//newTennant.setMovInDate(Date.from(Instant.from(date.atStartOfDay(ZoneId.systemDefault()))));
@@ -147,7 +147,7 @@ public class TnantAddController {
 			date = dateOfBirthDatePicker.getValue();
 			//newTennant.setDateOfBirth(Date.from(Instant.from(date.atStartOfDay(ZoneId.systemDefault()))));
 
-			newTennant.setAnnualIncome(Integer.parseInt(annualIncomeTextField.getText()));
+//			newTennant.setAnnualIncome(Integer.parseInt(annualIncomeTextField.getText()));
 
 			Database.getInstance().add(newTennant);
 

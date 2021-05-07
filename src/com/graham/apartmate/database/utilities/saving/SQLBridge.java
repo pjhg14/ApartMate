@@ -1774,7 +1774,7 @@ public class SQLBridge {
 				inspection.setLog(rs.getString(COLUMN_INSPECTION_DESCRIPTION));
 				inspection.setLogDate(rs.getDate(COLUMN_INSPECTION_DATE).toLocalDate());
 
-				queriedBuildings.forEach(apt -> apt.getLivingSpaces().forEach(livingSpace -> {
+				queriedBuildings.forEach(apt -> apt.getApartments().forEach(livingSpace -> {
 					if (inspection.getFk() == livingSpace.getId()) {
 						livingSpace.getInspections().add(inspection);
 					}
@@ -1839,15 +1839,15 @@ public class SQLBridge {
 				tenant.setFk(rs.getInt(COLUMN_TNANT_APT));
 				tenant.setDateCreated(rs.getTimestamp(COLUMN_TNANT_DATE_CREATED).toLocalDateTime());
 				tenant.setDateModified(rs.getTimestamp(COLUMN_TNANT_DATE_MODIFIED).toLocalDateTime());
-				tenant.setFirstName(rs.getString(COLUMN_TNANT_FNAME));
-				tenant.setLastName(rs.getString(COLUMN_TNANT_LNAME));
-				tenant.setPhone(rs.getString(COLUMN_TNANT_PHONE));
-				tenant.setEmail(rs.getString(COLUMN_TNANT_EMAIL));
-				tenant.setSsn(rs.getString(COLUMN_TNANT_IDN));
-				tenant.setNumChildren(rs.getInt(COLUMN_TNANT_NUM_CHILDREN));
+//				tenant.setFirstName(rs.getString(COLUMN_TNANT_FNAME));
+//				tenant.setLastName(rs.getString(COLUMN_TNANT_LNAME));
+//				tenant.setPhone(rs.getString(COLUMN_TNANT_PHONE));
+//				tenant.setEmail(rs.getString(COLUMN_TNANT_EMAIL));
+//				tenant.setSsn(rs.getString(COLUMN_TNANT_IDN));
+//				tenant.setNumChildren(rs.getInt(COLUMN_TNANT_NUM_CHILDREN));
 				tenant.setMovInDate(rs.getDate(COLUMN_TNANT_MOVE_IN_DATE).toLocalDate());
-				tenant.setDateOfBirth(rs.getDate(COLUMN_TNANT_DOB).toLocalDate());
-				tenant.setAnnualIncome(rs.getInt(COLUMN_TNANT_ANNUAL_INCOME));
+//				tenant.setDateOfBirth(rs.getDate(COLUMN_TNANT_DOB).toLocalDate());
+//				tenant.setAnnualIncome(rs.getInt(COLUMN_TNANT_ANNUAL_INCOME));
 				tenant.setEvicted(rs.getBoolean(COLUMN_TNANT_SLATED_FOR_EVICTION));
 				tenant.setEvictReason(rs.getString(COLUMN_TNANT_EVICT_REASON));
 				tenant.setMovOutDate(rs.getDate(COLUMN_TNANT_MOV_OUT_DATE).toLocalDate());
@@ -1859,23 +1859,23 @@ public class SQLBridge {
 			rs = statement.executeQuery(QUERY_TNANT_SPOUSES);
 
 			while (rs.next()) {
-				RoomMate tnantRoomMate = new RoomMate();
+				Occupant tnantOccupant = new Occupant();
 
-				tnantRoomMate.setId(rs.getInt(COLUMN_SPOUSE_ID));
-				tnantRoomMate.setFk(rs.getInt(COLUMN_SPOUSE_TNANT_ID));
-				tnantRoomMate.setDateCreated(rs.getTimestamp(COLUMN_SPOUSE_DATE_CREATED).toLocalDateTime());
-				tnantRoomMate.setDateModified(rs.getTimestamp(COLUMN_SPOUSE_DATE_MODIFIED).toLocalDateTime());
-				tnantRoomMate.setFirstName(rs.getString(COLUMN_SPOUSE_FNAME));
-				tnantRoomMate.setLastName(rs.getString(COLUMN_SPOUSE_LNAME));
-				tnantRoomMate.setPhone(rs.getString(COLUMN_SPOUSE_PHONE));
-				tnantRoomMate.setEmail(rs.getString(COLUMN_SPOUSE_EMAIL));
-				tnantRoomMate.setSsn(rs.getString(COLUMN_SPOUSE_IDN));
-				tnantRoomMate.setDateOfBirth(rs.getDate(COLUMN_SPOUSE_DOB).toLocalDate());
-				tnantRoomMate.setAnnualIncome(rs.getInt(COLUMN_SPOUSE_ANNUAL_INCOME));
+				tnantOccupant.setId(rs.getInt(COLUMN_SPOUSE_ID));
+				tnantOccupant.setFk(rs.getInt(COLUMN_SPOUSE_TNANT_ID));
+				tnantOccupant.setDateCreated(rs.getTimestamp(COLUMN_SPOUSE_DATE_CREATED).toLocalDateTime());
+				tnantOccupant.setDateModified(rs.getTimestamp(COLUMN_SPOUSE_DATE_MODIFIED).toLocalDateTime());
+//				tnantOccupant.setFirstName(rs.getString(COLUMN_SPOUSE_FNAME));
+//				tnantOccupant.setLastName(rs.getString(COLUMN_SPOUSE_LNAME));
+//				tnantOccupant.setPhone(rs.getString(COLUMN_SPOUSE_PHONE));
+//				tnantOccupant.setEmail(rs.getString(COLUMN_SPOUSE_EMAIL));
+//				tnantOccupant.setSsn(rs.getString(COLUMN_SPOUSE_IDN));
+//				tnantOccupant.setDateOfBirth(rs.getDate(COLUMN_SPOUSE_DOB).toLocalDate());
+//				tnantOccupant.setAnnualIncome(rs.getInt(COLUMN_SPOUSE_ANNUAL_INCOME));
 
 				queriedTenants.forEach(tnant -> {
-					if (tnantRoomMate.getFk() == tnant.getId()) {
-						tnant.addRoomMate(tnantRoomMate);
+					if (tnantOccupant.getFk() == tnant.getId()) {
+						tnant.addRoomMate(tnantOccupant);
 					}
 				});
 			}
@@ -1918,14 +1918,14 @@ public class SQLBridge {
 				candidate.setFk(rs.getInt(COLUMN_CAND_APT));
 				candidate.setDateCreated(rs.getTimestamp(COLUMN_CAND_DATE_CREATED).toLocalDateTime());
 				candidate.setDateModified(rs.getTimestamp(COLUMN_CAND_DATE_MODIFIED).toLocalDateTime());
-				candidate.setFirstName(rs.getString(COLUMN_CAND_FNAME));
-				candidate.setLastName(COLUMN_CAND_LNAME);
-				candidate.setPhone(rs.getString(COLUMN_CAND_PHONE));
-				candidate.setEmail(rs.getString(COLUMN_CAND_EMAIL));
-				candidate.setDateOfBirth(rs.getDate(COLUMN_CAND_DOB).toLocalDate());
-				candidate.setSsn(rs.getString(COLUMN_CAND_IDN));
-				candidate.setNumChildren(rs.getInt(COLUMN_CAND_NUM_CHILDREN));
-				candidate.setAnnualIncome(rs.getInt(COLUMN_CAND_ANNUAL_INCOME));
+//				candidate.setFirstName(rs.getString(COLUMN_CAND_FNAME));
+//				candidate.setLastName(COLUMN_CAND_LNAME);
+//				candidate.setPhone(rs.getString(COLUMN_CAND_PHONE));
+//				candidate.setEmail(rs.getString(COLUMN_CAND_EMAIL));
+//				candidate.setDateOfBirth(rs.getDate(COLUMN_CAND_DOB).toLocalDate());
+//				candidate.setSsn(rs.getString(COLUMN_CAND_IDN));
+//				candidate.setNumChildren(rs.getInt(COLUMN_CAND_NUM_CHILDREN));
+//				candidate.setAnnualIncome(rs.getInt(COLUMN_CAND_ANNUAL_INCOME));
 
 				queriedCandidates.add(candidate);
 			}
@@ -1934,23 +1934,23 @@ public class SQLBridge {
 
 			// Should only run once
 			while (rs.next()) {
-				RoomMate candRoomMate = new RoomMate();
+				Occupant candOccupant = new Occupant();
 
-				candRoomMate.setId(rs.getInt(COLUMN_SPOUSE_ID));
-				candRoomMate.setFk2(rs.getInt(COLUMN_SPOUSE_CAND_ID));
-				candRoomMate.setDateCreated(rs.getTimestamp(COLUMN_SPOUSE_DATE_CREATED).toLocalDateTime());
-				candRoomMate.setDateModified(rs.getTimestamp(COLUMN_SPOUSE_DATE_MODIFIED).toLocalDateTime());
-				candRoomMate.setFirstName(rs.getString(COLUMN_SPOUSE_FNAME));
-				candRoomMate.setLastName(rs.getString(COLUMN_SPOUSE_LNAME));
-				candRoomMate.setPhone(rs.getString(COLUMN_SPOUSE_PHONE));
-				candRoomMate.setEmail(rs.getString(COLUMN_SPOUSE_EMAIL));
-				candRoomMate.setSsn(rs.getString(COLUMN_SPOUSE_IDN));
-				candRoomMate.setDateOfBirth(rs.getDate(COLUMN_SPOUSE_DOB).toLocalDate());
-				candRoomMate.setAnnualIncome(rs.getInt(COLUMN_SPOUSE_ANNUAL_INCOME));
+				candOccupant.setId(rs.getInt(COLUMN_SPOUSE_ID));
+				candOccupant.setFk2(rs.getInt(COLUMN_SPOUSE_CAND_ID));
+				candOccupant.setDateCreated(rs.getTimestamp(COLUMN_SPOUSE_DATE_CREATED).toLocalDateTime());
+				candOccupant.setDateModified(rs.getTimestamp(COLUMN_SPOUSE_DATE_MODIFIED).toLocalDateTime());
+//				candOccupant.setFirstName(rs.getString(COLUMN_SPOUSE_FNAME));
+//				candOccupant.setLastName(rs.getString(COLUMN_SPOUSE_LNAME));
+//				candOccupant.setPhone(rs.getString(COLUMN_SPOUSE_PHONE));
+//				candOccupant.setEmail(rs.getString(COLUMN_SPOUSE_EMAIL));
+//				candOccupant.setSsn(rs.getString(COLUMN_SPOUSE_IDN));
+//				candOccupant.setDateOfBirth(rs.getDate(COLUMN_SPOUSE_DOB).toLocalDate());
+//				candOccupant.setAnnualIncome(rs.getInt(COLUMN_SPOUSE_ANNUAL_INCOME));
 
 				queriedCandidates.forEach(cand -> {
-					if (candRoomMate.getFk2() == cand.getId()) {
-						cand.addRoomMate(candRoomMate);
+					if (candOccupant.getFk2() == cand.getId()) {
+						cand.addRoomMate(candOccupant);
 					}
 				});
 			}
@@ -2060,8 +2060,8 @@ public class SQLBridge {
 			insertApartment.clearParameters();
 
 			// Inspection
-			for (LivingSpace livingSpace : building.getLivingSpaces()) {
-				for (NoteLog inspection : livingSpace.getInspections()) {
+			for (Apartment apartment : building.getApartments()) {
+				for (NoteLog inspection : apartment.getInspections()) {
 					insert(inspection, building.getTableType());
 				}
 			}
@@ -2101,11 +2101,11 @@ public class SQLBridge {
 			insertTenant.setString(6, tenant.getLastName());
 			insertTenant.setString(7, tenant.getPhone());
 			insertTenant.setString(8, tenant.getEmail());
-			insertTenant.setString(9, tenant.getSsn());
-			insertTenant.setInt(11, tenant.getNumChildren());
+//			insertTenant.setString(9, tenant.getSsn());
+//			insertTenant.setInt(11, tenant.getNumChildren());
 			insertTenant.setDate(12, Date.valueOf(tenant.getMovInDate()));
-			insertTenant.setDate(13, Date.valueOf(tenant.getDateOfBirth()));
-			insertTenant.setInt(14, tenant.getAnnualIncome());
+//			insertTenant.setDate(13, Date.valueOf(tenant.getDateOfBirth()));
+//			insertTenant.setInt(14, tenant.getAnnualIncome());
 			insertTenant.setBoolean(15, tenant.isEvicted());
 			insertTenant.setString(16, tenant.getEvictReason());
 			insertTenant.setDate(17, Date.valueOf(tenant.getMovOutDate()));
@@ -2114,8 +2114,8 @@ public class SQLBridge {
 			insertTenant.clearParameters();
 
 			// Spouse
-			if (!tenant.getRoomMates().isEmpty()) {
-				tenant.getRoomMates().forEach(roomMate -> insert(roomMate, tenant.getTableType()));
+			if (!tenant.getOccupants().isEmpty()) {
+				tenant.getOccupants().forEach(roomMate -> insert(roomMate, tenant.getTableType()));
 			}
 
 			// Tnant_Account
@@ -2144,18 +2144,18 @@ public class SQLBridge {
 			insertCandidate.setString(6, candidate.getLastName());
 			insertCandidate.setString(7, candidate.getPhone());
 			insertCandidate.setString(8, candidate.getEmail());
-			insertCandidate.setDate(9, Date.valueOf(candidate.getDateOfBirth()));
-			insertCandidate.setInt(10, candidate.getAnnualIncome());
-			insertCandidate.setString(11, candidate.getSsn());
-			insertCandidate.setInt(12, candidate.getNumChildren());
+//			insertCandidate.setDate(9, Date.valueOf(candidate.getDateOfBirth()));
+//			insertCandidate.setInt(10, candidate.getAnnualIncome());
+//			insertCandidate.setString(11, candidate.getSsn());
+//			insertCandidate.setInt(12, candidate.getNumChildren());
 			insertCandidate.setBoolean(13, candidate.isAccepted());
 
 			insertCandidate.execute();
 			insertCandidate.clearParameters();
 
 			// Roommate
-			if (!candidate.getRoomMates().isEmpty()) {
-				candidate.getRoomMates().forEach(roomMate -> insert(roomMate, candidate.getTableType()));
+			if (!candidate.getOccupants().isEmpty()) {
+				candidate.getOccupants().forEach(roomMate -> insert(roomMate, candidate.getTableType()));
 			}
 
 		} catch (SQLException e) {
@@ -2262,27 +2262,27 @@ public class SQLBridge {
 
 	/**
 	 * Inserts a new Tenant/Candidate Spouse into the server
-	 * @param roomMate Spouse to insert
+	 * @param occupant Spouse to insert
 	 * @param table Specifies table to insert into   
 	 * */
-	public void insert(RoomMate roomMate, DBTables table) {
+	public void insert(Occupant occupant, DBTables table) {
 		try {
 			switch(table) {
 				case TENANTS:
 					if (Main.DEBUG)
 						System.out.println("Saving Spouse(tenant)");
 					
-					insertTnantSpouse.setInt(1, roomMate.getId());
-					insertTnantSpouse.setInt(2, roomMate.getFk());
-					insertTnantSpouse.setTimestamp(3, Timestamp.valueOf(roomMate.getDateCreated()));
-					insertTnantSpouse.setTimestamp(4, Timestamp.valueOf(roomMate.getDateModified()));
-					insertTnantSpouse.setString(5, roomMate.getFirstName());
-					insertTnantSpouse.setString(6, roomMate.getLastName());
-					insertTnantSpouse.setString(7, roomMate.getPhone());
-					insertTnantSpouse.setString(8, roomMate.getEmail());
-					insertTnantSpouse.setString(9, roomMate.getSsn());
-					insertTnantSpouse.setDate(10, Date.valueOf(roomMate.getDateOfBirth()));
-					insertTnantSpouse.setInt(11, roomMate.getAnnualIncome());
+					insertTnantSpouse.setInt(1, occupant.getId());
+					insertTnantSpouse.setInt(2, occupant.getFk());
+					insertTnantSpouse.setTimestamp(3, Timestamp.valueOf(occupant.getDateCreated()));
+					insertTnantSpouse.setTimestamp(4, Timestamp.valueOf(occupant.getDateModified()));
+					insertTnantSpouse.setString(5, occupant.getFirstName());
+					insertTnantSpouse.setString(6, occupant.getLastName());
+					insertTnantSpouse.setString(7, occupant.getPhone());
+					insertTnantSpouse.setString(8, occupant.getEmail());
+//					insertTnantSpouse.setString(9, occupant.getSsn());
+//					insertTnantSpouse.setDate(10, Date.valueOf(occupant.getDateOfBirth()));
+//					insertTnantSpouse.setInt(11, occupant.getAnnualIncome());
 
 					insertTnantSpouse.execute();
 					insertTnantSpouse.clearParameters();
@@ -2291,17 +2291,17 @@ public class SQLBridge {
 					if (Main.DEBUG)
 						System.out.println("Saving Spouse(candidate)");
 					
-					insertCandSpouse.setInt(1, roomMate.getId());
-					insertCandSpouse.setInt(2, roomMate.getFk());
-					insertCandSpouse.setTimestamp(3, Timestamp.valueOf(roomMate.getDateCreated()));
-					insertCandSpouse.setTimestamp(4, Timestamp.valueOf(roomMate.getDateModified()));
-					insertCandSpouse.setString(5, roomMate.getFirstName());
-					insertCandSpouse.setString(6, roomMate.getLastName());
-					insertCandSpouse.setString(7, roomMate.getPhone());
-					insertCandSpouse.setString(8, roomMate.getEmail());
-					insertCandSpouse.setString(9, roomMate.getSsn());
-					insertCandSpouse.setDate(10, Date.valueOf(roomMate.getDateOfBirth()));
-					insertCandSpouse.setInt(11, roomMate.getAnnualIncome());
+					insertCandSpouse.setInt(1, occupant.getId());
+					insertCandSpouse.setInt(2, occupant.getFk());
+					insertCandSpouse.setTimestamp(3, Timestamp.valueOf(occupant.getDateCreated()));
+					insertCandSpouse.setTimestamp(4, Timestamp.valueOf(occupant.getDateModified()));
+					insertCandSpouse.setString(5, occupant.getFirstName());
+					insertCandSpouse.setString(6, occupant.getLastName());
+					insertCandSpouse.setString(7, occupant.getPhone());
+					insertCandSpouse.setString(8, occupant.getEmail());
+//					insertCandSpouse.setString(9, occupant.getSsn());
+//					insertCandSpouse.setDate(10, Date.valueOf(occupant.getDateOfBirth()));
+//					insertCandSpouse.setInt(11, occupant.getAnnualIncome());
 
 					insertCandSpouse.execute();
 					insertCandSpouse.clearParameters();
@@ -2524,17 +2524,17 @@ public class SQLBridge {
 
 	/**
 	 * Updates existing Spouse in the server
-	 * @param roomMate Spouse to be updated
+	 * @param occupant Spouse to be updated
 	 * @param table Selects table to update
 	 * */
-	public void update(RoomMate roomMate, DBTables table) {
+	public void update(Occupant occupant, DBTables table) {
 		try {
 			if (Main.DEBUG)
 				System.out.println("Updating Apartment");
 			
 			connection.setAutoCommit(false);
-			delete(roomMate,table);
-			insert(roomMate,table);
+			delete(occupant,table);
+			insert(occupant,table);
 			connection.commit();
 			connection.setAutoCommit(true);
 		} catch (SQLException e) {
@@ -2584,7 +2584,7 @@ public class SQLBridge {
 				//Insert account deletion
 				break;
 			case ROOMMATE:
-				delete((RoomMate) table, table.getTableType());
+				delete((Occupant) table, table.getTableType());
 				break;
 			case BILLS:
 				delete((Bill) table);
@@ -2716,24 +2716,24 @@ public class SQLBridge {
 
 	/**
 	 * Deletes Spouse in the server
-	 * @param roomMate Spouse to be deleted
+	 * @param occupant Spouse to be deleted
 	 * @param table Selects table to delete from
 	 * */
-	public void delete(RoomMate roomMate, DBTables table) {
+	public void delete(Occupant occupant, DBTables table) {
 		try {
 			switch(table){
 				case TENANTS:
 					if (Main.DEBUG)
 						System.out.println("Deleting Apartment");
 					
-					deleteTnantSpouse.setInt(1, roomMate.getId());
+					deleteTnantSpouse.setInt(1, occupant.getId());
 					deleteInspection.execute();
 					break;
 				case CANDIDATES:
 					if (Main.DEBUG)
 						System.out.println("Deleting Apartment");
 					
-					deleteCandSpouse.setInt(1, roomMate.getId());
+					deleteCandSpouse.setInt(1, occupant.getId());
 					deleteInspection.execute();
 					break;
 				default:

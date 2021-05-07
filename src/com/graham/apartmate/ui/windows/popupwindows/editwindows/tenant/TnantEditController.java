@@ -1,7 +1,7 @@
 package com.graham.apartmate.ui.windows.popupwindows.editwindows.tenant;
 
 import com.graham.apartmate.database.tables.mainTables.Building;
-import com.graham.apartmate.database.tables.subTables.RoomMate;
+import com.graham.apartmate.database.tables.subTables.Occupant;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -62,7 +62,7 @@ public class TnantEditController {
 		@FXML
 		private Button addButton;
 		
-		public static RoomMate tnantRoomMate;
+		public static Occupant tnantOccupant;
 		
 		// ---------------------------------------------------------
 		// ---------------------------------------------------------

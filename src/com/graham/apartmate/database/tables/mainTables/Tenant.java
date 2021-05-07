@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.subTables.*;
 import com.graham.apartmate.main.Main;
-import com.graham.apartmate.ui.libraries.FXMLLocation;
+import com.graham.apartmate.ui.res.classes.FXMLLocation;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -27,17 +27,7 @@ public class Tenant extends Candidate {
 	private static final long serialVersionUID = 1L;
 
 	//------------------------------------------------------------
-	// Mandatory fields///////////////////////////////////////////
-	//------------------------------------------------------------
-	/**
-	 * Tenant's move-in date
-	 * */
-	private final SimpleObjectProperty<LocalDate> movInDate; // tenant's move in date
-	//------------------------------------------------------------
-	//------------------------------------------------------------
-
-	//------------------------------------------------------------
-	// Optional/uninitialized fields//////////////////////////////
+	// Fields//////////////////////////////
 	//------------------------------------------------------------
 	/**
 	 * True if the Tenant is slated for eviction/evicted
@@ -100,16 +90,35 @@ public class Tenant extends Candidate {
 				candidate.getLastName(),
 				candidate.getPhone(),
 				candidate.getEmail(),
-				candidate.getDateOfBirth(),
-				candidate.getAnnualIncome(),
-				candidate.getSsn(),
-				candidate.getNumChildren(),
+				candidate.getPersonalInfo(),
 				movInDate,
 				candidate.getEContact1(),
 				candidate.getEContact2(),
 				initialAccount,
 				initialLease
 		);
+	}
+
+	/**
+	 * Temp full constructor
+	 * */
+	public Tenant(int id, int fk, String firstName, String lastName, String phone, String email, Contact contact,
+				  LocalDate movInDate, Contact contact1, Contact contact2, Account initialAccount, Lease initialLease) {
+		this(id,
+				fk,
+				firstName,
+				lastName,
+				phone,
+				email,
+				contact.getDateOfBirth(),
+				contact.getAnnualIncome(),
+				contact.getSsn(),
+				contact.getNumChildren(),
+				movInDate,
+				contact1,
+				contact2,
+				initialAccount,
+				initialLease);
 	}
 
 	// Constructor
@@ -130,10 +139,9 @@ public class Tenant extends Candidate {
 	public Tenant(int id, int fk, String firstName, String lastName, String phone, String email, LocalDate dateOfBirth,
 				  int annualIncome, String SSN, int numChildren, LocalDate movInDate,
 				  Contact contact1, Contact contact2, Account initialAccount, Lease initialLease) {
-		super(id, fk, firstName,lastName,phone,email,SSN,dateOfBirth,annualIncome,numChildren, contact1,contact2);
+		super(id, fk, firstName,lastName,phone,email,SSN,dateOfBirth,annualIncome,numChildren, movInDate, contact1,contact2);
 		super.setAccepted(true);
 
-		this.movInDate = new SimpleObjectProperty<>(movInDate);
 		movOutDate = new SimpleObjectProperty<>(LocalDate.MIN);
 		slatedForEviction = new SimpleBooleanProperty(false);
 		evictReason = new SimpleStringProperty();
@@ -199,35 +207,7 @@ public class Tenant extends Candidate {
 	//------------------------------------------------------------
 	// General getters and setters////////////////////////////////
 	//------------------------------------------------------------
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets Tenant's move in date
-	 * @return move in date
-	 * */
-	public LocalDate getMovInDate() {
-		return movInDate.get();
-	}
 
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets Tenant's move in date
-	 * @param movInDate New move in date
-	 * */
-	public void setMovInDate(LocalDate movInDate) {
-		this.movInDate.set(movInDate);
-	}
-
-	/**
-	 * Getter:
-	 * <p>
-	 * Gets move in date field property
-	 * @return move in date property
-	 * */
-	public SimpleObjectProperty<LocalDate> movInDateProperty() {
-		return movInDate;
-	}
 
 	/**
 	 * Getter:

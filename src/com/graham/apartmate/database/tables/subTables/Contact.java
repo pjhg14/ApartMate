@@ -2,6 +2,7 @@ package com.graham.apartmate.database.tables.subTables;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.mainTables.Table;
+import com.graham.apartmate.ui.res.classes.FXMLLocation;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -72,17 +73,6 @@ public class Contact extends Table {
     }
 
     /**
-     * Default constructor
-     * Creates the baseline for a dummy Table
-     */
-    public Contact(String dummy) {
-        this();
-        if (dummy.equals(DUMMY_TABLE)) {
-            super.setDummy(true);
-        }
-    }
-
-    /**
      * Creates the baseline for a Table with two foreign keys
      *
      * @param id  Primary Key of the Table
@@ -94,10 +84,10 @@ public class Contact extends Table {
         this(id,fk,fk2,fk3,firstName,lastName,phoneNumber,email,"",0,LocalDate.MIN, 0);
     }
 
-    public Contact(int id, int fk, int fk2, int fk3, String firstName, String lastName, String phoneNumber, String email, String ssn,
-                   int numChildren, LocalDate dateOfBirth, int annualIncome) {
+    public Contact(int id, int fk, int fk2, int fk3, String firstName, String lastName, String phoneNumber,
+                   String email, String ssn, int numChildren, LocalDate dateOfBirth, int annualIncome) {
         super(id, fk, fk2, fk3);
-        image = new Image("com/graham/apartmate/ui/res/TenantImg_small.png");
+        image = new Image("com/graham/apartmate/ui/res/img/TenantImg_small.png");
         this.firstName = new SimpleStringProperty(firstName);
         this.lastName = new SimpleStringProperty(lastName);
         this.phoneNumber = new SimpleStringProperty(phoneNumber);
@@ -135,25 +125,25 @@ public class Contact extends Table {
      */
     @Override
     public DBTables getTableType() {
-        return DBTables.INVALID;
+        return DBTables.UNASSIGNED;
     }
 
     /***/
     @Override
     public String getInfoLocation() {
-        return null;
+        return FXMLLocation.CONTACTINFO.getLocation();
     }
 
     /***/
     @Override
     public String getAddLocation() {
-        return null;
+        return FXMLLocation.CONTACTADD.getLocation();
     }
 
     /***/
     @Override
     public String getEditLocation() {
-        return null;
+        return FXMLLocation.CONTACTEDIT.getLocation();
     }
 
     /**

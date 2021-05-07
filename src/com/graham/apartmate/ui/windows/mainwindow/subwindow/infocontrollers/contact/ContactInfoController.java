@@ -1,23 +1,18 @@
-package com.graham.apartmate.ui.windows.mainwindow.subwindow.infocontrollers.candidate;
+package com.graham.apartmate.ui.windows.mainwindow.subwindow.infocontrollers.contact;
 
-import com.graham.apartmate.database.dbMirror.Database;
-import com.graham.apartmate.database.tables.mainTables.Candidate;
-import com.graham.apartmate.database.tables.subTables.Occupant;
+import com.graham.apartmate.database.tables.subTables.Contact;
 import com.graham.apartmate.main.Main;
 import com.graham.apartmate.ui.windows.utility.SubWindowController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 
 import java.io.File;
-import java.util.List;
 
-public class CandInfoController extends SubWindowController {
+public class ContactInfoController extends SubWindowController {
 
     //----------------------------------------------------------
     //FXML Fields
@@ -26,29 +21,29 @@ public class CandInfoController extends SubWindowController {
     private Text nameText;
 
     @FXML
+    private Text phoneText;
+
+    @FXML
     private Text emailText;
 
     @FXML
-    private Text residenceText;
+    private Text numChildrenText;
 
     @FXML
-    private Text movInPrompt;
+    private Text dateOfBirthText;
 
     @FXML
-    private Text movInDateText;
+    private Text annualIncomeText;
 
     @FXML
-    private ImageView candImg;
-
-    @FXML
-    private FlowPane contentList;
+    private ImageView contactImg;
     //----------------------------------------------------------
     //----------------------------------------------------------
 
     //----------------------------------------------------------
     //Other Fields
     //----------------------------------------------------------
-    private Candidate selectedCand;
+    private Contact selectedContact;
     //----------------------------------------------------------
     //----------------------------------------------------------
 
@@ -57,20 +52,14 @@ public class CandInfoController extends SubWindowController {
     //----------------------------------------------------------
     @Override
     public void init() {
-        selectedCand = (Candidate) currentTable;
+        selectedContact = (Contact) currentTable;
 
-        nameText.setText(selectedCand.getFullName());
-        emailText.setText(selectedCand.getEmail());
-        residenceText.setText(Database.getInstance().getResidency(selectedCand));
-
-        if (selectedCand.isAccepted() && selectedCand.getMovInDate() != null) {
-            movInDateText.setText(selectedCand.getMovInDate().toString());
-        } else {
-            movInPrompt.setVisible(false);
-            movInDateText.setVisible(false);
-        }
-
-        listOccupants(selectedCand.getOccupants());
+        nameText.setText(selectedContact.getFullName());
+        phoneText.setText(selectedContact.getPhoneNumber());
+        emailText.setText(selectedContact.getEmail());
+        numChildrenText.setText(selectedContact.getNumChildren() + "");
+        dateOfBirthText.setText(selectedContact.getDateOfBirth().toString());
+        annualIncomeText.setText(selectedContact.getAnnualIncome() + "");
     }
     //----------------------------------------------------------
     //----------------------------------------------------------
@@ -78,11 +67,6 @@ public class CandInfoController extends SubWindowController {
     //----------------------------------------------------------
     //FXML Methods
     //----------------------------------------------------------
-    @FXML
-    public void viewCandidateContact() {
-        subWindowSubmit.accept(selectedCand.getPersonalInfo(), false);
-    }
-
     @FXML
     public void editImage() {
         //Open file explorer so user can choose choose new image
@@ -107,14 +91,8 @@ public class CandInfoController extends SubWindowController {
 
         File img = fileChooser.showOpenDialog(Main.getLibrary().getMainStage());
 
-        selectedCand.setImage(new Image(img.toURI().toString()));
-        candImg.setImage(new Image(img.toURI().toString()));
-    }
-
-    @FXML
-    public void addOccupant() {
-        //TODO: Occupant addition stub
-        System.out.println("No outer window yet sorry");
+        selectedContact.setImage(new Image(img.toURI().toString()));
+        contactImg.setImage(new Image(img.toURI().toString()));
     }
     //----------------------------------------------------------
     //----------------------------------------------------------
@@ -122,29 +100,7 @@ public class CandInfoController extends SubWindowController {
     //----------------------------------------------------------
     //Other Methods
     //----------------------------------------------------------
-    private void listOccupants(List<Occupant> occupants) {
-        for (Occupant occupant : occupants) {
-            contentList.getChildren().add(contentBox(occupant));
-        }
-    }
 
-    private VBox contentBox(Occupant occupant) {
-        VBox container = new VBox();
-
-        ImageView icon = new ImageView(occupant.getImage());
-        icon.setPreserveRatio(true);
-        icon.setSmooth(true);
-        icon.setOnMouseClicked(event -> subWindowSubmit.accept(occupant.getPersonalInfo(), false));
-
-        container.getChildren().add(icon);
-
-        Button deleteButton = new Button("Delete");
-        deleteButton.setOnAction(event -> Database.getInstance().remove(occupant,selectedCand.getTableType()));
-
-        container.getChildren().add(deleteButton);
-
-        return container;
-    }
     //----------------------------------------------------------
     //----------------------------------------------------------
 }

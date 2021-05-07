@@ -3,7 +3,7 @@ package com.graham.apartmate.ui.windows.dbgwindow;
 
 import com.graham.apartmate.database.utilities.unordered.TestingData;
 import com.graham.apartmate.main.Main;
-import com.graham.apartmate.ui.libraries.FXMLLocation;
+import com.graham.apartmate.ui.res.classes.FXMLLocation;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;

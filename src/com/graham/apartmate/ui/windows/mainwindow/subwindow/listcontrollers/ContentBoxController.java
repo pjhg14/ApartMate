@@ -2,7 +2,7 @@ package com.graham.apartmate.ui.windows.mainwindow.subwindow.listcontrollers;
 
 import com.graham.apartmate.database.dbMirror.Database;
 import com.graham.apartmate.database.tables.mainTables.*;
-import com.graham.apartmate.database.tables.subTables.LivingSpace;
+import com.graham.apartmate.database.tables.subTables.Apartment;
 import com.graham.apartmate.ui.windows.utility.SubWindowController;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -49,7 +49,7 @@ public class ContentBoxController extends SubWindowController {
                 }
                 break;
             case LIVING_SPACE:
-                for (Candidate candidate : ((LivingSpace) currentTable).getExpectantCandidates()) {
+                for (Candidate candidate : ((Apartment) currentTable).getExpectantCandidates()) {
                     mainPane.getChildren().add(contentBox(candidate));
                 }
                 break;

@@ -1,10 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.graham.apartmate.ui.windows.mainwindow.subwindow.infocontrollers.contractor.ContInfoController"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.graham.apartmate.ui.windows.mainwindow.subwindow.infocontrollers.contractor.ContInfoController">
+    <content>
+        <AnchorPane prefHeight="680.0" prefWidth="600.0">
+            <children>
+                <VBox prefHeight="200.0" prefWidth="100.0" spacing="15.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                    <children>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;">
+                            <children>
+                                <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-border-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <Text fx:id="nameText" strokeType="OUTSIDE" strokeWidth="0.0" text="Name">
+                                            <font>
+                                                <Font size="48.0" />
+                                            </font>
+                                        </Text>
+                                        <HBox spacing="5.0">
+                                            <children>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Working on:" />
+                                                <Text fx:id="residenceText" strokeType="OUTSIDE" strokeWidth="0.0" text="Apartment, LivingSpace" />
+                                            </children>
+                                        </HBox>
+                                        <HBox spacing="5.0">
+                                            <children>
+                                                <Text fx:id="balanceContext" strokeType="OUTSIDE" strokeWidth="0.0" text="Current Balance:" />
+                                                <Text fx:id="balanceText" strokeType="OUTSIDE" strokeWidth="0.0" text="balance" />
+                                            </children>
+                                        </HBox>
+                                        <Text fx:id="emailText" strokeType="OUTSIDE" strokeWidth="0.0" text="Email" />
+                                    </children>
+                                </VBox>
+                                <VBox layoutX="355.0" layoutY="6.0" prefHeight="191.0" spacing="15.0" style="-fx-border-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <ImageView fx:id="contImg" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" style="-fx-border-color: black;" />
+                                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#editImage" prefHeight="15.0" prefWidth="200.0" text="Edit Image">
+                                            <font>
+                                                <Font size="11.0" />
+                                            </font>
+                                        </Button>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </AnchorPane>
+                        <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="540.0" style="-fx-border-color: black;">
+                            <children>
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Payments:" />
+                                <ListView fx:id="paymentListView" prefHeight="200.0" prefWidth="200.0" />
+                        <HBox>
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#addTransaction" text="New">
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Button>
+                              <Button mnemonicParsing="false" onAction="#editTransaction" text="Edit">
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Button>
+                              <Button mnemonicParsing="false" onAction="#deleteTransaction" text="Delete">
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </HBox>
+                            </children>
+                        </VBox>
+                        <AnchorPane style="-fx-border-color: black;">
+                            <children>
+                                <Button layoutX="508.0" layoutY="5.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#viewContract" prefHeight="50.0" prefWidth="200.0" text="Contract" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                <Button layoutX="405.0" layoutY="7.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#viewAccount" prefHeight="50.0" prefWidth="200.0" text="Account" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                            </children>
+                        </AnchorPane>
+                        <VBox alignment="CENTER" style="-fx-border-color: black;">
+                            <children>
+                                <Button fx:id="contractorContactButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#viewContractorContact" prefHeight="50.0" prefWidth="200.0" text="ContactName" />
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </children>
+        </AnchorPane>
+    </content>
+</ScrollPane>

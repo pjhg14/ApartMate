@@ -4,10 +4,13 @@ import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.subTables.Account;
 import com.graham.apartmate.database.tables.subTables.Contract;
 import com.graham.apartmate.database.tables.subTables.Contact;
+import com.graham.apartmate.database.tables.subTables.TransactionLog;
 import com.graham.apartmate.main.Main;
-import com.graham.apartmate.ui.libraries.FXMLLocation;
+import com.graham.apartmate.ui.res.classes.FXMLLocation;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
+
+import java.time.LocalDate;
 
 /**
  * Contractor object
@@ -53,7 +56,7 @@ public class Contractor extends Table {
 	 * */
 	private final Account account;
 
-	private Contract contract;
+	private final Contract contract;
 	//------------------------------------------------------------
 	//------------------------------------------------------------
 
@@ -64,7 +67,7 @@ public class Contractor extends Table {
 	 * Default constructor
 	 * */
 	public Contractor() {
-		this(0,0,"","","", null);
+		this(0,0,"","","", new Contract());
 	}
 
 	/**
@@ -79,13 +82,14 @@ public class Contractor extends Table {
 	 * */
 	public Contractor(int id, int fk, String name, String phone, String email, Contract contract) {
 		super(id, fk);
-		image = new Image("com/graham/apartmate/ui/res/TenantImg_small.png");
+		image = new Image("com/graham/apartmate/ui/res/img/TenantImg_small.png");
 		this.name = new SimpleStringProperty(name);
 		this.phone = new SimpleStringProperty(phone);
 		this.email = new SimpleStringProperty(email);
 		this.contract = contract;
 
-		account = new Account();
+		account = new Account(
+				new TransactionLog(0,contract.getPayment(), LocalDate.now().plusMonths(contract.getTerm())));
 	}
 	//------------------------------------------------------------
 	//------------------------------------------------------------
@@ -124,19 +128,19 @@ public class Contractor extends Table {
 	/***/
 	@Override
 	public String getInfoLocation() {
-		return FXMLLocation.CONTINFO.getLocation();
+		return FXMLLocation.CONTRINFO.getLocation();
 	}
 
 	/***/
 	@Override
 	public String getAddLocation() {
-		return FXMLLocation.CONTADD.getLocation();
+		return FXMLLocation.CONTRADD.getLocation();
 	}
 
 	/***/
 	@Override
 	public String getEditLocation() {
-		return FXMLLocation.CONTEDIT.getLocation();
+		return FXMLLocation.CONTREDIT.getLocation();
 	}
 	//------------------------------------------------------------
 	//------------------------------------------------------------
@@ -256,11 +260,6 @@ public class Contractor extends Table {
 	/***/
 	public Contract getContract() {
 		return contract;
-	}
-
-	/***/
-	public void setContract(Contract contract) {
-		this.contract = contract;
 	}
 	//------------------------------------------------------------
 	//------------------------------------------------------------

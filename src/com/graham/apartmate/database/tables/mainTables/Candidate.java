@@ -6,11 +6,12 @@ import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.subTables.Account;
 import com.graham.apartmate.database.tables.subTables.Lease;
 import com.graham.apartmate.database.tables.subTables.Contact;
-import com.graham.apartmate.database.tables.subTables.RoomMate;
+import com.graham.apartmate.database.tables.subTables.Occupant;
 
 import com.graham.apartmate.main.Main;
-import com.graham.apartmate.ui.libraries.FXMLLocation;
+import com.graham.apartmate.ui.res.classes.FXMLLocation;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
@@ -21,7 +22,7 @@ import javafx.scene.image.Image;
  * Records the information of a candidate looking to rent a specific Apartment
  *
  * @see Table
- * @see RoomMate
+ * @see Occupant
  * @author Paul Graham Jr (pjhg14@gmail.com)
  * @version {@value Main#VERSION}
  * @since Can we call this an alpha? (0.1)
@@ -38,18 +39,21 @@ public class Candidate extends Table {
 
 	// Mandatory fields
 	/***/
-	private Contact contactInfo;
+	private Contact personalInfo;
 
 	/**
 	 * Whether the Candidate is accepted or not (used to convert a candidate to a tenant)
 	 * */
 	private final SimpleBooleanProperty accepted;
 
+	/***/
+	private final SimpleObjectProperty<LocalDate> movInDate;
+
 	// Candidate sub-tables
 	/**
 	 * Data of Candidate's Spouse (if any)
 	 * */
-	private ObservableList<RoomMate> roomMates;
+	private ObservableList<Occupant> occupants;
 
 	/**
 	 * Candidate's first contact
@@ -71,7 +75,7 @@ public class Candidate extends Table {
 	 * */
 	public Candidate() {
 		this(0,0,"","","","","",LocalDate.MIN,0,0,
-				null, null);
+				LocalDate.MIN, null, null);
 	}
 
 	/**
@@ -79,7 +83,7 @@ public class Candidate extends Table {
 	 * */
 	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, String ssn,
 					 Contact eContact1, Contact eContact2) {
-		this(id, fk, firstName, lastName, phone, email, ssn, LocalDate.MIN, 0,0,
+		this(id, fk, firstName, lastName, phone, email, ssn, LocalDate.MIN, 0,0, LocalDate.MIN,
 				eContact1, eContact2);
 	}
 
@@ -99,14 +103,15 @@ public class Candidate extends Table {
 	 * @param eContact2 Candidate's second emergency contact
 	 * */
 	public Candidate(int id, int fk, String firstName, String lastName, String phone, String email, String ssn,
-					 LocalDate dateOfBirth, int annualIncome, int numChildren, Contact eContact1,
+					 LocalDate dateOfBirth, int annualIncome, int numChildren, LocalDate movInDate, Contact eContact1,
 					 Contact eContact2) {
 		super(id, fk);
-		image = new Image("com/graham/apartmate/ui/res/TenantImg_small.png");
-		contactInfo = new Contact(0,0,0,0, firstName, lastName, phone, email, ssn, numChildren,
+		image = new Image("com/graham/apartmate/ui/res/img/TenantImg_small.png");
+		personalInfo = new Contact(0,0,0,0, firstName, lastName, phone, email, ssn, numChildren,
 				dateOfBirth, annualIncome);
+		this.movInDate = new SimpleObjectProperty<>(movInDate);
 		accepted = new SimpleBooleanProperty(false);
-		this.roomMates = FXCollections.observableArrayList();
+		this.occupants = FXCollections.observableArrayList();
 		this.eContact1 = eContact1;
 		this.eContact2 = eContact2;
 	}
@@ -173,7 +178,7 @@ public class Candidate extends Table {
 	 * @return first name, last name
 	 * */
 	public String getFullName() {
-		return contactInfo.getFullName();
+		return personalInfo.getFullName();
 	}
 
 	/**
@@ -181,7 +186,7 @@ public class Candidate extends Table {
 	 * @return last name, first name
 	 * */
 	public String getProperName() {
-		return contactInfo.getProperName();
+		return personalInfo.getProperName();
 	}
 
 	/**
@@ -205,8 +210,8 @@ public class Candidate extends Table {
 	 * @return <code>true</code> if Candidate has a Spouse <code>false</code> if not
 	 * */
 	public boolean hasSpouse() {
-		for (RoomMate roomMate : roomMates) {
-			if (roomMate.isSpouse())
+		for (Occupant occupant : occupants) {
+			if (occupant.isSpouse())
 				return true;
 		}
 
@@ -216,15 +221,15 @@ public class Candidate extends Table {
 	/**
 	 * Adds a roommate to the candidate
 	 * */
-	public void addRoomMate(RoomMate roomMate) {
-		roomMates.add(roomMate);
+	public void addRoomMate(Occupant occupant) {
+		occupants.add(occupant);
 	}
 
 	/**
 	 * Removes Candidate's Spouse
 	 * */
-	public void removeRoomMate(RoomMate roomMate) {
-		roomMates.remove(roomMate);
+	public void removeRoomMate(Occupant occupant) {
+		occupants.remove(occupant);
 	}
 	//------------------------------------------------------------
 	//------------------------------------------------------------
@@ -239,17 +244,7 @@ public class Candidate extends Table {
 	 * @return first name
 	 * */
 	public String getFirstName() {
-		return contactInfo.getFirstName();
-	}
-
-	/**
-	 * Setter:
-	 * <p>
-	 * Sets the first name of Candidate
-	 * @param firstName New first name
-	 * */
-	public void setFirstName(String firstName) {
-		this.contactInfo.setFirstName(firstName);
+		return personalInfo.getFirstName();
 	}
 
 
@@ -260,7 +255,7 @@ public class Candidate extends Table {
 	 * @return last name
 	 * */
 	public String getLastName() {
-		return contactInfo.getLastName();
+		return personalInfo.getLastName();
 	}
 
 	/**
@@ -270,7 +265,7 @@ public class Candidate extends Table {
 	 * @return phone #
 	 * */
 	public String getPhone() {
-		return contactInfo.getPhoneNumber();
+		return personalInfo.getPhoneNumber();
 	}
 
 	/**
@@ -280,7 +275,7 @@ public class Candidate extends Table {
 	 * @return email
 	 * */
 	public String getEmail() {
-		return contactInfo.getEmail();
+		return personalInfo.getEmail();
 	}
 
 	/**
@@ -289,18 +284,18 @@ public class Candidate extends Table {
 	 * Gets the contact information of this table
 	 * @return contact information
 	 * */
-	public Contact getContactInfo() {
-		return contactInfo;
+	public Contact getPersonalInfo() {
+		return personalInfo;
 	}
 
 	/**
 	 * Setter
 	 * <p>
 	 * Sets the contact information of this table
-	 * @param contactInfo new contact information
+	 * @param personalInfo new contact information
 	 * */
-	public void setContactInfo(Contact contactInfo) {
-		this.contactInfo = contactInfo;
+	public void setPersonalInfo(Contact personalInfo) {
+		this.personalInfo = personalInfo;
 	}
 
 	/**
@@ -337,21 +332,51 @@ public class Candidate extends Table {
 	/**
 	 * Getter:
 	 * <p>
+	 * Gets Tenant's move in date
+	 * @return move in date
+	 * */
+	public LocalDate getMovInDate() {
+		return movInDate.get();
+	}
+
+	/**
+	 * Setter:
+	 * <p>
+	 * Sets Tenant's move in date
+	 * @param movInDate New move in date
+	 * */
+	public void setMovInDate(LocalDate movInDate) {
+		this.movInDate.set(movInDate);
+	}
+
+	/**
+	 * Getter:
+	 * <p>
+	 * Gets move in date field property
+	 * @return move in date property
+	 * */
+	public SimpleObjectProperty<LocalDate> movInDateProperty() {
+		return movInDate;
+	}
+
+	/**
+	 * Getter:
+	 * <p>
 	 * Gets the Candidate's Spouse
 	 * @return Spouse information
 	 * */
-	public ObservableList<RoomMate> getRoomMates() {
-		return FXCollections.unmodifiableObservableList(roomMates);
+	public ObservableList<Occupant> getOccupants() {
+		return FXCollections.unmodifiableObservableList(occupants);
 	}
 
 	/**
 	 * Setter:
 	 * <p>
 	 * Sets the Candidate's Spouse
-	 * @param roomMate New Spouse
+	 * @param occupant New Spouse
 	 * */
-	public void setSpouse(ObservableList<RoomMate> roomMate) {
-		this.roomMates = roomMate;
+	public void setSpouse(ObservableList<Occupant> occupant) {
+		this.occupants = occupant;
 	}
 
 	/**

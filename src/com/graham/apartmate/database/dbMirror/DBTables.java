@@ -59,7 +59,7 @@ public enum DBTables {
     TRANSACTION,
 
     /**
-     * Invalid Table pointer
+     * Unassigned Table pointer
      * */
-    INVALID
+    UNASSIGNED
 }

@@ -2,14 +2,11 @@ package com.graham.apartmate.database.tables.mainTables;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.main.Main;
-import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * Table abstract class
@@ -85,17 +82,6 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * True if a field was changed
 	 * */
 	private boolean edited;
-
-	/**
-	 * Whether a Table is considered a dummy Table
-	 * <p>
-	 * Dummy Tables are used as placeholders for various lists in the program
-	 * </p>
-	 * True if so, False if not
-	 * */
-	private boolean dummy;
-
-	public static final String DUMMY_TABLE = "DUMMY";
 	//----------------------------------------------------------------
 
 	//----------------------------------------------------------------
@@ -165,8 +151,6 @@ public abstract class Table implements Serializable, Comparable<Table> {
 
 		dateCreated = new SimpleObjectProperty<>(LocalDateTime.now());
 		dateModified = new SimpleObjectProperty<>(LocalDateTime.now());
-		dummy = false;
-		edited = false;
 
 		if (Main.DEBUG)
 			debug();
@@ -181,11 +165,7 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * Debug method...
 	 * */
 	private void debug() {
-		if (!dummy) {
-			System.out.println("New Table class created");
-		} else {
-			System.out.println("Dummy Table class created");
-		}
+		System.out.println("New Table class created, Type: " + getTableType() +"\nID info: \n" + getIdentifiers());
 	}
 
 	/**
@@ -208,6 +188,15 @@ public abstract class Table implements Serializable, Comparable<Table> {
 
 	/***/
 	public abstract String getEditLocation();
+
+	public String getIdentifiers() {
+		return String.format("ID: %s\n" +
+				"FK: %s\n" +
+				"FK2: %s\n" +
+				"FK3: %s\n" +
+				"FK4: %s\n",
+				getId(), getFk(), getFk2(), getFk3(), getFk4());
+	}
 	//----------------------------------------------------------------
 
 	//----------------------------------------------------------------
@@ -467,24 +456,6 @@ public abstract class Table implements Serializable, Comparable<Table> {
 	 * */
 	public void setEdited(boolean edited) {
 		this.edited = edited;
-	}
-
-	/**
-	 * Getter:
-	 * Gives whether or not this Table is a dummy Table
-	 * @return dummy
-	 * */
-	public boolean isDummy() {
-		return dummy;
-	}
-
-	/**
-	 * Setter:
-	 * Sets whether or not this Table is a dummy Table
-	 * @param dummy state of Table
-	 * */
-	protected void setDummy(boolean dummy) {
-		this.dummy = dummy;
 	}
 	//----------------------------------------------------------------
 }

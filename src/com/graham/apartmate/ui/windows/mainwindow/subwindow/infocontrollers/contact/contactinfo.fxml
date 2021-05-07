@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.graham.apartmate.ui.windows.mainwindow.subwindow.infocontrollers.contact.ContactInfoController">
+    <content>
+        <AnchorPane prefHeight="680.0" prefWidth="600.0">
+            <children>
+                <VBox prefHeight="200.0" prefWidth="100.0" spacing="15.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                    <children>
+                        <AnchorPane prefHeight="193.0" prefWidth="200.0" style="-fx-border-color: black;">
+                            <children>
+                                <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-border-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <Text fx:id="nameText" strokeType="OUTSIDE" strokeWidth="0.0" text="Name">
+                                            <font>
+                                                <Font size="48.0" />
+                                            </font>
+                                        </Text>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Relations" />
+                                    </children>
+                                </VBox>
+                                <VBox alignment="CENTER" layoutX="355.0" layoutY="6.0" prefHeight="191.0" spacing="15.0" style="-fx-border-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <ImageView fx:id="contactImg" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" style="-fx-border-color: black;" />
+                                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#editImage" prefHeight="15.0" prefWidth="200.0" text="Edit Image">
+                                            <font>
+                                                <Font size="11.0" />
+                                            </font>
+                                        </Button>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </AnchorPane>
+                  <AnchorPane minHeight="-Infinity" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;">
+                     <children>
+                        <VBox layoutX="2.0" prefHeight="200.0" prefWidth="316.0" spacing="10.0" AnchorPane.leftAnchor="0.0">
+                           <children>
+                              <Text fx:id="phoneText" strokeType="OUTSIDE" strokeWidth="0.0" text="phone_number">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font></Text>
+                                        <Text fx:id="emailText" strokeType="OUTSIDE" strokeWidth="0.0" text="Email">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font></Text>
+                              <HBox spacing="5.0">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Children:">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font></Text>
+                                    <Text fx:id="numChildrenText" strokeType="OUTSIDE" strokeWidth="0.0" text="num_children">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font></Text>
+                                 </children>
+                              </HBox>
+                              <HBox spacing="5.0">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Born on:">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font></Text>
+                                    <Text fx:id="dateOfBirthText" strokeType="OUTSIDE" strokeWidth="0.0" text="birth_date">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font></Text>
+                                 </children>
+                              </HBox>
+                              <HBox spacing="5.0">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Income:">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font></Text>
+                                    <Text fx:id="annualIncomeText" strokeType="OUTSIDE" strokeWidth="0.0" text="\$amount">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font></Text>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+                    </children>
+                </VBox>
+            </children>
+        </AnchorPane>
+    </content>
+</ScrollPane>

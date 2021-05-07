@@ -5,9 +5,9 @@ import java.util.Comparator;
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.subTables.Bill;
 import com.graham.apartmate.database.tables.subTables.NoteLog;
-import com.graham.apartmate.database.tables.subTables.LivingSpace;
+import com.graham.apartmate.database.tables.subTables.Apartment;
 import com.graham.apartmate.main.Main;
-import com.graham.apartmate.ui.libraries.FXMLLocation;
+import com.graham.apartmate.ui.res.classes.FXMLLocation;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -70,7 +70,7 @@ public class Building extends Table {
 	/**
 	 * List of rooms
 	 * */
-	private final ObservableList<LivingSpace> livingSpaces;
+	private final ObservableList<Apartment> apartments;
 
 	private boolean livingSpacesInitialized;
 	//--------------------------------------------------------------------
@@ -108,32 +108,22 @@ public class Building extends Table {
 	 * Default constructor:
 	 * */
 	public Building() {
-		this(0,"","","","",0);
-	}
-
-	/**
-	 * Dummy Apartment Constructor
-	 * */
-	public Building(String dummy) {
-		this();
-		if (dummy.equals(DUMMY_TABLE)) {
-			super.setDummy(true);
-		}
+		this(0,"","","","", FXCollections.observableArrayList());
 	}
 
 	/**
 	 * Full constructor:
-	 * Creates Apartment with existing capacity
-	 * @param id Primary Key of the Apartment
-	 * @param address address of the Apartment
-	 * @param city city the Apartment is located in
-	 * @param state state the Apartment is located in
-	 * @param zipCode zip-code of the Apartment
-	 * @param initialCapacity Apartment's occupant capacity
+	 * Creates Building with existing capacity
+	 * @param id Primary Key of the Building
+	 * @param address address of the Building
+	 * @param city city the Building is located in
+	 * @param state state the Building is located in
+	 * @param zipCode zip-code of the Building
+	 * @param apartments Building's Apartments
 	 * */
-	public Building(int id, String address, String city, String state, String zipCode, int initialCapacity) {
+	public Building(int id, String address, String city, String state, String zipCode, ObservableList<Apartment> apartments) {
 		super(id);
-		image = new Image("com/graham/apartmate/ui/res/BuildingImg_small.png");
+		image = new Image("com/graham/apartmate/ui/res/img/BuildingImg_small.png");
 		this.address = new SimpleStringProperty(address);
 		this.city = new SimpleStringProperty(city);
 		this.state = new SimpleStringProperty(state);
@@ -141,11 +131,8 @@ public class Building extends Table {
 
 		bills = FXCollections.observableArrayList();
 		issues = FXCollections.observableArrayList();
-		livingSpaces = FXCollections.observableArrayList();
+		this.apartments = apartments;
 
-		for (int i = 0; i < initialCapacity; i++) {
-			livingSpaces.add(new LivingSpace(0,getId(),i+1+""));
-		}
 		livingSpacesInitialized = false;
 	}
 	//--------------------------------------------------------------------
@@ -155,7 +142,7 @@ public class Building extends Table {
 	//Overrided & Utility Methods/////////////////////////////////////////
 	//--------------------------------------------------------------------
 	/**
-	 * Gives all identifying information for the Apartment
+	 * Gives all identifying information for the Building
 	 * @return id & location data
 	 * */
 	@Override
@@ -200,7 +187,7 @@ public class Building extends Table {
 	}
 
 	/**
-	 * Gives location data of the Apartment
+	 * Gives location data of the Building
 	 * @return address, city, state, & zipcode
 	 * */
 	public String getLocation() {
@@ -208,14 +195,14 @@ public class Building extends Table {
 	}
 
 	/**
-	 * Gives the number of Tenants in the Apartment
+	 * Gives the number of Tenants in the Building
 	 * @return # of Tenants
 	 * */
 	public int getNumTenants() {
 		int numTenants = 0;
 
-		for (LivingSpace livingSpace : livingSpaces) {
-			if (livingSpace.hasTenant()){
+		for (Apartment apartment : apartments) {
+			if (apartment.hasTenant()){
 				numTenants++;
 			}
 		}
@@ -224,20 +211,20 @@ public class Building extends Table {
 	}
 
 	/**
-	 * Gets the capacity (number of rooms) in an Apartment
+	 * Gets the capacity (number of rooms) in a Building
 	 * */
 	public int getCapacity() {
-		return livingSpaces.size();
+		return apartments.size();
 	}
 
 	/***/
-	public boolean addRoom(LivingSpace livingSpace) {
-		return livingSpaces.add(livingSpace);
+	public boolean addRoom(Apartment apartment) {
+		return apartments.add(apartment);
 	}
 
 	/***/
-	public boolean removeRoom(LivingSpace livingSpace) {
-		return livingSpaces.remove(livingSpace);
+	public boolean removeRoom(Apartment apartment) {
+		return apartments.remove(apartment);
 	}
 
 	/**
@@ -280,7 +267,7 @@ public class Building extends Table {
 	/**
 	 * Getter:
 	 * <p>
-	 * Gives the address of the Apartment
+	 * Gives the address of the Building
 	 * @return address
 	 * */
 	public String getAddress() {
@@ -310,7 +297,7 @@ public class Building extends Table {
 	/**
 	 * Getter:
 	 * <p>
-	 * Gives the city the Apartment is located in
+	 * Gives the city the Building is located in
 	 * @return city
 	 * */
 	public String getCity() {
@@ -340,7 +327,7 @@ public class Building extends Table {
 	/**
 	 * Getter:
 	 * <p>
-	 * Gives the state the Apartment is located in
+	 * Gives the state the Building is located in
 	 * @return state
 	 * */
 	public String getState() {
@@ -370,7 +357,7 @@ public class Building extends Table {
 	/**
 	 * Getter:
 	 * <p>
-	 * Gives the zip-code of the Apartment
+	 * Gives the zip-code of the Building
 	 * @return zip-code
 	 * */
 	public String getZipCode() {
@@ -410,7 +397,7 @@ public class Building extends Table {
 	/**
 	 * Getter:
 	 * <p>
-	 * Gives the list of Issues related to the room of the Apartment
+	 * Gives the list of Issues related to the room of the Building
 	 * @return Issue list
 	 * */
 	public ObservableList<NoteLog> getIssues() {
@@ -422,14 +409,16 @@ public class Building extends Table {
 	 * <p>
 	 * Gets the list of Rooms
 	 * */
-	public ObservableList<LivingSpace> getLivingSpaces() {
-		return FXCollections.unmodifiableObservableList(livingSpaces);
+	public ObservableList<Apartment> getApartments() {
+		return FXCollections.unmodifiableObservableList(apartments);
 	}
 
+	/***/
 	public boolean isLivingSpacesInitialized() {
 		return livingSpacesInitialized;
 	}
 
+	/***/
 	public void setLivingSpacesInitialized(boolean livingSpacesInitialized) {
 		this.livingSpacesInitialized = livingSpacesInitialized;
 	}

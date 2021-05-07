@@ -3,7 +3,7 @@ package com.graham.apartmate.database.tables.subTables;
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.mainTables.Table;
 import com.graham.apartmate.main.Main;
-import com.graham.apartmate.ui.libraries.FXMLLocation;
+import com.graham.apartmate.ui.res.classes.FXMLLocation;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -60,16 +60,6 @@ public class NoteLog extends Table {
      * */
     public NoteLog(boolean isIssue) {
         this(0,0,"",LocalDate.now() ,isIssue);
-    }
-
-    /**
-     * Dummy NoteLog Constructor
-     * */
-    public NoteLog(String dummy) {
-        this(true);
-        if (dummy.equals(DUMMY_TABLE)) {
-            super.setDummy(true);
-        }
     }
 
     /**

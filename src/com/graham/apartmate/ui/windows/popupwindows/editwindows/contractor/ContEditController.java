@@ -1,7 +1,7 @@
 package com.graham.apartmate.ui.windows.popupwindows.editwindows.contractor;
 
 import com.graham.apartmate.database.tables.mainTables.Building;
-import com.graham.apartmate.database.tables.subTables.RoomMate;
+import com.graham.apartmate.database.tables.subTables.Occupant;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -37,7 +37,7 @@ public class ContEditController {
 	@FXML
 	private Button addButton;
 	
-	public static RoomMate candRoomMate;
+	public static Occupant candOccupant;
 	
 	// ---------------------------------------------------------
 	// ---------------------------------------------------------

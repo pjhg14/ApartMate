@@ -2,7 +2,6 @@ package com.graham.apartmate.database.tables.subTables;
 
 import com.graham.apartmate.database.dbMirror.DBTables;
 import com.graham.apartmate.database.tables.mainTables.Table;
-import com.graham.apartmate.ui.libraries.FXMLLocation;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
@@ -10,11 +9,20 @@ import javafx.collections.ObservableList;
 
 public class Contract extends Table {
 
+    enum TermType {
+        MONTHS,
+        YEARS,
+        NONE
+    }
+
     //-------------------------------------------------------------
     //Fields///////////////////////////////////////////////////////
     //-------------------------------------------------------------
     /***/
     private final SimpleIntegerProperty term;
+
+    /***/
+    private TermType termType;
 
     /***/
     private final SimpleDoubleProperty payment;

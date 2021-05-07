@@ -1,4 +1,4 @@
-package com.graham.apartmate.ui.libraries;
+package com.graham.apartmate.ui.res.classes;
 
 import java.io.IOException;
 
@@ -100,7 +100,7 @@ public class WindowLibrary {
 					location = FXMLLocation.CANDADD;
 					break;
 				case CONTRACTORS:
-					location = FXMLLocation.CONTADD;
+					location = FXMLLocation.CONTRADD;
 					break;
 				case BILLS:
 					location = FXMLLocation.BILLADD;
@@ -149,7 +149,7 @@ public class WindowLibrary {
 					location = FXMLLocation.CANDADD;
 					break;
 				case CONTRACTORS:
-					location = FXMLLocation.CONTADD;
+					location = FXMLLocation.CONTRADD;
 					break;
 				case BILLS:
 					location = FXMLLocation.BILLADD;

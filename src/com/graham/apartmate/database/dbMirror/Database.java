@@ -353,8 +353,8 @@ public final class Database {
 					return id;
 				case INSPECTIONS:
 					for (Building building : buildings) {
-						for (LivingSpace livingSpace : building.getLivingSpaces()) {
-							for (NoteLog inspection : livingSpace.getInspections()) {
+						for (Apartment apartment : building.getApartments()) {
+							for (NoteLog inspection : apartment.getInspections()) {
 								if (inspection.getId() > id) {
 									id = inspection.getId();
 								}
@@ -364,18 +364,18 @@ public final class Database {
 					return id;
 				case ROOMMATE:
 					for (Tenant tenant : tenants) {
-						for (RoomMate roomMate : tenant.getRoomMates()) {
-							if (roomMate.getId() > id) {
-								id = roomMate.getId();
+						for (Occupant occupant : tenant.getOccupants()) {
+							if (occupant.getId() > id) {
+								id = occupant.getId();
 							}
 						}
 
 					}
 
 					for (Candidate candidate : candidates) {
-						for (RoomMate roomMate : candidate.getRoomMates()) {
-							if (roomMate.getId() > id) {
-								id = roomMate.getId();
+						for (Occupant occupant : candidate.getOccupants()) {
+							if (occupant.getId() > id) {
+								id = occupant.getId();
 							}
 						}
 
@@ -445,34 +445,22 @@ public final class Database {
 	// find methods
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
-	/***/
-	public Building getRelatedBuilding(Table table) {
-		for (Building building : buildings) {
-			if (table.getFk() == building.getId()) {
-				return building;
-			}
-		}
-
-		return null;
-	}
-
 	public String getResidency(Candidate candidate) {
-		Building relatedBuilding = getRelatedBuilding(candidate);
 
-		assert relatedBuilding != null;
-		for (LivingSpace livingSpace : relatedBuilding.getLivingSpaces()) {
-			if (livingSpace.getTenant().equals(candidate)) {
-				return relatedBuilding.getAddress() + ", " + livingSpace.getSectionName();
-			}
-
-			for (Candidate expectantCandidate : livingSpace.getExpectantCandidates()) {
-				if (expectantCandidate.equals(candidate)) {
-					return relatedBuilding.getAddress() + ", " + livingSpace.getSectionName();
+		//iterate through all buildings
+		for (Building building : buildings) {
+			//iterate through building apartments
+			for (Apartment apartment : building.getApartments()) {
+				//check if apartment id = candidate/tenant fk
+				if (apartment.getId() == candidate.getFk()) {
+					//building found, return building, apartment
+					return building.getAddress() + " " + building.getCity() + ", " + building.getState()
+							+ "\n Apartment " + apartment.getSectionName();
 				}
 			}
 		}
 
-		return null;
+		return "ERROR: BUILDING NOT FOUND";
 	}
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
@@ -586,10 +574,10 @@ public final class Database {
 		switch (table) {
 			case INSPECTIONS:
 				for (Building building : buildings) {
-					for (LivingSpace livingSpace : building.getLivingSpaces()) {
-						if (livingSpace.getId() == issInsp.getFk()) {
-							livingSpace.getInspections().add(issInsp);
-							Collections.sort(livingSpace.getInspections());
+					for (Apartment apartment : building.getApartments()) {
+						if (apartment.getId() == issInsp.getFk()) {
+							apartment.getInspections().add(issInsp);
+							Collections.sort(apartment.getInspections());
 
 							//Insert online method here
 
@@ -646,16 +634,16 @@ public final class Database {
 	/**
 	 * Adds a Spouse to the Database; uses table constants to select whether the added
 	 * spouse goes to a particular tenant or candidate
-	 * @param roomMate The Spouse to add to the Database
+	 * @param occupant The Spouse to add to the Database
 	 * @param table Table the Spouse is related to (Valid tables: Tenants & Candidates)
 	 * @return <code>true</code> if the spouse was added, <code>false</code> otherwise
 	 * */
-	public boolean add(RoomMate roomMate, DBTables table) {
+	public boolean add(Occupant occupant, DBTables table) {
 		switch (table) {
 		case TENANTS:
 			for (Tenant tenant : tenants) {
-				if ((tenant.getId() == roomMate.getFk()) && tenant.getRoomMates() == null) {
-					tenant.addRoomMate(roomMate);
+				if ((tenant.getId() == occupant.getFk()) && tenant.getOccupants() == null) {
+					tenant.addRoomMate(occupant);
 
 					//Insert online method here
 
@@ -665,8 +653,8 @@ public final class Database {
 			break;
 		case CANDIDATES:
 			for (Candidate candidate : candidates) {
-				if ((candidate.getId() == roomMate.getFk2()) && candidate.getRoomMates() == null) {
-					candidate.addRoomMate(roomMate);
+				if ((candidate.getId() == occupant.getFk2()) && candidate.getOccupants() == null) {
+					candidate.addRoomMate(occupant);
 
 					//Insert online method here
 
@@ -681,10 +669,10 @@ public final class Database {
 		return false;
 	}
 
-	public boolean add(LivingSpace livingSpace) {
+	public boolean add(Apartment apartment) {
 		for (Building building : buildings) {
-			if (building.getId() == livingSpace.getFk()) {
-				return building.addRoom(livingSpace);
+			if (building.getId() == apartment.getFk()) {
+				return building.addRoom(apartment);
 			}
 		}
 
@@ -860,11 +848,11 @@ public final class Database {
 		try {
 			if (tenants.remove(tenant)) {
 				for (Building building : buildings) {
-					for (LivingSpace livingSpace : building.getLivingSpaces()) {
-						if (livingSpace.getTenant().equals(tenant)) {
+					for (Apartment apartment : building.getApartments()) {
+						if (apartment.getTenant().equals(tenant)) {
 							//Insert online method here
 
-							return livingSpace.removeTenant();
+							return apartment.removeTenant();
 						}
 					}
 				}
@@ -948,8 +936,8 @@ public final class Database {
 			switch (table) {
 				case INSPECTIONS:
 					for (Building building : buildings) {
-						for (LivingSpace livingSpace : building.getLivingSpaces()) {
-							if (livingSpace.getInspections().remove(issInsp)) {
+						for (Apartment apartment : building.getApartments()) {
+							if (apartment.getInspections().remove(issInsp)) {
 								//Insert online method here
 
 								return true;
@@ -1023,15 +1011,15 @@ public final class Database {
 
 	/**
 	 * Removes an Spouse from the Database
-	 * @param roomMate Spouse to be removed
+	 * @param occupant Spouse to be removed
 	 * @param table Table the Spouse is related to (Valid tables: Tenants & Candidates)
 	 * @return <code>true</code> if the Issue or Inspection was removed <code>false</code> otherwise
 	 * */
-	public boolean remove(RoomMate roomMate, DBTables table) {
+	public boolean remove(Occupant occupant, DBTables table) {
 		switch (table) {
 		case TENANTS:
 			for (Tenant tenant : tenants) {
-				if (tenant.getId() == roomMate.getFk()) {
+				if (tenant.getId() == occupant.getFk()) {
 					tenant.setSpouse(null);
 
 					//Insert online method here
@@ -1042,7 +1030,7 @@ public final class Database {
 			break;
 		case CANDIDATES:
 			for (Candidate candidate : candidates) {
-				if (candidate.getId() == roomMate.getFk2()) {
+				if (candidate.getId() == occupant.getFk2()) {
 					candidate.setSpouse(null);
 
 					//Insert online method here
@@ -1173,17 +1161,17 @@ public final class Database {
 
 	/**
 	 * Edits Spouse details that already exists in the Database
-	 * @param roomMate Spouse to edit
+	 * @param occupant Spouse to edit
 	 * @param table Selects the related Table (Valid Tables: Tenants & Candidates)
 	 * @return <code>true</code> if Spouse exists and changes are made, <code>false</code> if not
 	 * */
-	public boolean edit(RoomMate roomMate, DBTables table) {
+	public boolean edit(Occupant occupant, DBTables table) {
 		switch (table){
 			case TENANTS:
 				for (Tenant tnant : tenants) {
-					if (tnant.getRoomMates().equals(roomMate)) {
-						roomMate.setEdited(true);
-						tnant.removeRoomMate(roomMate);
+					if (tnant.getOccupants().equals(occupant)) {
+						occupant.setEdited(true);
+						tnant.removeRoomMate(occupant);
 
 						//Insert online method here
 
@@ -1193,13 +1181,13 @@ public final class Database {
 				break;
 			case CANDIDATES:
 				for (Candidate cand : candidates) {
-					if (cand.getRoomMates().equals(roomMate)) {
-						roomMate.setEdited(true);
-						cand.removeRoomMate(roomMate);
+					if (cand.getOccupants().equals(occupant)) {
+						occupant.setEdited(true);
+						cand.removeRoomMate(occupant);
 
 						if (online) {
-							sqlBridge.update(roomMate,table);
-							roomMate.setEdited(false);
+							sqlBridge.update(occupant,table);
+							occupant.setEdited(false);
 						}
 
 						return true;
@@ -1223,12 +1211,12 @@ public final class Database {
 		switch (table) {
 			case INSPECTIONS:
 				for (Building building : buildings) {
-					for (LivingSpace livingSpace : building.getLivingSpaces()) {
-						int index = livingSpace.getInspections().indexOf(issInsp);
+					for (Apartment apartment : building.getApartments()) {
+						int index = apartment.getInspections().indexOf(issInsp);
 
 						if (index > 0) {
 							issInsp.setEdited(true);
-							livingSpace.getInspections().set(index,issInsp);
+							apartment.getInspections().set(index,issInsp);
 
 							events.upDateModified(issInsp);
 
@@ -1457,11 +1445,11 @@ public final class Database {
 		Collections.sort(candidates);
 		Collections.sort(contractors);
 
-		buildings.forEach(a -> Collections.sort(a.getLivingSpaces()));
+		buildings.forEach(a -> Collections.sort(a.getApartments()));
 
 		buildings.forEach(a -> Collections.sort(a.getIssues()));
 
-		buildings.forEach(a -> a.getLivingSpaces().forEach(r -> Collections.sort(r.getInspections())));
+		buildings.forEach(a -> a.getApartments().forEach(r -> Collections.sort(r.getInspections())));
 	}
 
 	/**
@@ -1473,7 +1461,7 @@ public final class Database {
 		candidates.sort(Collections.reverseOrder());
 		contractors.sort(Collections.reverseOrder());
 
-		buildings.forEach(a -> a.getLivingSpaces().forEach(r -> r.getInspections().sort(Collections.reverseOrder())));
+		buildings.forEach(a -> a.getApartments().forEach(r -> r.getInspections().sort(Collections.reverseOrder())));
 
 		buildings.forEach(a -> a.getIssues().sort(Collections.reverseOrder()));
 	}

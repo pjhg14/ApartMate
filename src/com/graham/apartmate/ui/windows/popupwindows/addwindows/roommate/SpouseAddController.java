@@ -3,7 +3,7 @@ package com.graham.apartmate.ui.windows.popupwindows.addwindows.roommate;
 import java.time.LocalDate;
 
 import com.graham.apartmate.database.dbMirror.Database;
-import com.graham.apartmate.database.tables.subTables.RoomMate;
+import com.graham.apartmate.database.tables.subTables.Occupant;
 import com.graham.apartmate.main.Main;
 
 import javafx.fxml.FXML;
@@ -66,7 +66,7 @@ public class SpouseAddController {
 		}
 
 		try {
-			RoomMate temp = new RoomMate();
+			Occupant temp = new Occupant();
 
 			LocalDate date;
 
@@ -77,14 +77,14 @@ public class SpouseAddController {
 //				temp.setFk(Database.getInstance().getCurrCand().getId());
 //			}
 
-			temp.setFirstName(firstNameTextField.getText());
-			temp.setLastName(lastNameTextField.getText());
-			temp.setPhone(phoneTextField.getText());
-			temp.setEmail(emailTextField.getText());
-			temp.setSsn(SSNTextField.getText());
+//			temp.setFirstName(firstNameTextField.getText());
+//			temp.setLastName(lastNameTextField.getText());
+//			temp.setPhone(phoneTextField.getText());
+//			temp.setEmail(emailTextField.getText());
+//			temp.setSsn(SSNTextField.getText());
 			date = dateOfBirthDatePicker.getValue();
 			//temp.setDateOfBirth(Date.from(Instant.from(date.atStartOfDay(ZoneId.systemDefault()))));
-			temp.setAnnualIncome(Integer.parseInt(annualIncomeTextField.getText()));
+//			temp.setAnnualIncome(Integer.parseInt(annualIncomeTextField.getText()));
 
 			//TnantAddController.tnantSpouse = temp;
 			//CandAddController.candSpouse = temp;

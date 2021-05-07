@@ -19,7 +19,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import static com.graham.apartmate.ui.libraries.FXMLLocation.*;
+import static com.graham.apartmate.ui.res.classes.FXMLLocation.*;
 
 public class MainSceneController {
 
@@ -71,9 +71,6 @@ public class MainSceneController {
     //--------------------------------------------------------
     //Utility Fields
     //--------------------------------------------------------
-
-    /*
-    * When the sub-window changes, push the last */
     /**
      * Utility field for the back button
      * */
@@ -85,6 +82,8 @@ public class MainSceneController {
     private List<Deque<FXMLLoader>> reverseHistory;
     //--------------------------------------------------------
     //--------------------------------------------------------
+
+    private Table parentTable;
 
     /*
     * This is the Main Scene for ApartMate upon logging in
@@ -119,6 +118,10 @@ public class MainSceneController {
         if (isList) {
             createListWindow(table);
         } else {
+            //TODO: following assignment will not work; find way of storing last table selected
+            // can replace Database.getInstance.getResidency function
+            parentTable = table;
+
             createInfoWindow(table);
         }
     };
@@ -151,6 +154,9 @@ public class MainSceneController {
 
         //Start at Overview Tab
         subPane.getSelectionModel().selectFirst();
+
+        //Work on Contractor tab postponed until Building-Tenant-Candidate relation is fully functional
+        contTab.setDisable(true);
     }
 
     //--------------------------------------------------------------------

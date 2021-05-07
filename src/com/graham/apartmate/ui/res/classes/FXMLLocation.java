@@ -1,4 +1,4 @@
-package com.graham.apartmate.ui.libraries;
+package com.graham.apartmate.ui.res.classes;
 
 import com.graham.apartmate.main.Main;
 
@@ -19,29 +19,34 @@ public enum FXMLLocation {
 	OVERVIEW("/com/graham/apartmate/ui/windows/mainwindow/subwindow/overview/overview.fxml"),
 
 	BLDGINFO("/com/graham/apartmate/ui/windows/mainwindow/subwindow/infocontrollers/building/bldginfo.fxml"),
-	TNANTINFO("/com/graham/apartmate/ui/fxml/info/tnantinfo.fxml"),
-	CANDINFO("/com/graham/apartmate/ui/fxml/info/candinfo.fxml"),
-	CONTINFO("/com/graham/apartmate/ui/fxml/info/continfo.fxml"),
+	TNANTINFO("/com/graham/apartmate/ui/windows/mainwindow/subwindow/infocontrollers/tenant/tnantinfo.fxml"),
+	CANDINFO("/com/graham/apartmate/ui/windows/mainwindow/subwindow/infocontrollers/candidate/candinfo.fxml"),
+	CONTRINFO("/com/graham/apartmate/ui/windows/mainwindow/subwindow/infocontrollers/contractor/continfo.fxml"),
 	ACTINFO("/com/graham/apartmate/ui/windows/mainwindow/subwindow/infocontrollers/account/actinfo.fxml"),
+	CONTACTINFO("/com/graham/apartmate/ui/windows/mainwindow/subwindow/infocontrollers/contact/contactinfo.fxml"),
+	CONTRACTINFO(""),
 	BILLINFO("/com/graham/apartmate/ui/windows/mainwindow/subwindow/infocontrollers/bill/billinfo.fxml"),
 	NOTEINFO("com/graham/apartmate/ui/windows/mainwindow/subwindow/infocontrollers/notelog/noteinfo.fxml"),
 
 	BLDGADD("/com/graham/apartmate/ui/windows/popupwindows/addwindows/building/bldgadd.fxml"),
 	TNANTADD("/com/graham/apartmate/ui/windows/popupwindows/addwindows/tenant/tnantadd.fxml"),
 	CANDADD("/com/graham/apartmate/ui/windows/popupwindows/addwindows/candidate/candadd.fxml"),
-	CONTADD("/com/graham/apartmate/ui/windows/popupwindows/addwindows/contractor/contadd.fxml"),
+	CONTACTADD(""),
+	CONTRADD("/com/graham/apartmate/ui/windows/popupwindows/addwindows/contractor/contadd.fxml"),
+	BILLADD("/com/graham/apartmate/ui/windows/popupwindows/addwindows/bill/billadd.fxml"),
+
+	OCCUPADD("/com/graham/apartmate/ui/windows/popupwindows/addwindows/roommate/spouseadd.fxml"),
+	NOTEADD(""),
 
 	BLDGEDIT("/com/graham/apartmate/ui/windows/popupwindows/editwindows/building/bldgedit.fxml"),
 	TNANTEDIT("/com/graham/apartmate/ui/windows/popupwindows/editwindows/tenant/tnantedit.fxml"),
 	CANDEDIT("/com/graham/apartmate/ui/windows/popupwindows/editwindows/candidate/candedit.fxml"),
-	CONTEDIT("/com/graham/apartmate/ui/windows/popupwindows/editwindows/contractor/contedit.fxml"),
-
-	SPOUSEADD("/com/graham/apartmate/ui/windows/popupwindows/addwindows/roommate/spouseadd.fxml"),
-	SPOUSEEDIT("/com/graham/apartmate/ui/windows/popupwindows/editwindows/roommate/spouseedit.fxml"),
-	BILLADD("/com/graham/apartmate/ui/windows/popupwindows/addwindows/bill/billadd.fxml"),
+	CONTREDIT("/com/graham/apartmate/ui/windows/popupwindows/editwindows/contractor/contedit.fxml"),
+	CONTACTEDIT(""),
 	BILLEDIT("/com/graham/apartmate/ui/windows/popupwindows/editwindows/bill/billedit.fxml"),
-	NOTEADD(""),
+	OCCUPEDIT("/com/graham/apartmate/ui/windows/popupwindows/editwindows/roommate/spouseedit.fxml"),
 	NOTEEDIT("");
+
 
 	private final String location;
 

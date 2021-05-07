@@ -2,17 +2,24 @@ package com.graham.apartmate.ui.windows.mainwindow.subwindow.infocontrollers.ten
 
 import com.graham.apartmate.database.dbMirror.Database;
 import com.graham.apartmate.database.tables.mainTables.Tenant;
+import com.graham.apartmate.database.tables.subTables.Occupant;
 import com.graham.apartmate.database.tables.subTables.TransactionLog;
 import com.graham.apartmate.main.Main;
 import com.graham.apartmate.ui.windows.utility.SubWindowController;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.util.List;
 
 public class TnantInfoController extends SubWindowController {
 
@@ -38,9 +45,10 @@ public class TnantInfoController extends SubWindowController {
     private ImageView tnantImg;
 
     @FXML
-    private ListView<TransactionLog> paymentListView;
+    private FlowPane contentList;
 
-
+    @FXML
+    private ListView<TransactionLog> transactionListView;
     //----------------------------------------------------------
     //----------------------------------------------------------
 
@@ -51,7 +59,9 @@ public class TnantInfoController extends SubWindowController {
     //----------------------------------------------------------
     //----------------------------------------------------------
 
-
+    //----------------------------------------------------------
+    //Initialize
+    //----------------------------------------------------------
     @Override
     public void init() {
         selectedTnant = (Tenant) currentTable;
@@ -71,7 +81,33 @@ public class TnantInfoController extends SubWindowController {
 
         //Set imageView
         tnantImg.setImage(selectedTnant.getImage());
+
+        //Set listView
+        transactionListView.setCellFactory(callBack -> new ListCell<TransactionLog>(){
+
+            @Override
+            protected void updateItem(TransactionLog item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (item == null || item.getAmount() == 0 || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText("$"
+                            + item.getAmount()
+                            + ((item.getAmount() > 0) ? " received" : " billed")
+                            + " on "
+                            + item.getTransactionDate());
+                    setTextFill((item.getAmount() > 0) ? Color.GREEN : Color.RED);
+                }
+            }
+        });
+        transactionListView.setItems(selectedTnant.getAccount().getTransactions());
+
+        listOccupants(selectedTnant.getOccupants());
     }
+    //----------------------------------------------------------
+    //----------------------------------------------------------
 
     //----------------------------------------------------------
     //FXML Methods
@@ -105,8 +141,23 @@ public class TnantInfoController extends SubWindowController {
     }
 
     @FXML
+    public void addTransaction() {
+        //TODO: Create addition windows and link from here
+    }
+
+    @FXML
+    public void editTransaction() {
+        //TODO: Create addition windows and link from here
+    }
+
+    @FXML
+    public void deleteTransaction() {
+        selectedTnant.getAccount().removeTransaction(transactionListView.getSelectionModel().getSelectedItem());
+    }
+
+    @FXML
     public void viewTenantContact() {
-        //Re-factor Tenant Contact information into Candidate class
+        subWindowSubmit.accept(selectedTnant.getPersonalInfo(), false);
     }
 
     @FXML
@@ -115,8 +166,14 @@ public class TnantInfoController extends SubWindowController {
     }
 
     @FXML
-    public void viewStatements() {
+    public void viewAccount() {
         subWindowSubmit.accept(selectedTnant.getAccount(), false);
+    }
+
+    @FXML
+    public void addOccupant() {
+        //TODO: Occupant addition stub
+        System.out.println("No outer window yet sorry");
     }
     //----------------------------------------------------------
     //----------------------------------------------------------
@@ -124,7 +181,29 @@ public class TnantInfoController extends SubWindowController {
     //----------------------------------------------------------
     //Other Methods
     //----------------------------------------------------------
+    private void listOccupants(List<Occupant> occupants) {
+        for (Occupant occupant : occupants) {
+            contentList.getChildren().add(contentBox(occupant));
+        }
+    }
 
+    private VBox contentBox(Occupant occupant) {
+        VBox container = new VBox();
+
+        ImageView icon = new ImageView(occupant.getImage());
+        icon.setPreserveRatio(true);
+        icon.setSmooth(true);
+        icon.setOnMouseClicked(event -> subWindowSubmit.accept(occupant.getPersonalInfo(), false));
+
+        container.getChildren().add(icon);
+
+        Button deleteButton = new Button("Delete");
+        deleteButton.setOnAction(event -> Database.getInstance().remove(occupant,selectedTnant.getTableType()));
+
+        container.getChildren().add(deleteButton);
+
+        return container;
+    }
     //----------------------------------------------------------
     //----------------------------------------------------------
 }
